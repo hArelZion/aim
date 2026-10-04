@@ -91,6 +91,14 @@ header { flex: none; background: var(--bg); border-bottom: 1px solid var(--line)
 .row-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
 .btn-plain { padding: 7px 14px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg); font-size: .88rem; }
 .btn-warn { padding: 7px 14px; border-radius: 9px; border: 1px solid var(--warn); background: transparent; color: var(--warn); font-weight: 600; font-size: .88rem; }
+.convs { display: grid; gap: 4px; width: 100%; max-width: 480px; text-align: start; }
+.conv { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); width: 100%; text-align: start; }
+.conv[aria-current="true"] { border-color: var(--spark); }
+.conv b { font-weight: 600; font-size: .95rem; }
+.conv span { font-size: .78rem; color: var(--muted); }
+.sheet h2 { margin: 0; font-size: .9rem; font-weight: 600; }
+.oldbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-block: 8px 12px; padding: 10px 14px; border-radius: 16px; background: var(--bubble); font-size: .88rem; }
+.oldbar button { border: 0; background: var(--accent); color: var(--accent-ink); border-radius: 10px; padding: 7px 12px; font-weight: 600; font-size: .85rem; }
 .alert { padding: 8px 12px; margin-bottom: 10px; border-radius: 10px; font-size: .85rem; background: var(--warn-soft); color: var(--warn); }
 
 /* thread */
@@ -179,6 +187,9 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
       <span class="sub"><i class="dot" id="dot" data-s="off"></i><span id="sub"></span></span>
     </div>
     <div class="actions">
+      <button class="icon-btn" id="convBtn" type="button" aria-expanded="false" aria-controls="convSheet">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 10h7M8.5 13.5h4.5"/></svg>
+      </button>
       <button class="icon-btn" id="themeBtn" type="button"></button>
       <button class="icon-btn" id="gear" type="button" aria-expanded="false" aria-controls="sheet">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.66 0-1.25.4-1.51 1z"/></svg>
@@ -186,6 +197,12 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
     </div>
   </div>
   <div class="wrap"><div class="alert" id="alert" hidden></div></div>
+  <div class="sheet" id="convSheet" hidden>
+    <div class="wrap sheet-in">
+      <h2 data-t="convsTitle"></h2>
+      <div class="convs" id="convList"></div>
+    </div>
+  </div>
   <div class="sheet" id="sheet" hidden>
     <div class="wrap sheet-in">
       <div class="meta" id="meta"></div>
@@ -211,6 +228,7 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 
 <footer>
   <div class="wrap">
+    <div class="oldbar" id="oldbar" hidden><span data-t="oldConv"></span><button type="button" id="backCurrent" data-t="backCurrent"></button></div>
     <div class="previews" id="previews" hidden></div>
     <form class="box" id="form">
       <button class="attach" id="attach" type="button">
@@ -242,6 +260,7 @@ document.querySelectorAll("[data-logo]").forEach((n) => { n.innerHTML = LOGO; })
 const $ = (id) => document.getElementById(id);
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let msgs = [], settings = {}, status = {}, watcher = {}, sending = false, firstLoad = true, signedIn = false;
+let convs = [], currentConv = null, viewConv = null;
 const known = new Set(), urlCache = new Map();
 
 /* ---------- language ---------- */
@@ -267,6 +286,8 @@ const I18N = {
     signUpDone: "שלחנו מייל אישור. לחץ על הקישור שבו, וחזור לכאן להתחבר עם הסיסמה.",
     loginErr: "הכניסה נכשלה. בדוק אימייל וסיסמה, ואם זו פעם ראשונה, אשר קודם את המייל.",
     password: "סיסמה (8 תווים לפחות)",
+    convsTitle: "השיחות שלך", conversations: "שיחות", currentTag: "נוכחית",
+    oldConv: "זו שיחה קודמת. אפשר לקרוא, לא לשלוח.", backCurrent: "לשיחה הנוכחית", untitled: "שיחה בלי שם",
   },
   en: {
     locale: "en-GB", yesterday: "Yesterday",
@@ -289,6 +310,8 @@ const I18N = {
     signUpDone: "We sent a confirmation email. Tap the link in it, then come back here and sign in with the password.",
     loginErr: "Sign-in failed. Check the email and password; if this is your first time, confirm the email first.",
     password: "Password (8+ characters)",
+    convsTitle: "Your conversations", conversations: "Conversations", currentTag: "current",
+    oldConv: "This is an earlier conversation. You can read it, not send to it.", backCurrent: "Current conversation", untitled: "Untitled conversation",
   },
 };
 let lang = "he";
@@ -318,7 +341,7 @@ function applyLang() {
   $("password").placeholder = t("password");
   $("composer").placeholder = t("placeholder"); $("composer").setAttribute("aria-label", t("msgAria"));
   $("send").setAttribute("aria-label", t("send")); $("gear").setAttribute("aria-label", t("settings"));
-  $("attach").setAttribute("aria-label", t("attach"));
+  $("attach").setAttribute("aria-label", t("attach")); $("convBtn").setAttribute("aria-label", t("conversations"));
   $("lang-he").setAttribute("aria-pressed", String(lang === "he"));
   $("lang-en").setAttribute("aria-pressed", String(lang === "en"));
   paintThemeBtn(); renderHeader(); if (!firstLoad) renderThread(); renderTail();
@@ -504,24 +527,62 @@ function applyControl(row) {
   }
   if (row.id === "status") status = row.data || {};
   if (row.id === "watcher") watcher = row.data || {};
+  if (row.id === "current") {
+    const next = (row.data || {}).conv || null;
+    if (next && next !== currentConv) {
+      const follow = !viewConv || viewConv === currentConv;
+      currentConv = next;
+      if (follow && signedIn && !booting) { viewConv = next; loadMessages(); }
+    }
+  }
+}
+let booting = false;
+async function loadConvs() {
+  const { data, error } = await sb.from("conversations").select("*").order("created_at", { ascending: false });
+  if (!error) convs = data || [];
+  renderConvs();
+}
+async function loadMessages() {
+  let q = sb.from("messages").select("*").order("ts", { ascending: false }).limit(300);
+  if (viewConv) q = q.eq("conv", viewConv);
+  const { data, error } = await q;
+  if (!error) { msgs = (data || []).reverse(); firstLoad = true; }
+  renderAll(); renderOldBar();
 }
 async function loadAll() {
-  const [m, c] = await Promise.all([
-    sb.from("messages").select("*").order("ts", { ascending: false }).limit(300),
-    sb.from("control").select("*"),
-  ]);
-  if (!m.error) msgs = (m.data || []).reverse();
+  booting = true;
+  const c = await sb.from("control").select("*");
   if (!c.error) (c.data || []).forEach(applyControl);
-  renderAll();
+  booting = false;
+  if (!viewConv) viewConv = currentConv;
+  await Promise.all([loadConvs(), loadMessages()]);
 }
+function renderConvs() {
+  const list = $("convList"); list.replaceChildren();
+  convs.forEach((cv) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "conv";
+    b.setAttribute("aria-current", String(cv.id === viewConv));
+    const when = new Date(cv.created_at).toLocaleDateString(t("locale"), { day: "numeric", month: "numeric", year: "2-digit" });
+    b.append(el("b", null, cv.title || t("untitled")), el("span", null, [when, cv.project, cv.id === currentConv ? t("currentTag") : ""].filter(Boolean).join(" · ")));
+    b.onclick = () => { viewConv = cv.id; $("convSheet").hidden = true; $("convBtn").setAttribute("aria-expanded", "false"); loadMessages(); renderConvs(); };
+    list.append(b);
+  });
+}
+function renderOldBar() {
+  const old = !!(viewConv && currentConv && viewConv !== currentConv);
+  $("oldbar").hidden = !old; $("form").hidden = old;
+}
+$("backCurrent").onclick = () => { viewConv = currentConv; loadMessages(); renderConvs(); };
 let channel = null;
 function subscribe() {
   if (channel) return;
   channel = sb.channel("aim")
     .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, (p) => {
-      if (p.eventType === "DELETE") msgs = msgs.filter((m) => m.id !== p.old.id); else upsertMsg(p.new);
+      if (p.eventType === "DELETE") msgs = msgs.filter((m) => m.id !== p.old.id);
+      else if (!viewConv || !p.new.conv || p.new.conv === viewConv) upsertMsg(p.new);
       renderThread(); renderTail();
     })
+    .on("postgres_changes", { event: "*", schema: "public", table: "conversations" }, () => loadConvs())
     .on("postgres_changes", { event: "*", schema: "public", table: "control" }, (p) => {
       if (p.new) applyControl(p.new);
       renderHeader(); renderTail();
@@ -536,7 +597,8 @@ async function saveSettings(patch) {
 }
 
 /* ---------- settings sheet ---------- */
-$("gear").onclick = () => { const open = $("sheet").hidden; $("sheet").hidden = !open; $("gear").setAttribute("aria-expanded", String(open)); };
+$("gear").onclick = () => { const open = $("sheet").hidden; $("sheet").hidden = !open; $("gear").setAttribute("aria-expanded", String(open)); $("convSheet").hidden = true; $("convBtn").setAttribute("aria-expanded", "false"); };
+$("convBtn").onclick = () => { const open = $("convSheet").hidden; $("convSheet").hidden = !open; $("convBtn").setAttribute("aria-expanded", String(open)); $("sheet").hidden = true; $("gear").setAttribute("aria-expanded", "false"); if (open) loadConvs(); };
 $("pauseBtn").onclick = () => saveSettings({ mode: settings.mode === "off" ? "on" : "off" });
 $("signOutBtn").onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
@@ -594,6 +656,7 @@ $("form").addEventListener("submit", async (e) => {
   const ts = Date.now();
   const id = "m" + ts.toString(36) + Math.random().toString(36).slice(2, 6);
   const row = { id, sender: "me", kind: "command", text, ts, seen: false };
+  if (currentConv) row.conv = currentConv;
   const lastAi = [...msgs].reverse().find((m) => m.sender !== "me" && m.kind !== "system");
   if (lastAi && lastAi.kind === "question" && !msgs.slice(msgs.indexOf(lastAi) + 1).some((m) => m.sender === "me")) { row.kind = "answer"; row.reply_to = lastAi.id; }
   try {
