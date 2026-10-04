@@ -279,7 +279,7 @@ document.querySelectorAll("[data-logo]").forEach((n) => { n.innerHTML = LOGO; })
 
 const $ = (id) => document.getElementById(id);
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-let msgs = [], settings = {}, statuses = {}, watchers = {}, sending = false, firstLoad = true, signedIn = false;
+let msgs = [], settings = {}, statuses = {}, watchers = {}, sending = false, firstLoad = true, ready = false, signedIn = false;
 let convs = [], currentConv = null, viewConv = null;
 const curByModel = { claude: null, gpt: null }, viewByModel = { claude: null, gpt: null };
 const curS = () => statuses[model] || {};
@@ -298,7 +298,7 @@ const I18N = {
     offlineAlert: "המחשב לא מאזין עכשיו. הודעות שתשלח יחכו עד שתקליד /phone בשיחה במחשב.",
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
-    newChat: "שיחה חדשה",
+    newChat: "שיחה חדשה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
     noGptConv: "ChatGPT עדיין לא חובר. הקלד $phone ב-Codex במחשב.", offlineGpt: "ChatGPT לא מחובר. הקלד $phone ב-Codex במחשב.", switchTo: "מעבר ל-",
     language: "שפת האפליקציה", pause: "השהיית הקו", resume: "המשך הקו", signOut: "התנתקות",
     placeholder: "כתוב ל-Claude…", msgAria: "הודעה ל-Claude", send: "שליחה", settings: "הגדרות",
@@ -325,7 +325,7 @@ const I18N = {
     offlineAlert: "The computer isn't listening right now. Messages you send wait until you type /phone on the computer.",
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
-    newChat: "New chat",
+    newChat: "New chat", namePrompt: "Name for the new chat (optional):",
     noGptConv: "ChatGPT is not connected yet. Type $phone in Codex on the computer.", offlineGpt: "ChatGPT is not connected. Type $phone in Codex on the computer.", switchTo: "Switch to ",
     language: "App language", pause: "Pause the line", resume: "Resume the line", signOut: "Sign out",
     placeholder: "Message Claude…", msgAria: "Message to Claude", send: "Send", settings: "Settings",
@@ -440,18 +440,22 @@ function paintModel() {
   const m = document.querySelector('meta[name="theme-color"]');
   if (m) m.content = model === "gpt" && isDark() ? "#000000" : isDark() ? "#262624" : "#faf9f5";
 }
+const followByModel = { claude: true, gpt: true };
 function switchModel() {
-  viewByModel[model] = viewConv;
+  viewByModel[model] = viewConv; followByModel[model] = !viewConv || viewConv === currentConv;
   model = model === "gpt" ? "claude" : "gpt";
   try { localStorage.setItem("aim-model", model); } catch (e) {}
-  currentConv = curByModel[model]; viewConv = viewByModel[model] || currentConv;
+  currentConv = curByModel[model]; viewConv = followByModel[model] ? currentConv : (viewByModel[model] || currentConv);
   $("sheet").hidden = true; $("convSheet").hidden = true;
   paintModel(); applyLang(); renderConvs(); loadMessages();
 }
 $("modelBtn").onclick = switchModel;
 async function newChat() {
   const id = (model === "gpt" ? "g" : "c") + Date.now();
-  const title = new Date().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).replace(",", "");
+  const stamp = new Date().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).replace(",", "");
+  const asked = window.prompt(t("namePrompt"), "");
+  if (asked === null) return;
+  const title = asked.trim() || stamp;
   const ins = await sb.from("conversations").insert({ id, title, project: curS().project || null });
   if (ins.error) { showErr(t("sendErr")); return; }
   curByModel[model] = id;
@@ -476,7 +480,7 @@ function near() { const sc = $("scroller"); return sc.scrollHeight - sc.scrollTo
 function toBottom() { const sc = $("scroller"); sc.scrollTop = sc.scrollHeight; }
 
 function renderHeader() {
-  const c = firstLoad ? "connecting" : conn();
+  const c = ready ? conn() : "connecting";
   $("dot").dataset.s = c === "working" || c === "waiting" || c === "live" ? "live" : "off";
   $("sub").textContent = t(c);
   const alert = $("alert"); alert.hidden = true;
@@ -624,6 +628,7 @@ async function loadAll() {
   const c = await sb.from("control").select("*");
   if (!c.error) (c.data || []).forEach(applyControl);
   booting = false;
+  ready = true;
   if (!viewConv) viewConv = currentConv;
   await Promise.all([loadConvs(), loadMessages()]);
 }
