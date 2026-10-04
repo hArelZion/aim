@@ -105,6 +105,11 @@ header { flex: none; background: var(--bg); border-bottom: 1px solid var(--line)
 .convs { display: grid; gap: 4px; width: 100%; max-width: 480px; text-align: start; }
 .conv { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); width: 100%; text-align: start; }
 .conv[aria-current="true"] { border-color: var(--spark); }
+.convrow { display: flex; gap: 6px; align-items: stretch; }
+.convrow .conv { flex: 1; min-width: 0; }
+.convdel { flex: none; width: 40px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); display: grid; place-items: center; cursor: pointer; }
+.convdel:hover { color: #d33; border-color: #d33; }
+.convdel svg { width: 18px; height: 18px; }
 .conv b { font-weight: 600; font-size: .95rem; }
 .conv span { font-size: .78rem; color: var(--muted); }
 .sheet h2 { margin: 0; font-size: .9rem; font-weight: 600; }
@@ -298,6 +303,7 @@ const I18N = {
     offlineAlert: "המחשב לא מאזין עכשיו. הודעות שתשלח יחכו עד שתקליד /phone בשיחה במחשב.",
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
+    deleteConv: "מחיקת שיחה", deleteAsk: "למחוק את \"%s\" לצמיתות, כולל כל ההודעות שלה?",
     newChat: "שיחה חדשה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
     noGptConv: "ChatGPT עדיין לא חובר. הקלד $phone ב-Codex במחשב.", offlineGpt: "ChatGPT לא מחובר. הקלד $phone ב-Codex במחשב.", switchTo: "מעבר ל-",
     language: "שפת האפליקציה", pause: "השהיית הקו", resume: "המשך הקו", signOut: "התנתקות",
@@ -325,6 +331,7 @@ const I18N = {
     offlineAlert: "The computer isn't listening right now. Messages you send wait until you type /phone on the computer.",
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
+    deleteConv: "Delete conversation", deleteAsk: "Permanently delete \"%s\" and all its messages?",
     newChat: "New chat", namePrompt: "Name for the new chat (optional):",
     noGptConv: "ChatGPT is not connected yet. Type $phone in Codex on the computer.", offlineGpt: "ChatGPT is not connected. Type $phone in Codex on the computer.", switchTo: "Switch to ",
     language: "App language", pause: "Pause the line", resume: "Resume the line", signOut: "Sign out",
@@ -640,8 +647,27 @@ function renderConvs() {
     const when = new Date(cv.created_at).toLocaleDateString(t("locale"), { day: "numeric", month: "numeric", year: "2-digit" });
     b.append(el("b", null, cv.title || t("untitled")), el("span", null, [when, cv.project, cv.id === currentConv ? t("currentTag") : ""].filter(Boolean).join(" · ")));
     b.onclick = () => { viewConv = cv.id; $("convSheet").hidden = true; $("convBtn").setAttribute("aria-expanded", "false"); loadMessages(); renderConvs(); };
-    list.append(b);
+    const d = document.createElement("button"); d.type = "button"; d.className = "convdel"; d.setAttribute("aria-label", t("deleteConv"));
+    d.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>';
+    d.onclick = (e) => { e.stopPropagation(); deleteConv(cv); };
+    const row = el("div", "convrow"); row.append(b, d);
+    list.append(row);
   });
+}
+async function deleteConv(cv) {
+  if (!window.confirm(t("deleteAsk").replace("%s", cv.title || t("untitled")))) return;
+  const m = await sb.from("messages").delete().eq("conv", cv.id);
+  const c = m.error ? m : await sb.from("conversations").delete().eq("id", cv.id);
+  if (c.error) { showErr(t("sendErr")); return; }
+  showErr("");
+  if (curByModel.claude === cv.id || curByModel.gpt === cv.id) {
+    if (curByModel.claude === cv.id) curByModel.claude = null;
+    if (curByModel.gpt === cv.id) curByModel.gpt = null;
+    await sb.from("control").upsert({ id: "current", data: { conv: curByModel.claude, gpt: curByModel.gpt }, updated_at: new Date().toISOString() });
+    currentConv = curByModel[model];
+  }
+  if (viewConv === cv.id) viewConv = currentConv;
+  await loadConvs(); loadMessages();
 }
 function renderOldBar() {
   const old = !!(viewConv && currentConv && viewConv !== currentConv);
