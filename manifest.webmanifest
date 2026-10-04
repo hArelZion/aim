@@ -1,7 +1,7 @@
 {
   "name": "AIM",
   "short_name": "AIM",
-  "start_url": "./",
+  "start_url": "./?launch=1",
   "display": "browser",
   "background_color": "#3d4046",
   "theme_color": "#3d4046",
