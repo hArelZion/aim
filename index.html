@@ -36,6 +36,17 @@
   --accent: #d97757; --accent-ink: #1f1e1d; --code: #1c1c1a; --live: #3ccf78; --warn: #f08a83; --warn-soft: #3a1f1e;
   color-scheme: dark;
 }
+:root[data-model="gpt"] { --spark: #3b82f6; --accent: #2563eb; }
+@media (prefers-color-scheme: dark) {
+  :root[data-model="gpt"]:not([data-theme="light"]) {
+    --bg: #000000; --surface: #111111; --line: #262626; --bubble: #1c1c1e; --accent: #3b82f6; --accent-ink: #ffffff; --code: #151515;
+  }
+}
+:root[data-model="gpt"][data-theme="dark"] {
+  --bg: #000000; --surface: #111111; --line: #262626; --bubble: #1c1c1e; --accent: #3b82f6; --accent-ink: #ffffff; --code: #151515;
+}
+.logo-btn { border: 0; background: transparent; padding: 0; cursor: pointer; border-radius: 8px; -webkit-tap-highlight-color: transparent; }
+.logo-btn:focus-visible { outline: 2px solid var(--spark); outline-offset: 3px; }
 *, *::before, *::after { box-sizing: border-box; }
 html { direction: rtl; }
 html[lang="en"] { direction: ltr; }
@@ -181,9 +192,9 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 <div id="app" hidden style="display:contents">
 <header>
   <div class="wrap bar">
-    <span class="logo" data-logo></span>
+    <button class="logo logo-btn" id="modelBtn" type="button"></button>
     <div class="who">
-      <span class="name">Claude</span>
+      <span class="name" id="modelName">Claude</span>
       <span class="sub"><i class="dot" id="dot" data-s="off"></i><span id="sub"></span></span>
     </div>
     <div class="actions">
@@ -254,13 +265,24 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* Claude mark: Bootstrap Icons "claude" (MIT) */
 const LOGO = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="m3.127 10.604 3.135-1.76.053-.153-.053-.085H6.11l-.525-.032-1.791-.048-1.554-.065-1.505-.08-.38-.081L0 7.832l.036-.234.32-.214.455.04 1.009.069 1.513.105 1.097.064 1.626.17h.259l.036-.105-.089-.065-.068-.064-1.566-1.062-1.695-1.121-.887-.646-.48-.327-.243-.306-.104-.67.435-.48.585.04.15.04.593.456 1.267.981 1.654 1.218.242.202.097-.068.012-.049-.109-.181-.9-1.626-.96-1.655-.428-.686-.113-.411a2 2 0 0 1-.068-.484l.496-.674L4.446 0l.662.089.279.242.411.94.666 1.48 1.033 2.014.302.597.162.553.06.17h.105v-.097l.085-1.134.157-1.392.154-1.792.052-.504.25-.605.497-.327.387.186.319.456-.045.294-.19 1.23-.37 1.93-.243 1.29h.142l.161-.16.654-.868 1.097-1.372.484-.545.565-.601.363-.287h.686l.505.751-.226.775-.707.895-.585.759-.839 1.13-.524.904.048.072.125-.012 1.897-.403 1.024-.186 1.223-.21.553.258.06.263-.218.536-1.307.323-1.533.307-2.284.54-.028.02.032.04 1.029.098.44.024h1.077l2.005.15.525.346.315.424-.053.323-.807.411-3.631-.863-.872-.218h-.12v.073l.726.71 1.331 1.202 1.667 1.55.084.383-.214.302-.226-.032-1.464-1.101-.565-.497-1.28-1.077h-.084v.113l.295.432 1.557 2.34.08.718-.112.234-.404.141-.444-.08-.911-1.28-.94-1.44-.759-1.291-.093.053-.448 4.821-.21.246-.484.186-.403-.307-.214-.496.214-.98.258-1.28.21-1.016.19-1.263.112-.42-.008-.028-.092.012-.953 1.307-1.448 1.957-1.146 1.227-.274.109-.477-.247.045-.44.266-.39 1.586-2.018.956-1.25.617-.723-.004-.105h-.036l-4.212 2.736-.75.096-.324-.302.04-.496.154-.162 1.267-.871z"/></svg>';
-function logoEl() { const s = document.createElement("span"); s.className = "logo"; s.innerHTML = LOGO; return s; }
+/* ChatGPT: generic three-ellipse knot, not the official mark */
+const LOGO_GPT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><g transform="translate(12 12)"><ellipse rx="3.2" ry="8"/><ellipse rx="3.2" ry="8" transform="rotate(60)"/><ellipse rx="3.2" ry="8" transform="rotate(120)"/></g></svg>';
+let model = "claude";
+try { if (localStorage.getItem("aim-model") === "gpt") model = "gpt"; } catch (e) {}
+const mname = () => (model === "gpt" ? "ChatGPT" : "Claude");
+const modelLogo = () => (model === "gpt" ? LOGO_GPT : LOGO);
+function logoEl() { const s = document.createElement("span"); s.className = "logo"; s.innerHTML = modelLogo(); return s; }
 document.querySelectorAll("[data-logo]").forEach((n) => { n.innerHTML = LOGO; });
 
 const $ = (id) => document.getElementById(id);
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-let msgs = [], settings = {}, status = {}, watcher = {}, sending = false, firstLoad = true, signedIn = false;
+let msgs = [], settings = {}, statuses = {}, watchers = {}, sending = false, firstLoad = true, signedIn = false;
 let convs = [], currentConv = null, viewConv = null;
+const curByModel = { claude: null, gpt: null }, viewByModel = { claude: null, gpt: null };
+const curS = () => statuses[model] || {};
+const curW = () => watchers[model] || {};
+const modeKey = () => (model === "gpt" ? "mode_gpt" : "mode");
+const isOff = () => settings[modeKey()] === "off";
 const known = new Set(), urlCache = new Map();
 
 /* ---------- language ---------- */
@@ -273,6 +295,7 @@ const I18N = {
     offlineAlert: "המחשב לא מאזין עכשיו. הודעות שתשלח יחכו עד שתקליד /phone בשיחה במחשב.",
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
+    offlineGpt: "ChatGPT לא מחובר. הקלד /phone ב-Codex במחשב.", switchTo: "מעבר ל-",
     language: "שפת האפליקציה", pause: "השהיית הקו", resume: "המשך הקו", signOut: "התנתקות",
     placeholder: "כתוב ל-Claude…", msgAria: "הודעה ל-Claude", send: "שליחה", settings: "הגדרות",
     attach: "צירוף תמונה", removePic: "הסרת התמונה", dark: "מצב כהה", light: "מצב בהיר",
@@ -297,6 +320,7 @@ const I18N = {
     offlineAlert: "The computer isn't listening right now. Messages you send wait until you type /phone on the computer.",
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
+    offlineGpt: "ChatGPT is not connected. Type /phone in Codex on the computer.", switchTo: "Switch to ",
     language: "App language", pause: "Pause the line", resume: "Resume the line", signOut: "Sign out",
     placeholder: "Message Claude…", msgAria: "Message to Claude", send: "Send", settings: "Settings",
     attach: "Attach a photo", removePic: "Remove photo", dark: "Dark mode", light: "Light mode",
@@ -339,12 +363,12 @@ function applyLang() {
   document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
   document.querySelectorAll("[data-t]").forEach((n) => fillText(n, t(n.dataset.t)));
   $("password").placeholder = t("password");
-  $("composer").placeholder = t("placeholder"); $("composer").setAttribute("aria-label", t("msgAria"));
+  $("composer").placeholder = t("placeholder").replace("Claude", mname()); $("composer").setAttribute("aria-label", t("msgAria").replace("Claude", mname()));
   $("send").setAttribute("aria-label", t("send")); $("gear").setAttribute("aria-label", t("settings"));
   $("attach").setAttribute("aria-label", t("attach")); $("convBtn").setAttribute("aria-label", t("conversations"));
   $("lang-he").setAttribute("aria-pressed", String(lang === "he"));
   $("lang-en").setAttribute("aria-pressed", String(lang === "en"));
-  paintThemeBtn(); renderHeader(); if (!firstLoad) renderThread(); renderTail();
+  paintThemeBtn(); paintModel(); renderHeader(); if (!firstLoad) renderThread(); renderTail();
 }
 async function setLang(l, save) {
   if (l !== "he" && l !== "en") return;
@@ -398,13 +422,33 @@ function md(src) {
   return out.join("");
 }
 
+/* ---------- model switch: the logo flips between Claude and ChatGPT, each with its own conversations ---------- */
+function paintModel() {
+  const r = document.documentElement;
+  if (model === "gpt") r.dataset.model = "gpt"; else delete r.dataset.model;
+  $("modelBtn").innerHTML = modelLogo();
+  $("modelBtn").setAttribute("aria-label", t("switchTo") + (model === "gpt" ? "Claude" : "ChatGPT"));
+  $("modelName").textContent = mname();
+  document.title = mname();
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.content = model === "gpt" && isDark() ? "#000000" : isDark() ? "#262624" : "#faf9f5";
+}
+function switchModel() {
+  viewByModel[model] = viewConv;
+  model = model === "gpt" ? "claude" : "gpt";
+  try { localStorage.setItem("aim-model", model); } catch (e) {}
+  currentConv = curByModel[model]; viewConv = viewByModel[model] || currentConv;
+  $("sheet").hidden = true; $("convSheet").hidden = true;
+  paintModel(); applyLang(); renderConvs(); loadMessages();
+}
+$("modelBtn").onclick = switchModel;
 /* ---------- connection state ---------- */
 function conn() {
   const now = Date.now();
-  if (settings.mode === "off") return "paused";
-  const wAt = toMs(watcher.at), sAt = toMs(status.updatedAt);
-  if (status.state === "working" && sAt && now - sAt < 60 * 60000) return "working";
-  if (wAt && now - wAt < 75000) return status.state === "waiting" ? "waiting" : "live";
+  if (isOff()) return "paused";
+  const wAt = toMs(curW().at), sAt = toMs(curS().updatedAt);
+  if (curS().state === "working" && sAt && now - sAt < 60 * 60000) return "working";
+  if (wAt && now - wAt < 75000) return curS().state === "waiting" ? "waiting" : "live";
   return "offline";
 }
 function near() { const sc = $("scroller"); return sc.scrollHeight - sc.scrollTop - sc.clientHeight < 140; }
@@ -415,12 +459,12 @@ function renderHeader() {
   $("dot").dataset.s = c === "working" || c === "waiting" || c === "live" ? "live" : "off";
   $("sub").textContent = t(c);
   const alert = $("alert"); alert.hidden = true;
-  if (c === "offline") { fillText(alert, t("offlineAlert")); alert.hidden = false; }
-  else if (c === "paused") { fillText(alert, t("pausedAlert")); alert.hidden = false; }
+  if (c === "offline") { fillText(alert, model === "gpt" ? t("offlineGpt") : t("offlineAlert")); alert.hidden = false; }
+  else if (c === "paused") { fillText(alert, t("pausedAlert").replace("Claude", mname())); alert.hidden = false; }
   const meta = $("meta"); meta.replaceChildren();
-  if (status.project) { const s = el("span", null, t("project")); s.append(el("b", null, status.project)); meta.append(s); }
-  if (watcher.at) meta.append(el("span", null, t("lastSeen", ago(Date.now() - toMs(watcher.at)))));
-  $("pauseBtn").textContent = settings.mode === "off" ? t("resume") : t("pause");
+  if (curS().project) { const s = el("span", null, t("project")); s.append(el("b", null, curS().project)); meta.append(s); }
+  if (curW().at) meta.append(el("span", null, t("lastSeen", ago(Date.now() - toMs(curW().at)))));
+  $("pauseBtn").textContent = isOff() ? t("resume") : t("pause");
 }
 
 /* ---------- photos ---------- */
@@ -506,7 +550,7 @@ function renderTail() {
     const row = el("div", "thinking"); row.append(logoEl());
     const tx = el("div", "think-txt");
     tx.append(el("span", "shimmer", t("thinking")));
-    if (status.activity) tx.append(el("span", "activity", status.activity));
+    if (curS().activity) tx.append(el("span", "activity", curS().activity));
     row.append(tx); tail.append(row);
   }
   if (stick) toBottom();
@@ -525,10 +569,14 @@ function applyControl(row) {
     settings = row.data || {};
     if ((settings.lang === "he" || settings.lang === "en") && settings.lang !== lang) setLang(settings.lang, false);
   }
-  if (row.id === "status") status = row.data || {};
-  if (row.id === "watcher") watcher = row.data || {};
+  if (row.id === "status") statuses.claude = row.data || {};
+  if (row.id === "status-gpt") statuses.gpt = row.data || {};
+  if (row.id === "watcher") watchers.claude = row.data || {};
+  if (row.id === "watcher-gpt") watchers.gpt = row.data || {};
   if (row.id === "current") {
-    const next = (row.data || {}).conv || null;
+    const d = row.data || {};
+    curByModel.claude = d.conv || null; curByModel.gpt = d.gpt || null;
+    const next = curByModel[model];
     if (next && next !== currentConv) {
       const follow = !viewConv || viewConv === currentConv;
       currentConv = next;
@@ -559,7 +607,7 @@ async function loadAll() {
 }
 function renderConvs() {
   const list = $("convList"); list.replaceChildren();
-  convs.forEach((cv) => {
+  convs.filter((cv) => cv.id.startsWith("g") === (model === "gpt")).forEach((cv) => {
     const b = document.createElement("button"); b.type = "button"; b.className = "conv";
     b.setAttribute("aria-current", String(cv.id === viewConv));
     const when = new Date(cv.created_at).toLocaleDateString(t("locale"), { day: "numeric", month: "numeric", year: "2-digit" });
@@ -599,7 +647,7 @@ async function saveSettings(patch) {
 /* ---------- settings sheet ---------- */
 $("gear").onclick = () => { const open = $("sheet").hidden; $("sheet").hidden = !open; $("gear").setAttribute("aria-expanded", String(open)); $("convSheet").hidden = true; $("convBtn").setAttribute("aria-expanded", "false"); };
 $("convBtn").onclick = () => { const open = $("convSheet").hidden; $("convSheet").hidden = !open; $("convBtn").setAttribute("aria-expanded", String(open)); $("sheet").hidden = true; $("gear").setAttribute("aria-expanded", "false"); if (open) loadConvs(); };
-$("pauseBtn").onclick = () => saveSettings({ mode: settings.mode === "off" ? "on" : "off" });
+$("pauseBtn").onclick = () => saveSettings({ [modeKey()]: isOff() ? "on" : "off" });
 $("signOutBtn").onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
 /* ---------- composer and photos ---------- */
