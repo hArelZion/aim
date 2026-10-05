@@ -270,6 +270,7 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
       </div>
       <div id="membersBox" hidden>
         <span class="lang-label" id="membersTitle"></span>
+        <input class="field" id="memberSearch" type="search" autocomplete="off" style="margin-block:6px">
         <div class="members" id="members"></div>
         <div class="lang-label" id="membersHint" style="font-weight:400"></div>
       </div>
@@ -389,7 +390,7 @@ const I18N = {
     attach: "צירוף תמונה", removePic: "הסרת התמונה", dark: "מצב כהה", light: "מצב בהיר",
     emptyTitle: "שלום, מה נעשה היום?",
     emptyTeam: "שיחה משותפת: אני מנהל, ומעביר עבודה ל-ChatGPT כשצריך. תראה כאן מי עובד ומה אנחנו אומרים זה לזה (לחיצה על ההודעה פותחת אותה), וכל מה שמופנה אליך יהיה בעברית. כדי להתחיל, הקלד /phone במחשב.",
-    teamDefault: "צוות", toLabel: "שלח אל:", membersTitle: "מי בשיחה הזאת", membersHint: "הסר מודל כדי שלא ישתתף. אפשר להשאיר אחד, שניים או שלושה.",
+    teamDefault: "צוות", searchModels: "חיפוש מודל…", toLabel: "שלח אל:", membersTitle: "מי בשיחה הזאת", membersHint: "הסר מודל כדי שלא ישתתף. אפשר להשאיר אחד, שניים או שלושה.",
     noGeminiConv: "Gemini עדיין לא חובר. הקלד /phone במחשב.", offlineGemini: "Gemini לא מחובר. הקלד /phone במחשב.",
     emptyGemini: "כשתקליד /phone במחשב, Gemini יתחבר לכאן ותוכל לשוחח איתו מהטלפון.",
     emptyGpt: "כשתקליד $phone ב-Codex במחשב, ChatGPT יתחבר לכאן ותוכל לשוחח איתו מהטלפון.",
@@ -421,7 +422,7 @@ const I18N = {
     attach: "Attach a photo", removePic: "Remove photo", dark: "Dark mode", light: "Light mode",
     emptyTitle: "Hi, what are we doing today?",
     emptyTeam: "A shared chat: I lead and hand work to ChatGPT when needed. You see who is working and what we tell each other (tap a message to open it), and anything addressed to you is in your language. To start, type /phone on the computer.",
-    teamDefault: "Team", toLabel: "Send to:", membersTitle: "Who is in this chat", membersHint: "Untick a model to keep it out. One, two or all three can take part.",
+    teamDefault: "Team", searchModels: "Search models…", toLabel: "Send to:", membersTitle: "Who is in this chat", membersHint: "Untick a model to keep it out. One, two or all three can take part.",
     noGeminiConv: "Gemini is not connected yet. Type /phone on the computer.", offlineGemini: "Gemini is not connected. Type /phone on the computer.",
     emptyGemini: "Type /phone on your computer and Gemini connects here, so you can chat with it from your phone.",
     emptyGpt: "Type $phone in Codex on your computer and ChatGPT connects here, so you can chat with it from your phone.",
@@ -808,6 +809,8 @@ function renderMembers() {
   $("membersTitle").textContent = t("membersTitle"); $("membersHint").textContent = t("membersHint");
   const list = $("members"); list.replaceChildren();
   const m = members();
+  const q = $("memberSearch"); q.placeholder = t("searchModels");
+  if (!q.dataset.bound) { q.dataset.bound = "1"; q.addEventListener("input", () => { const v = q.value.trim().toLowerCase(); list.querySelectorAll("label").forEach((l) => { l.hidden = !!v && !l.textContent.toLowerCase().includes(v); }); }); }
   allKeys().forEach((x) => {
     const lab = document.createElement("label");
     const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = m.includes(x);
