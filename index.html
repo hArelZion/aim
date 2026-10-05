@@ -79,11 +79,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .duo.three > span:nth-child(2) { top: 0; bottom: auto; inset-inline-end: 0; }
 .duo.three > span:nth-child(3) { bottom: 0; inset-inline-start: 21%; }
 .duo svg { width: 100%; height: 100%; display: block; }
-.target { display: flex; gap: 6px; align-items: center; padding: 6px 2px 8px; flex-wrap: wrap; font-size: .78rem; color: var(--muted); }
+.target { display: flex; gap: 6px; align-items: center; padding: 6px 2px 8px; flex-wrap: wrap; max-height: 104px; overflow-y: auto; font-size: .78rem; color: var(--muted); }
 .target button { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--line); background: var(--bg); color: var(--ink, inherit); border-radius: 999px; padding: 4px 10px 4px 8px; font: inherit; cursor: pointer; }
 .target button[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
 .target .logo { width: 16px; height: 16px; }
-.members { display: grid; gap: 6px; margin-block: 8px 4px; }
+.members { display: grid; gap: 6px; margin-block: 8px 4px; max-height: 42vh; overflow-y: auto; }
+.members .sub { font-size: .72rem; color: var(--muted); margin-inline-start: 4px; }
 .members label { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; }
 .members .logo { width: 20px; height: 20px; }
 .members input { margin-inline-start: auto; width: 18px; height: 18px; accent-color: var(--accent); }
@@ -325,18 +326,30 @@ const AUTHORS = {
   gpt: { name: "ChatGPT", logo: LOGO_GPT, color: "#3b82f6" },
   gemini: { name: "Gemini", logo: LOGO_GEM, color: "#8ab4f8" },
 };
-const authorOf = (m) => (/-g$/.test(m.id) ? "gpt" : /-m$/.test(m.id) ? "gemini" : "claude");
+const badge = (name) => '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><text x="8" y="11.2" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" font-family="sans-serif">' + String(name || "?").trim().charAt(0).replace(/[<&>]/g, "?").toUpperCase() + "</text></svg>";
+let EXTRA = [];   // [{key, name, color}] extra models that can join a team chat
+function registerModels(list) {
+  EXTRA.forEach((e) => { delete AUTHORS[e.key]; });
+  EXTRA = (list || []).filter((e) => e && /^[a-z0-9]+$/.test(e.key) && !AUTHORS[e.key]);
+  EXTRA.forEach((e) => { AUTHORS[e.key] = { name: e.name, logo: badge(e.name), color: e.color || "#8a8a8a" }; });
+}
+const authorOf = (m) => {
+  const x = /-x([a-z0-9]+)$/.exec(m.id);
+  if (x && AUTHORS[x[1]]) return x[1];
+  return /-g$/.test(m.id) ? "gpt" : /-m$/.test(m.id) ? "gemini" : "claude";
+};
 let model = "claude";   // claude | gpt | gemini | team (everyone in one shared conversation, Claude leads)
 try { const v = localStorage.getItem("aim-model"); if (v === "gpt" || v === "gemini" || v === "team") model = v; } catch (e) {}
 const MODELS = ["claude", "gpt", "gemini", "team"];
-const ALL3 = ["claude", "gpt", "gemini"];
+const ALL3 = ["claude", "gpt", "gemini"];   // default team
+const allKeys = () => ALL3.concat(EXTRA.map((e) => e.key));
 let teamCfg = {};   // control row "team": { conversationId: [members] }, default everyone
-const members = () => { const m = ((currentConv && teamCfg[currentConv]) || ALL3).filter((x) => ALL3.includes(x)); return m.length ? m : ALL3; };
+const members = () => { const m = ((currentConv && teamCfg[currentConv]) || ALL3).filter((x) => AUTHORS[x]); return m.length ? m : ALL3; };
 const src = () => (model === "gpt" ? "gpt" : model === "gemini" ? "gemini" : "claude");   // team uses Claude's status, heartbeat and pause switch
 const convKind = (id) => (id[0] === "g" ? "gpt" : id[0] === "m" ? "gemini" : id[0] === "t" ? "team" : "claude");
-const mname = () => (model === "gpt" ? "ChatGPT" : model === "gemini" ? "Gemini" : model === "team" ? (members().length === 3 ? t("teamDefault") : members().map((x) => AUTHORS[x].name).join(" + ")) : "Claude");
+const mname = () => (model === "gpt" ? "ChatGPT" : model === "gemini" ? "Gemini" : model === "team" ? (members().length === 3 && members().every((x) => ALL3.includes(x)) ? t("teamDefault") : members().length > 3 ? t("teamDefault") + " \u00b7 " + members().length : members().map((x) => AUTHORS[x].name).join(" + ")) : "Claude");
 const duoHtml = () => {
-  const m = members();
+  const m = members().slice(0, 3);
   return '<span class="duo' + (m.length === 3 ? " three" : "") + '">' + m.map((x) => '<span style="color:' + AUTHORS[x].color + '">' + AUTHORS[x].logo + "</span>").join("") + "</span>";
 };
 const modelLogo = () => (model === "team" ? duoHtml() : model === "gpt" ? LOGO_GPT : model === "gemini" ? LOGO_GEM : LOGO);
@@ -616,8 +629,8 @@ function renderThread() {
       const row = el("div", "row me");
       if (imgs.length) row.append(picsEl(imgs));
       let body = m.text, toA = "";
-      const mt = /^@(claude|gpt|gemini)\n/.exec(body || "");
-      if (mt) { toA = mt[1]; body = body.slice(mt[0].length); }
+      const mt = /^@([a-z0-9]+)\n/.exec(body || "");
+      if (mt && AUTHORS[mt[1]]) { toA = mt[1]; body = body.slice(mt[0].length); }
       if (toA) { const chip = el("div", "tochip"); chip.append(logoEl(toA), document.createTextNode("\u2192 " + AUTHORS[toA].name)); row.append(chip); }
       if (body) row.append(el("div", "ububble", body));
       const f = el("div", "ufoot", stamp(m.ts) + " · ");
@@ -706,6 +719,7 @@ function applyControl(row) {
   if (row.id === "watcher-gpt") watchers.gpt = row.data || {};
   if (row.id === "status-gemini") statuses.gemini = row.data || {};
   if (row.id === "watcher-gemini") watchers.gemini = row.data || {};
+  if (row.id === "models") { registerModels((row.data || {}).list); if (ready) { paintModel(); paintTarget(); renderMembers(); renderThread(); renderTail(); } }
   if (row.id === "team") { teamCfg = row.data || {}; if (typeof paintModel === "function" && ready) { paintModel(); paintTarget(); renderMembers(); } }
   if (row.id === "current") {
     const d = row.data || {};
@@ -772,7 +786,7 @@ async function deleteConv(cv) {
 }
 /* ---------- team chat: who gets the next message, and who takes part ---------- */
 let target = "claude";
-try { const v = localStorage.getItem("aim-target"); if (ALL3.includes(v)) target = v; } catch (e) {}
+try { const v = localStorage.getItem("aim-target"); if (v && /^[a-z0-9]+$/.test(v)) target = v; } catch (e) {}
 function paintTarget() {
   const box = $("target"); box.replaceChildren();
   const on = model === "team";
@@ -794,11 +808,11 @@ function renderMembers() {
   $("membersTitle").textContent = t("membersTitle"); $("membersHint").textContent = t("membersHint");
   const list = $("members"); list.replaceChildren();
   const m = members();
-  ALL3.forEach((x) => {
+  allKeys().forEach((x) => {
     const lab = document.createElement("label");
     const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = m.includes(x);
     cb.onchange = async () => {
-      let next = ALL3.filter((y) => (y === x ? cb.checked : members().includes(y)));
+      let next = allKeys().filter((y) => (y === x ? cb.checked : members().includes(y)));
       if (!next.length) { cb.checked = true; return; }
       if (!currentConv && !(await makeConv(t("teamDefault")))) return;   // first setting in a new team chat starts the chat
       teamCfg = Object.assign({}, teamCfg, { [currentConv]: next });
