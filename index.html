@@ -637,8 +637,8 @@ function renderThread() {
       if (imgs.length) row.append(picsEl(imgs));
       let body = m.text, toA = "";
       const mt = /^@([a-z0-9]+)\n/.exec(body || "");
-      if (mt && AUTHORS[mt[1]]) { toA = mt[1]; body = body.slice(mt[0].length); }
-      if (toA) { const chip = el("div", "tochip"); chip.append(logoEl(toA), document.createTextNode("\u2192 " + AUTHORS[toA].name)); row.append(chip); }
+      if (mt && (AUTHORS[mt[1]] || mt[1] === "all")) { toA = mt[1]; body = body.slice(mt[0].length); }
+      if (toA) { const chip = el("div", "tochip"); if (toA !== "all") chip.append(logoEl(toA)); chip.append(document.createTextNode("\u2192 " + (toA === "all" ? t("tierAll") : AUTHORS[toA].name))); row.append(chip); }
       if (body) row.append(el("div", "ububble", body));
       const f = el("div", "ufoot", stamp(m.ts) + " · ");
       f.append(m.pending ? el("span", null, t("sending")) : m.seen ? el("span", "read", t("read")) : el("span", null, t("sent")));
@@ -800,8 +800,14 @@ function paintTarget() {
   box.hidden = !on;
   if (!on) return;
   const m = members();
-  if (!m.includes(target)) target = m[0];
+  if (target !== "all" && !m.includes(target)) target = m[0];
   box.append(el("span", null, t("toLabel")));
+  if (m.filter((x) => x !== "claude").length > 1) {   // everyone at once: the lead asks all other members in parallel
+    const ball = document.createElement("button"); ball.type = "button"; ball.setAttribute("aria-pressed", String(target === "all"));
+    const ls = document.createElement("span"); ls.className = "logo"; ls.innerHTML = duoHtml(); ball.append(ls, document.createTextNode(t("tierAll")));
+    ball.onclick = () => { target = "all"; try { localStorage.setItem("aim-target", "all"); } catch (e) {} paintTarget(); };
+    box.append(ball);
+  }
   m.forEach((x) => {
     const b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-pressed", String(x === target));
     b.append(logoEl(x), document.createTextNode(AUTHORS[x].name));
