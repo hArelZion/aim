@@ -601,7 +601,7 @@ function picsEl(paths) {
 function renderThread() {
   const stick = near() || firstLoad;
   const thread = $("thread"); thread.replaceChildren();
-  if (!msgs.length) {
+  if (!msgs.some((m) => m.kind !== "system")) {   // only connect/pause notes so far: still show the welcome
     const e = el("div", "empty"); e.append(logoEl());
     e.append(el("span", "brand", "AIM"));
     e.append(el("strong", null, t("emptyTitle")));
