@@ -373,7 +373,11 @@ let msgs = [], settings = {}, statuses = {}, watchers = {}, sending = false, fir
 let convs = [], currentConv = null, viewConv = null;
 const curByModel = { claude: null, gpt: null, gemini: null, team: null }, viewByModel = { claude: null, gpt: null, gemini: null, team: null };
 const curS = () => statuses[src()] || {};
-const curW = () => watchers[src()] || {};
+const curW = () => {   // team chats are also served by the coordinator, so the freshest heartbeat counts
+  if (model !== "team") return watchers[src()] || {};
+  const a = watchers.claude || {}, b = watchers.team || {};
+  return toMs(b.at) > toMs(a.at) ? b : a;
+};
 const modeKey = () => ({ gpt: "mode_gpt", gemini: "mode_gemini" }[src()] || "mode");
 const isOff = () => settings[modeKey()] === "off";
 const known = new Set(), urlCache = new Map();
@@ -396,7 +400,7 @@ const I18N = {
     attach: "צירוף תמונה", removePic: "הסרת התמונה", dark: "מצב כהה", light: "מצב בהיר",
     emptyTitle: "שלום, מה נעשה היום?",
     emptyTeam: "שיחה משותפת: אני מנהל, ומעביר עבודה ל-ChatGPT כשצריך. תראה כאן מי עובד ומה אנחנו אומרים זה לזה (לחיצה על ההודעה פותחת אותה), וכל מה שמופנה אליך יהיה בעברית. כדי להתחיל, הקלד /phone במחשב.",
-    teamDefault: "צוות", searchModels: "חיפוש מודל…", tierStrong: "חזקים", tierMedium: "בינוניים ומעלה", tierAll: "כולם", pickShown: "סמן את כל המוצגים", unpickShown: "בטל את המוצגים", tierS: "חזק", tierM: "בינוני", tierL: "קטן", toLabel: "שלח אל:", membersTitle: "מי בשיחה הזאת", membersHint: "הסר מודל כדי שלא ישתתף. אפשר להשאיר אחד, שניים או שלושה.",
+    teamDefault: "צוות", searchModels: "חיפוש מודל…", allFree: "כל החינמיים", tierStrong: "חזקים", tierMedium: "בינוניים ומעלה", tierAll: "כולם", pickShown: "סמן את כל המוצגים", unpickShown: "בטל את המוצגים", tierS: "חזק", tierM: "בינוני", tierL: "קטן", toLabel: "שלח אל:", membersTitle: "מי בשיחה הזאת", membersHint: "הסר מודל כדי שלא ישתתף. אפשר להשאיר אחד, שניים או שלושה.",
     noGeminiConv: "Gemini עדיין לא חובר. הקלד /phone במחשב.", offlineGemini: "Gemini לא מחובר. הקלד /phone במחשב.",
     emptyGemini: "כשתקליד /phone במחשב, Gemini יתחבר לכאן ותוכל לשוחח איתו מהטלפון.",
     emptyGpt: "כשתקליד $phone ב-Codex במחשב, ChatGPT יתחבר לכאן ותוכל לשוחח איתו מהטלפון.",
@@ -428,7 +432,7 @@ const I18N = {
     attach: "Attach a photo", removePic: "Remove photo", dark: "Dark mode", light: "Light mode",
     emptyTitle: "Hi, what are we doing today?",
     emptyTeam: "A shared chat: I lead and hand work to ChatGPT when needed. You see who is working and what we tell each other (tap a message to open it), and anything addressed to you is in your language. To start, type /phone on the computer.",
-    teamDefault: "Team", searchModels: "Search models…", tierStrong: "Strong", tierMedium: "Medium +", tierAll: "All", pickShown: "Select all shown", unpickShown: "Clear shown", tierS: "strong", tierM: "medium", tierL: "small", toLabel: "Send to:", membersTitle: "Who is in this chat", membersHint: "Untick a model to keep it out. One, two or all three can take part.",
+    teamDefault: "Team", searchModels: "Search models…", allFree: "All free models", tierStrong: "Strong", tierMedium: "Medium +", tierAll: "All", pickShown: "Select all shown", unpickShown: "Clear shown", tierS: "strong", tierM: "medium", tierL: "small", toLabel: "Send to:", membersTitle: "Who is in this chat", membersHint: "Untick a model to keep it out. One, two or all three can take part.",
     noGeminiConv: "Gemini is not connected yet. Type /phone on the computer.", offlineGemini: "Gemini is not connected. Type /phone on the computer.",
     emptyGemini: "Type /phone on your computer and Gemini connects here, so you can chat with it from your phone.",
     emptyGpt: "Type $phone in Codex on your computer and ChatGPT connects here, so you can chat with it from your phone.",
@@ -638,7 +642,7 @@ function renderThread() {
       let body = m.text, toA = "";
       const mt = /^@([a-z0-9]+)\n/.exec(body || "");
       if (mt && (AUTHORS[mt[1]] || mt[1] === "all")) { toA = mt[1]; body = body.slice(mt[0].length); }
-      if (toA) { const chip = el("div", "tochip"); if (toA !== "all") chip.append(logoEl(toA)); chip.append(document.createTextNode("\u2192 " + (toA === "all" ? t("tierAll") : AUTHORS[toA].name))); row.append(chip); }
+      if (toA) { const chip = el("div", "tochip"); if (toA !== "all") chip.append(logoEl(toA)); chip.append(document.createTextNode("\u2192 " + (toA === "all" ? t("allFree") : AUTHORS[toA].name))); row.append(chip); }
       if (body) row.append(el("div", "ububble", body));
       const f = el("div", "ufoot", stamp(m.ts) + " · ");
       f.append(m.pending ? el("span", null, t("sending")) : m.seen ? el("span", "read", t("read")) : el("span", null, t("sent")));
@@ -726,6 +730,7 @@ function applyControl(row) {
   if (row.id === "watcher-gpt") watchers.gpt = row.data || {};
   if (row.id === "status-gemini") statuses.gemini = row.data || {};
   if (row.id === "watcher-gemini") watchers.gemini = row.data || {};
+  if (row.id === "watcher-team") watchers.team = row.data || {};
   if (row.id === "models") { registerModels((row.data || {}).list); if (ready) { paintModel(); paintTarget(); renderMembers(); renderThread(); renderTail(); } }
   if (row.id === "team") { teamCfg = row.data || {}; if (typeof paintModel === "function" && ready) { paintModel(); paintTarget(); renderMembers(); } }
   if (row.id === "current") {
@@ -804,7 +809,7 @@ function paintTarget() {
   box.append(el("span", null, t("toLabel")));
   if (m.filter((x) => x !== "claude").length > 1) {   // everyone at once: the lead asks all other members in parallel
     const ball = document.createElement("button"); ball.type = "button"; ball.setAttribute("aria-pressed", String(target === "all"));
-    const ls = document.createElement("span"); ls.className = "logo"; ls.innerHTML = duoHtml(); ball.append(ls, document.createTextNode(t("tierAll")));
+    const ls = document.createElement("span"); ls.className = "logo"; ls.innerHTML = duoHtml(); ball.append(ls, document.createTextNode(t("allFree")));
     ball.onclick = () => { target = "all"; try { localStorage.setItem("aim-target", "all"); } catch (e) {} paintTarget(); };
     box.append(ball);
   }
