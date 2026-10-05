@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>איקס עיגול</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20rx%3D%2722%27%20fill%3D%27%230f172a%27/%3E%3Cpath%20d%3D%27M22%2022L48%2048M48%2022L22%2048%27%20stroke%3D%27%23ff5964%27%20stroke-width%3D%279%27%20stroke-linecap%3D%27round%27/%3E%3Ccircle%20cx%3D%2768%27%20cy%3D%2768%27%20r%3D%2715%27%20stroke%3D%27%2300b4d8%27%20stroke-width%3D%279%27%20fill%3D%27none%27/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20rx%3D%2722%27%20fill%3D%27%230f172a%27/%3E%3Cpath%20d%3D%27M22%2022L48%2048M48%2022L22%2048%27%20stroke%3D%27%23ff5964%27%20stroke-width%3D%279%27%20stroke-linecap%3D%27round%27/%3E%3Ccircle%20cx%3D%2768%27%20cy%3D%2768%27%20r%3D%2715%27%20stroke%3D%27%2300b4d8%27%20stroke-width%3D%279%27%20fill%3D%27none%27/%3E%3C/svg%3E">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%D7%90%D7%99%D7%A7%D7%A1%20%D7%A2%D7%99%D7%92%D7%95%D7%9C%22%2C%22short_name%22%3A%22%D7%90%D7%99%D7%A7%D7%A1%20%D7%A2%D7%99%D7%92%D7%95%D7%9C%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22start_url%22%3A%22.%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage/svg%2Bxml%2C%253Csvg%2520xmlns%253D%2527http%253A//www.w3.org/2000/svg%2527%2520viewBox%253D%25270%25200%2520100%2520100%2527%253E%253Crect%2520width%253D%2527100%2527%2520height%253D%2527100%2527%2520rx%253D%252722%2527%2520fill%253D%2527%25230f172a%2527/%253E%253Cpath%2520d%253D%2527M22%252022L48%252048M48%252022L22%252048%2527%2520stroke%253D%2527%2523ff5964%2527%2520stroke-width%253D%25279%2527%2520stroke-linecap%253D%2527round%2527/%253E%253Ccircle%2520cx%253D%252768%2527%2520cy%253D%252768%2527%2520r%253D%252715%2527%2520stroke%253D%2527%252300b4d8%2527%2520stroke-width%253D%25279%2527%2520fill%253D%2527none%2527/%253E%253C/svg%253E%22%2C%22sizes%22%3A%22any%22%2C%22type%22%3A%22image/svg%2Bxml%22%7D%5D%7D">
+<style>
+:root {
+  --bg: #f4f5f7;
+  --surf: #ffffff;
+  --surf-glass: rgba(255, 255, 255, 0.8);
+  --text: #1e293b;
+  --text-sec: #64748b;
+  --border: #e2e8f0;
+  --x-col: #ff5964;
+  --x-glow: rgba(255, 89, 100, 0.3);
+  --o-col: #00b4d8;
+  --o-glow: rgba(0, 180, 216, 0.3);
+  --win-col: #10b981;
+  --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  --radius: 24px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --surf: #1e293b;
+    --surf-glass: rgba(30, 41, 59, 0.8);
+    --text: #f8fafc;
+    --text-sec: #94a3b8;
+    --border: #334155;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  }
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+#app {
+  width: 100%;
+  max-width: 420px;
+  height: 100%;
+  max-height: 850px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  position: relative;
+}
+
+/* Header & Scores */
+header {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.score {
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.score .lbl {
+  font-size: 0.75rem;
+  color: var(--text-sec);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.score b {
+  font-size: 1.25rem;
+}
+
+body[data-turn="X"] .score[data-p="X"],
+body[data-turn="O"] .score[data-p="O"] {
+  border-color: currentColor;
+  transform: scale(1.05);
+}
+.score[data-p="X"] { color: var(--x-col); }
+.score[data-p="O"] { color: var(--o-col); }
+.score[data-p="D"] { color: var(--text-sec); }
+
+/* Turn Indicator */
+#turn {
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-sec);
+  height: 24px;
+}
+
+/* Board */
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+  aspect-ratio: 1;
+  direction: ltr;
+  position: relative;
+}
+
+.cell {
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  position: relative;
+  transition: transform 0.1s, background 0.2s, border-color 0.2s;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 16px;
+}
+
+.cell:active:not(.x):not(.o) {
+  transform: scale(0.92);
+}
+
+/* Ghost Hover */
+@media (hover: hover) {
+  body[data-turn="X"] .cell:not(.x):not(.o):hover::after,
+  body[data-turn="O"] .cell:not(.x):not(.o):hover::after {
+    content: '';
+    position: absolute;
+    inset: 20%;
+    opacity: 0.3;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  body[data-turn="X"] .cell:not(.x):not(.o):hover::after {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20 L80 80 M80 20 L20 80' stroke='%23ff5964' stroke-width='16' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+  body[data-turn="O"] .cell:not(.x):not(.o):hover::after {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='30' stroke='%2300b4d8' stroke-width='16' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+}
+
+/* Marks & SVG Animation */
+.cell svg.mark {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.mark path, .mark circle {
+  pathLength: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.mark.x path { stroke: var(--x-col); stroke-width: 16; stroke-linecap: round; fill: none; }
+.mark.x path:nth-child(2) { animation-delay: 0.1s; }
+.mark.o circle { stroke: var(--o-col); stroke-width: 16; fill: none; stroke-linecap: round; }
+
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.cell.win {
+  background: var(--surf-glass);
+  border-color: var(--win-col);
+  animation: pulse 1.5s infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+  to { transform: scale(1.04); box-shadow: 0 0 20px var(--win-col); }
+}
+
+/* Win Line SVG */
+#wl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+#wl line {
+  stroke: var(--win-col);
+  stroke-width: 8;
+  stroke-linecap: round;
+  pathLength: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+#wl.show line {
+  animation: draw 0.4s ease forwards;
+}
+
+/* Navigation / Controls */
+nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+nav button {
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 12px 4px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.1s, background 0.2s;
+  min-height: 48px;
+}
+
+nav button:active {
+  transform: scale(0.95);
+  background: var(--border);
+}
+
+/* Sheet / Modal */
+#sheet {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+#sheet:not([hidden]) {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.card {
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 32px;
+  padding: 32px;
+  width: 85%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow);
+  transform: scale(0.8) translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#sheet:not([hidden]) .card {
+  transform: scale(1) translateY(0);
+}
+
+.card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+#bAgain {
+  width: 100%;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  border-radius: 16px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 48px;
+  transition: transform 0.1s;
+}
+
+#bAgain:active {
+  transform: scale(0.96);
+}
+
+#sheet.xwin .card { border-top: 6px solid var(--x-col); }
+#sheet.owin .card { border-top: 6px solid var(--o-col); }
+#sheet.tie .card { border-top: 6px solid var(--text-sec); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Claude additions */
+#resIcon{font-size:3rem;line-height:1}
+#sheet.lose .card{border-top:6px solid var(--text-sec)}
+nav button:disabled{opacity:.4;pointer-events:none}
+.cell.hint{border-color:var(--win-col)}
+#board.over .cell:not(.win){opacity:.55;transition:opacity .4s}
+#sheet[hidden]{display:flex}
+html{background:var(--bg)}
+#wl line{opacity:0}
+#wl.show line{opacity:1}
+header{direction:ltr}
+.score b{font-variant-numeric:tabular-nums}
+.mark.x path{stroke-dasharray:80;stroke-dashoffset:80}
+.mark.o circle{stroke-dasharray:180;stroke-dashoffset:180;transform:rotate(-90deg);transform-origin:50% 50%}
+#wl line{stroke-dasharray:420;stroke-dashoffset:420}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="score" data-p="X"><span class="lbl">X</span><b id="sX">0</b></div>
+    <div class="score" data-p="D"><span class="lbl">=</span><b id="sD">0</b></div>
+    <div class="score" data-p="O"><span class="lbl">O</span><b id="sO">0</b></div>
+  </header>
+  <div id="turn" aria-live="polite"></div>
+  <main>
+    <div id="board" role="grid">
+      <button class="cell" data-i="0"></button><button class="cell" data-i="1"></button><button class="cell" data-i="2"></button><button class="cell" data-i="3"></button><button class="cell" data-i="4"></button><button class="cell" data-i="5"></button><button class="cell" data-i="6"></button><button class="cell" data-i="7"></button><button class="cell" data-i="8"></button>
+      <svg id="wl" viewBox="0 0 300 300"><line x1="0" y1="0" x2="0" y2="0"/></svg>
+    </div>
+  </main>
+  <nav>
+    <button id="bUndo"></button><button id="bMode"></button><button id="bLevel"></button><button id="bNew"></button>
+  </nav>
+  <div id="sheet" hidden><div class="card"><div id="resIcon"></div><h2 id="res"></h2><button id="bAgain"></button></div></div>
+</div>
+
+<script>
+const Engine = (() => {
+  const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  const winner = b => {
+    for (const line of LINES) if (b[line[0]] && b[line[0]] === b[line[1]] && b[line[1]] === b[line[2]]) return { p: b[line[0]], line };
+    return null;
+  };
+  const full = b => b.every(Boolean);
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const perfect = (b, p) => {
+    const me = p, other = p === 'X' ? 'O' : 'X';
+    const solve = (turn, depth, alpha, beta) => {
+      const w = winner(b);
+      if (w) return w.p === me ? 10 - depth : depth - 10;
+      if (full(b)) return 0;
+      let best = turn === me ? -Infinity : Infinity;
+      for (let i = 0; i < 9; i++) if (!b[i]) {
+        b[i] = turn;
+        const v = solve(turn === me ? other : me, depth + 1, alpha, beta);
+        b[i] = '';
+        if (turn === me) { best = Math.max(best, v); alpha = Math.max(alpha, best); }
+        else { best = Math.min(best, v); beta = Math.min(beta, best); }
+        if (beta <= alpha) break;
+      }
+      return best;
+    };
+    let best = -Infinity, moves = [];
+    for (let i = 0; i < 9; i++) if (!b[i]) {
+      b[i] = me;
+      const v = solve(other, 1, -Infinity, Infinity);
+      b[i] = '';
+      if (v > best) { best = v; moves = [i]; }
+      else if (v === best) moves.push(i);
+    }
+    return pick(moves);
+  };
+  const move = (b, p, level) => {
+    const empty = b.map((v, i) => v ? -1 : i).filter(i => i >= 0);
+    if (!empty.length) return -1;
+    if (level === 0) return pick(empty);
+    if (level === 1) return Math.random() < 0.55 ? perfect(b, p) : pick(empty);
+    if (level === 2) {
+      for (const q of [p, p === 'X' ? 'O' : 'X']) for (const i of empty) {
+        b[i] = q; const w = winner(b); b[i] = '';
+        if (w) return i;
+      }
+      const ranked = empty.filter(i => i === 4);
+      if (ranked.length) return pick(ranked);
+      const corners = empty.filter(i => [0,2,6,8].includes(i));
+      return corners.length ? pick(corners) : pick(empty);
+    }
+    return perfect(b, p);
+  };
+  return { LINES, winner, full, move, hint: (b, p) => perfect(b, p) };
+})();
+
+</script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s), cells = [...document.querySelectorAll('.cell')];
+  const LV = ['קל', 'בינוני', 'חכם', 'בלתי מנוצח'];
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem('xo.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem('xo.' + k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const cfg = { cpu: store.get('cpu', true), level: Math.min(3, Math.max(0, store.get('level', 2) | 0)), score: store.get('score', { X: 0, O: 0, D: 0 }), sound: store.get('sound', true) };
+  let st = { board: Array(9).fill(''), turn: 'X', hist: [], over: false, busy: false, starter: 'X' };
+  const NS = 'http://www.w3.org/2000/svg';
+  let ac;
+  const beep = (f, d, t = 'sine', v = .08, at = 0) => {
+    if (!cfg.sound) return;
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      const o = ac.createOscillator(), g = ac.createGain(), t0 = ac.currentTime + at;
+      o.type = t; o.frequency.setValueAtTime(f, t0);
+      g.gain.setValueAtTime(v, t0); g.gain.exponentialRampToValueAtTime(.0001, t0 + d);
+      o.connect(g); g.connect(ac.destination); o.start(t0); o.stop(t0 + d);
+    } catch (e) {}
+  };
+  const buzz = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
+  const mark = p => {
+    const s = document.createElementNS(NS, 'svg');
+    s.setAttribute('viewBox', '0 0 100 100'); s.setAttribute('class', 'mark ' + p.toLowerCase());
+    const add = (tag, a) => {
+      const e = document.createElementNS(NS, tag);
+      for (const k in a) e.setAttribute(k, a[k]);
+      s.appendChild(e);
+    };
+    if (p === 'X') { add('path', { d: 'M24 24L76 76' }); add('path', { d: 'M76 24L24 76' }); }
+    else add('circle', { cx: 50, cy: 50, r: 28 });
+    return s;
+  };
+  function render() {
+    document.body.dataset.turn = st.over ? '' : st.turn;
+    cells.forEach((c, i) => {
+      const v = st.board[i], m = c.querySelector('.mark');
+      const cur = m ? m.getAttribute('class').slice(5).toUpperCase() : '';
+      if (cur !== v) {
+        c.textContent = ''; c.className = 'cell';
+        if (v) { c.appendChild(mark(v)); c.classList.add(v.toLowerCase()); }
+      }
+      c.setAttribute('aria-label', 'משבצת ' + (i + 1) + (v ? ', ' + v : ', ריקה'));
+    });
+    $('#sX').textContent = cfg.score.X; $('#sO').textContent = cfg.score.O; $('#sD').textContent = cfg.score.D;
+    $('#bMode').textContent = cfg.cpu ? '🤖 נגד מחשב' : '👥 שני שחקנים';
+    $('#bLevel').textContent = cfg.cpu ? LV[cfg.level] : (cfg.sound ? '🔊 קול' : '🔇 שקט');
+    $('#bUndo').textContent = '↶ בטל'; $('#bNew').textContent = '↻ חדש';
+    $('#bUndo').disabled = !st.hist.length || st.busy || st.over;
+    $('#turn').textContent = st.over ? '' : st.busy ? 'המחשב חושב…'
+      : cfg.cpu ? (st.turn === 'X' ? 'התור שלך · X' : 'התור של המחשב · O') : 'התור של ' + st.turn;
+    $('#board').classList.toggle('over', st.over);
+  }
+  function drawLine(line) {
+    const c = i => [50 + (i % 3) * 100, 50 + Math.floor(i / 3) * 100], a = c(line[0]), b = c(line[2]), l = $('#wl line');
+    const dx = b[0] - a[0], dy = b[1] - a[1], k = 22 / Math.hypot(dx, dy);
+    l.setAttribute('x1', a[0] - dx * k); l.setAttribute('y1', a[1] - dy * k);
+    l.setAttribute('x2', b[0] + dx * k); l.setAttribute('y2', b[1] + dy * k);
+    const w = $('#wl'); w.classList.remove('show'); void w.getBoundingClientRect(); w.classList.add('show');
+  }
+  function finish(w) {
+    st.over = true; st.busy = false;
+    const key = w ? w.p : 'D'; cfg.score[key]++; store.set('score', cfg.score);
+    if (w) { w.line.forEach(i => cells[i].classList.add('win')); drawLine(w.line); }
+    render();
+    const sheet = $('#sheet');
+    sheet.className = w ? (w.p === 'X' ? 'xwin' : 'owin') : 'tie';
+    let title, icon;
+    if (!w) { title = 'תיקו!'; icon = '🤝'; }
+    else if (cfg.cpu) {
+      const win = w.p === 'X';
+      title = win ? 'ניצחת!' : 'המחשב ניצח'; icon = win ? '🏆' : '😅';
+      if (!win) sheet.classList.add('lose');
+    } else { title = w.p + ' ניצח!'; icon = '🏆'; }
+    $('#res').textContent = title; $('#resIcon').textContent = icon; $('#bAgain').textContent = 'שחק שוב';
+    if (w && (!cfg.cpu || w.p === 'X')) { buzz([30, 40, 30, 40, 90]); [523, 659, 784, 1047].forEach((f, i) => beep(f, .25, 'triangle', .09, i * .09)); }
+    else if (w) { buzz(120); beep(220, .3, 'sawtooth', .05); beep(165, .4, 'sawtooth', .05, .15); }
+    else { buzz(40); beep(330, .2, 'sine'); beep(330, .25, 'sine', .08, .15); }
+    const gen = st;
+    setTimeout(() => { if (st === gen && st.over) sheet.hidden = false; }, 900);
+  }
+  function cpuMove(delay) {
+    const gen = st;
+    setTimeout(() => {
+      if (st !== gen || st.over) return;
+      st.busy = false;
+      const m = Engine.move(st.board.slice(), 'O', cfg.level);
+      if (m >= 0 && !st.board[m]) place(m, true); else render();
+    }, delay);
+  }
+  function place(i, byCpu) {
+    if (st.over || st.board[i]) return;
+    const p = st.turn; st.board[i] = p; st.hist.push({ i, p });
+    beep(p === 'X' ? 520 : 390, .12, 'triangle'); buzz(byCpu ? 8 : 14);
+    const w = Engine.winner(st.board);
+    if (w) { render(); return finish(w); }
+    if (Engine.full(st.board)) { render(); return finish(null); }
+    st.turn = p === 'X' ? 'O' : 'X'; st.busy = cfg.cpu && st.turn === 'O'; render();
+    if (st.busy) cpuMove(380 + Math.random() * 320);
+  }
+  function reset(keepStarter) {
+    $('#sheet').hidden = true; $('#wl').classList.remove('show');
+    const starter = keepStarter ? st.starter : (st.starter === 'X' ? 'O' : 'X');
+    st = { board: Array(9).fill(''), turn: starter, hist: [], over: false, busy: cfg.cpu && starter === 'O', starter };
+    render();
+    if (st.busy) cpuMove(500);
+  }
+  function resetScore() { cfg.score = { X: 0, O: 0, D: 0 }; store.set('score', cfg.score); }
+  cells.forEach((c, i) => c.addEventListener('click', () => { if (!st.busy && !st.over) place(i, false); }));
+  $('#bAgain').onclick = () => reset(false);
+  $('#bNew').onclick = () => reset(true);
+  $('#sheet').addEventListener('click', e => { if (e.target.id === 'sheet') $('#sheet').hidden = true; });
+  $('#bUndo').onclick = () => {
+    if (st.busy || st.over || !st.hist.length) return;
+    let m = st.hist.pop(); st.board[m.i] = '';
+    if (cfg.cpu && m.p === 'O' && st.hist.length) { m = st.hist.pop(); st.board[m.i] = ''; }
+    st.turn = m.p; buzz(10); render();
+  };
+  $('#bMode').onclick = () => { cfg.cpu = !cfg.cpu; store.set('cpu', cfg.cpu); resetScore(); st.starter = 'O'; reset(false); };
+  $('#bLevel').onclick = () => {
+    if (cfg.cpu) { cfg.level = (cfg.level + 1) % 4; store.set('level', cfg.level); resetScore(); st.starter = 'O'; reset(false); }
+    else { cfg.sound = !cfg.sound; store.set('sound', cfg.sound); render(); }
+  };
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  reset(true);
+})();
+
+</script>
+</body>
+</html>
