@@ -84,6 +84,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .target button[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
 .target .logo { width: 16px; height: 16px; }
 .members { display: grid; gap: 6px; margin-block: 8px 4px; max-height: 42vh; overflow-y: auto; }
+.tiers { display: flex; gap: 6px; margin-block: 6px; }
+.tiers button { flex: 1; border: 1px solid var(--line); background: var(--bg); color: inherit; border-radius: 10px; padding: 7px 4px; font: inherit; font-size: .82rem; cursor: pointer; }
+.tiers button[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; font-weight: 600; }
+.pickall { border: 0; background: transparent; color: var(--accent); font: inherit; font-size: .82rem; cursor: pointer; padding: 2px 0 6px; text-align: start; }
 .members .sub { font-size: .72rem; color: var(--muted); margin-inline-start: 4px; }
 .members label { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; }
 .members .logo { width: 20px; height: 20px; }
@@ -270,6 +274,8 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
       </div>
       <div id="membersBox" hidden>
         <span class="lang-label" id="membersTitle"></span>
+        <div class="tiers" id="tiers" role="group"></div>
+        <button class="pickall" id="pickAll" type="button"></button>
         <input class="field" id="memberSearch" type="search" autocomplete="off" style="margin-block:6px">
         <div class="members" id="members"></div>
         <div class="lang-label" id="membersHint" style="font-weight:400"></div>
@@ -323,16 +329,16 @@ const LOGO_GPT = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true
 /* Gemini mark (Simple Icons "googlegemini"), filled with Google's blue-purple-red gradient */
 const LOGO_GEM = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#gemgrad)" d="M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81"/></svg>';
 const AUTHORS = {
-  claude: { name: "Claude", logo: LOGO, color: "#d97757" },
-  gpt: { name: "ChatGPT", logo: LOGO_GPT, color: "#3b82f6" },
-  gemini: { name: "Gemini", logo: LOGO_GEM, color: "#8ab4f8" },
+  claude: { name: "Claude", logo: LOGO, color: "#d97757", tier: "strong" },
+  gpt: { name: "ChatGPT", logo: LOGO_GPT, color: "#3b82f6", tier: "strong" },
+  gemini: { name: "Gemini", logo: LOGO_GEM, color: "#8ab4f8", tier: "strong" },
 };
 const badge = (name) => '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><text x="8" y="11.2" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" font-family="sans-serif">' + String(name || "?").trim().charAt(0).replace(/[<&>]/g, "?").toUpperCase() + "</text></svg>";
 let EXTRA = [];   // [{key, name, color}] extra models that can join a team chat
 function registerModels(list) {
   EXTRA.forEach((e) => { delete AUTHORS[e.key]; });
   EXTRA = (list || []).filter((e) => e && /^[a-z0-9]+$/.test(e.key) && !AUTHORS[e.key]);
-  EXTRA.forEach((e) => { AUTHORS[e.key] = { name: e.name, logo: badge(e.name), color: e.color || "#8a8a8a" }; });
+  EXTRA.forEach((e) => { AUTHORS[e.key] = { name: e.name, logo: badge(e.name), color: e.color || "#8a8a8a", tier: ["strong", "medium", "small"].includes(e.tier) ? e.tier : "medium" }; });
 }
 const authorOf = (m) => {
   const x = /-x([a-z0-9]+)$/.exec(m.id);
@@ -390,7 +396,7 @@ const I18N = {
     attach: "צירוף תמונה", removePic: "הסרת התמונה", dark: "מצב כהה", light: "מצב בהיר",
     emptyTitle: "שלום, מה נעשה היום?",
     emptyTeam: "שיחה משותפת: אני מנהל, ומעביר עבודה ל-ChatGPT כשצריך. תראה כאן מי עובד ומה אנחנו אומרים זה לזה (לחיצה על ההודעה פותחת אותה), וכל מה שמופנה אליך יהיה בעברית. כדי להתחיל, הקלד /phone במחשב.",
-    teamDefault: "צוות", searchModels: "חיפוש מודל…", toLabel: "שלח אל:", membersTitle: "מי בשיחה הזאת", membersHint: "הסר מודל כדי שלא ישתתף. אפשר להשאיר אחד, שניים או שלושה.",
+    teamDefault: "צוות", searchModels: "חיפוש מודל…", tierStrong: "חזקים", tierMedium: "בינוניים ומעלה", tierAll: "כולם", pickShown: "סמן את כל המוצגים", unpickShown: "בטל את המוצגים", tierS: "חזק", tierM: "בינוני", tierL: "קטן", toLabel: "שלח אל:", membersTitle: "מי בשיחה הזאת", membersHint: "הסר מודל כדי שלא ישתתף. אפשר להשאיר אחד, שניים או שלושה.",
     noGeminiConv: "Gemini עדיין לא חובר. הקלד /phone במחשב.", offlineGemini: "Gemini לא מחובר. הקלד /phone במחשב.",
     emptyGemini: "כשתקליד /phone במחשב, Gemini יתחבר לכאן ותוכל לשוחח איתו מהטלפון.",
     emptyGpt: "כשתקליד $phone ב-Codex במחשב, ChatGPT יתחבר לכאן ותוכל לשוחח איתו מהטלפון.",
@@ -422,7 +428,7 @@ const I18N = {
     attach: "Attach a photo", removePic: "Remove photo", dark: "Dark mode", light: "Light mode",
     emptyTitle: "Hi, what are we doing today?",
     emptyTeam: "A shared chat: I lead and hand work to ChatGPT when needed. You see who is working and what we tell each other (tap a message to open it), and anything addressed to you is in your language. To start, type /phone on the computer.",
-    teamDefault: "Team", searchModels: "Search models…", toLabel: "Send to:", membersTitle: "Who is in this chat", membersHint: "Untick a model to keep it out. One, two or all three can take part.",
+    teamDefault: "Team", searchModels: "Search models…", tierStrong: "Strong", tierMedium: "Medium +", tierAll: "All", pickShown: "Select all shown", unpickShown: "Clear shown", tierS: "strong", tierM: "medium", tierL: "small", toLabel: "Send to:", membersTitle: "Who is in this chat", membersHint: "Untick a model to keep it out. One, two or all three can take part.",
     noGeminiConv: "Gemini is not connected yet. Type /phone on the computer.", offlineGemini: "Gemini is not connected. Type /phone on the computer.",
     emptyGemini: "Type /phone on your computer and Gemini connects here, so you can chat with it from your phone.",
     emptyGpt: "Type $phone in Codex on your computer and ChatGPT connects here, so you can chat with it from your phone.",
@@ -803,29 +809,66 @@ function paintTarget() {
     box.append(b);
   });
 }
+let tierFilter = "all";   // strong | medium (strong + medium) | all
+try { const v = localStorage.getItem("aim-tier"); if (v === "strong" || v === "medium") tierFilter = v; } catch (e) {}
+const TIER_RANK = { strong: 0, medium: 1, small: 2 };
+const tierOk = (k) => TIER_RANK[(AUTHORS[k] || {}).tier || "medium"] <= { strong: 0, medium: 1, all: 2 }[tierFilter];
 function renderMembers() {
   const box = $("membersBox"); box.hidden = model !== "team";
   if (box.hidden) return;
   $("membersTitle").textContent = t("membersTitle"); $("membersHint").textContent = t("membersHint");
+  const tiers = $("tiers"); tiers.replaceChildren();
+  [["strong", "tierStrong"], ["medium", "tierMedium"], ["all", "tierAll"]].forEach(([id, key]) => {
+    const bt = document.createElement("button"); bt.type = "button"; bt.textContent = t(key); bt.setAttribute("aria-pressed", String(tierFilter === id));
+    bt.onclick = () => { tierFilter = id; try { localStorage.setItem("aim-tier", id); } catch (e) {} renderMembers(); };
+    tiers.append(bt);
+  });
   const list = $("members"); list.replaceChildren();
   const m = members();
   const q = $("memberSearch"); q.placeholder = t("searchModels");
-  if (!q.dataset.bound) { q.dataset.bound = "1"; q.addEventListener("input", () => { const v = q.value.trim().toLowerCase(); list.querySelectorAll("label").forEach((l) => { l.hidden = !!v && !l.textContent.toLowerCase().includes(v); }); }); }
+  const labels = [];
   allKeys().forEach((x) => {
-    const lab = document.createElement("label");
+    const lab = document.createElement("label"); lab.dataset.k = x;
     const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = m.includes(x);
     cb.onchange = async () => {
       let next = allKeys().filter((y) => (y === x ? cb.checked : members().includes(y)));
-      if (!next.length) { cb.checked = true; return; }
-      if (!currentConv && !(await makeConv(t("teamDefault")))) return;   // first setting in a new team chat starts the chat
-      teamCfg = Object.assign({}, teamCfg, { [currentConv]: next });
-      paintModel(); paintTarget(); renderMembers(); applyLang();
-      const { error } = await sb.from("control").upsert({ id: "team", data: teamCfg, updated_at: new Date().toISOString() });
-      if (error) showErr(t("sendErr"));
+      await saveMembers(next, cb);
     };
-    lab.append(logoEl(x), document.createTextNode(AUTHORS[x].name), cb);
-    list.append(lab);
+    const sub = el("span", "sub", { strong: t("tierS"), medium: t("tierM"), small: t("tierL") }[AUTHORS[x].tier] || "");
+    lab.append(logoEl(x), document.createTextNode(AUTHORS[x].name), sub, cb);
+    list.append(lab); labels.push(lab);
   });
+  const apply = () => {
+    const v = q.value.trim().toLowerCase();
+    let shown = 0, shownOn = 0;
+    labels.forEach((l) => {
+      const k = l.dataset.k, on = l.querySelector("input").checked;
+      const vis = on || (tierOk(k) && (!v || l.textContent.toLowerCase().includes(v)));
+      l.hidden = !vis;
+      if (vis && !on) shown++;
+      if (vis && on) shownOn++;
+    });
+    const all = shown === 0 && shownOn > 0;   // everything visible is already on: offer to clear
+    $("pickAll").textContent = all ? t("unpickShown") : t("pickShown");
+    $("pickAll").dataset.mode = all ? "clear" : "set";
+  };
+  if (!q.dataset.bound) { q.dataset.bound = "1"; q.addEventListener("input", () => renderMembers()); }
+  $("pickAll").onclick = async () => {
+    const clear = $("pickAll").dataset.mode === "clear", v = q.value.trim().toLowerCase();
+    const vis = allKeys().filter((k) => tierOk(k) && (!v || AUTHORS[k].name.toLowerCase().includes(v)));
+    const cur = members();
+    let next = clear ? cur.filter((k) => !vis.includes(k)) : Array.from(new Set(cur.concat(vis)));
+    await saveMembers(next);
+  };
+  apply();
+}
+async function saveMembers(next, cb) {
+  if (!next.length) { if (cb) cb.checked = true; return; }
+  if (!currentConv && !(await makeConv(t("teamDefault")))) return;   // first setting in a new team chat starts the chat
+  teamCfg = Object.assign({}, teamCfg, { [currentConv]: next });
+  paintModel(); paintTarget(); renderMembers(); applyLang();
+  const { error } = await sb.from("control").upsert({ id: "team", data: teamCfg, updated_at: new Date().toISOString() });
+  if (error) showErr(t("sendErr"));
 }
 function renderOldBar() {
   const old = !!(viewConv && currentConv && viewConv !== currentConv);
