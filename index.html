@@ -217,6 +217,20 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 .send svg { width: 18px; height: 18px; }
 .send:disabled { opacity: .35; cursor: default; }
 .err { padding-bottom: 8px; font-size: .82rem; color: var(--warn); }
+.screenview { position: fixed; inset: 0; z-index: 60; background: #000; color: #fff; display: flex; flex-direction: column; }
+.screenview .sbar { display: flex; gap: 6px; align-items: center; padding: 8px 10px; background: #111; flex-wrap: wrap; }
+.screenview .sbar button { border: 1px solid #333; background: #1c1c1e; color: #fff; border-radius: 10px; padding: 6px 10px; font: inherit; font-size: .85rem; cursor: pointer; }
+.screenview .sbar .stop { background: #b3261e; border-color: #b3261e; }
+.screenview .sbar .left { margin-inline-start: auto; font-size: .8rem; opacity: .8; }
+.screenview .sview { flex: 1; overflow: auto; display: grid; align-items: start; justify-items: center; }
+.screenview .sview img { width: 100%; height: auto; display: block; touch-action: pan-x pan-y pinch-zoom; user-select: none; -webkit-user-drag: none; }
+.screenview .smsg { padding: 28px 20px; text-align: center; display: grid; gap: 14px; justify-items: center; max-width: 420px; margin: auto; line-height: 1.5; }
+.screenview .smsg button, .screenview .smsg input { border-radius: 12px; font: inherit; padding: 10px 18px; }
+.screenview .smsg button { border: 0; background: #fff; color: #000; cursor: pointer; font-weight: 600; }
+.screenview .smsg input { border: 1px solid #444; background: #111; color: #fff; text-align: center; letter-spacing: .3em; width: 9em; }
+.screenview .skbd { display: flex; gap: 6px; padding: 8px 10px; background: #111; }
+.screenview .skbd input { flex: 1; min-width: 0; border: 1px solid #333; background: #000; color: #fff; border-radius: 10px; padding: 8px 10px; font: inherit; }
+.screenview .skbd button { border: 0; background: #fff; color: #000; border-radius: 10px; padding: 0 14px; font: inherit; font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .shimmer { color: var(--muted); background: none; } }
 </style>
 </head>
@@ -245,6 +259,9 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
       <span class="sub"><i class="dot" id="dot" data-s="off"></i><span id="sub"></span></span>
     </div>
     <div class="actions">
+      <button class="icon-btn" id="screenBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+      </button>
       <button class="icon-btn" id="newBtn" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
       </button>
@@ -296,6 +313,23 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
   </div>
 </main>
 
+<div class="screenview" id="screenView" hidden>
+  <div class="sbar" id="sbar" hidden>
+    <button type="button" id="sKbd"></button>
+    <button type="button" id="sEnter">Enter</button>
+    <button type="button" id="sEsc">Esc</button>
+    <button type="button" id="sTab">Tab</button>
+    <button type="button" id="sBack">&#9003;</button>
+    <button type="button" id="sUp">&#9650;</button>
+    <button type="button" id="sDown">&#9660;</button>
+    <button type="button" id="sMore"></button>
+    <button type="button" class="stop" id="sStop"></button>
+    <span class="left" id="sLeft"></span>
+  </div>
+  <div class="sview" id="sview"></div>
+  <form class="skbd" id="skbd" hidden><input id="sText" autocomplete="off"><button type="submit" id="sSend"></button></form>
+  <div class="sbar" style="justify-content:center"><button type="button" id="sClose"></button></div>
+</div>
 <footer>
   <div class="wrap">
     <div class="oldbar" id="oldbar" hidden><span data-t="oldConv"></span><button type="button" id="backCurrent" data-t="backCurrent"></button></div>
@@ -401,6 +435,9 @@ const I18N = {
     attach: "צירוף תמונה", removePic: "הסרת התמונה", dark: "מצב כהה", light: "מצב בהיר",
     emptyTitle: "שלום, מה נעשה היום?",
     emptyTeam: "שיחה משותפת: אני מנהל, ומעביר עבודה ל-ChatGPT כשצריך. תראה כאן מי עובד ומה אנחנו אומרים זה לזה (לחיצה על ההודעה פותחת אותה), וכל מה שמופנה אליך יהיה בעברית. כדי להתחיל, הקלד /phone במחשב.",
+    screenTitle: "המסך של המחשב", screenIntro: "אפשר לראות את המסך של המחשב על הטלפון ולגעת בו, למשל כדי לאשר חלון שמחכה לך. אפשר לעצור בכל רגע, יש גם כפתור עצירה שמוצג על המסך במחשב, והשיתוף נגמר מעצמו אחרי 10 דקות.",
+    screenStart: "הצג את המסך", screenStop: "עצור", screenPin: "קוד (PIN)", screenWait: "מתחבר למחשב…", screenOffline: "המחשב לא מחובר. הקלד /phone במחשב.", screenDenied: "הקוד שגוי.",
+    screenClose: "סגור", screenKbd: "מקלדת", screenSend: "שלח", screenMore: "+10 דק׳", screenEnded: "השיתוף הסתיים.", screenLeft: "נשאר",
     teamDefault: "צוות", searchModels: "חיפוש מודל…", allFree: "כל החינמיים", tierStrong: "חזקים", tierMedium: "בינוניים ומעלה", tierAll: "כולם", pickShown: "סמן את כל המוצגים", unpickShown: "בטל את המוצגים", tierS: "חזק", tierM: "בינוני", tierL: "קטן", toLabel: "שלח אל:", membersTitle: "מי בשיחה הזאת", membersHint: "הסר מודל כדי שלא ישתתף. אפשר להשאיר אחד, שניים או שלושה.",
     noGeminiConv: "Gemini עדיין לא חובר. הקלד /phone במחשב.", offlineGemini: "Gemini לא מחובר. הקלד /phone במחשב.",
     emptyGemini: "כשתקליד /phone במחשב, Gemini יתחבר לכאן ותוכל לשוחח איתו מהטלפון.",
@@ -434,6 +471,9 @@ const I18N = {
     attach: "Attach a photo", removePic: "Remove photo", dark: "Dark mode", light: "Light mode",
     emptyTitle: "Hi, what are we doing today?",
     emptyTeam: "A shared chat: I lead and hand work to ChatGPT when needed. You see who is working and what we tell each other (tap a message to open it), and anything addressed to you is in your language. To start, type /phone on the computer.",
+    screenTitle: "Computer screen", screenIntro: "See your computer's screen on the phone and tap it, for example to approve a window that is waiting for you. You can stop at any time, a Stop button also shows on the computer screen, and sharing ends by itself after 10 minutes.",
+    screenStart: "Show the screen", screenStop: "Stop", screenPin: "PIN", screenWait: "Connecting to the computer…", screenOffline: "The computer is not connected. Type /phone on the computer.", screenDenied: "Wrong PIN.",
+    screenClose: "Close", screenKbd: "Keyboard", screenSend: "Send", screenMore: "+10 min", screenEnded: "Sharing ended.", screenLeft: "left",
     teamDefault: "Team", searchModels: "Search models…", allFree: "All free models", tierStrong: "Strong", tierMedium: "Medium +", tierAll: "All", pickShown: "Select all shown", unpickShown: "Clear shown", tierS: "strong", tierM: "medium", tierL: "small", toLabel: "Send to:", membersTitle: "Who is in this chat", membersHint: "Untick a model to keep it out. One, two or all three can take part.",
     noGeminiConv: "Gemini is not connected yet. Type /phone on the computer.", offlineGemini: "Gemini is not connected. Type /phone on the computer.",
     emptyGemini: "Type /phone on your computer and Gemini connects here, so you can chat with it from your phone.",
@@ -735,6 +775,11 @@ function applyControl(row) {
   if (row.id === "status-gemini") statuses.gemini = row.data || {};
   if (row.id === "watcher-gemini") watchers.gemini = row.data || {};
   if (row.id === "watcher-team") watchers.team = row.data || {};
+  if (row.id === "screen") {
+    const was = scr.state; scr = row.data || {};
+    if (scr.state === "on") scrWasOn = true;
+    if (typeof renderScreen === "function" && scrOpen && (was !== scr.state || scr.state === "on" || scr.state === "denied")) renderScreen();
+  }
   if (row.id === "models") { registerModels((row.data || {}).list); if (ready) { paintModel(); paintTarget(); renderMembers(); renderThread(); renderTail(); } }
   if (row.id === "team") { teamCfg = row.data || {}; if (typeof paintModel === "function" && ready) { paintModel(); paintTarget(); renderMembers(); } }
   if (row.id === "current") {
@@ -800,6 +845,104 @@ async function deleteConv(cv) {
   if (viewConv === cv.id) viewConv = currentConv;
   await loadConvs(); loadMessages();
 }
+/* ---------- computer screen on the phone ---------- */
+let scr = {}, scrOpen = false, scrWaiting = false, scrFetching = false, scrLastSeq = 0, scrUrl = null, scrTimer = null;
+const nowIso = () => new Date().toISOString();
+const putCtl = (id, data) => sb.from("control").upsert({ id, data, updated_at: nowIso() });
+function screenBody() { return $("sview"); }
+function renderScreen() {
+  const sv = screenBody(), bar = $("sbar");
+  $("sKbd").textContent = t("screenKbd"); $("sStop").textContent = t("screenStop"); $("sMore").textContent = t("screenMore");
+  $("sSend").textContent = t("screenSend"); $("sClose").textContent = t("screenClose");
+  const live = scr.state === "on";
+  bar.hidden = !live; if (!live) $("skbd").hidden = true;
+  if (live) {
+    if (!sv.querySelector("img")) { sv.replaceChildren(); const im = document.createElement("img"); im.alt = ""; im.id = "sImg"; sv.append(im); bindScreenImg(im); }
+    scrWaiting = false; fetchFrame(); tickScreen();
+    return;
+  }
+  sv.replaceChildren();
+  const box = el("div", "smsg");
+  box.append(el("strong", null, t("screenTitle")));
+  if (scrWaiting && scr.state !== "denied") {
+    box.append(el("span", null, t("screenWait")));
+  } else {
+    if (scr.state === "off" && scr.reason && scr.reason !== "expired" && scrWasOn) box.append(el("span", null, t("screenEnded") + " (" + scr.reason + ")"));
+    else if (scr.state === "off" && scr.reason === "expired" && scrWasOn) box.append(el("span", null, t("screenEnded")));
+    if (scr.state === "denied") box.append(el("span", null, t("screenDenied")));
+    box.append(el("span", null, t("screenIntro")));
+    if (scr.pin_required) { const pi = document.createElement("input"); pi.id = "sPin"; pi.type = "password"; pi.inputMode = "numeric"; pi.placeholder = t("screenPin"); pi.autocomplete = "off"; box.append(pi); }
+    const go = document.createElement("button"); go.type = "button"; go.textContent = t("screenStart");
+    go.onclick = startScreen; box.append(go);
+  }
+  sv.append(box);
+}
+let scrWasOn = false;
+async function startScreen() {
+  const pi = $("sPin"), pin = pi ? pi.value : "";
+  scrWaiting = true; scrWasOn = false;
+  await putCtl("screen-req", { state: "request", at: nowIso(), pin });
+  renderScreen();
+  setTimeout(() => { if (scrWaiting && scr.state !== "on") { scrWaiting = false; const sv = screenBody(); sv.replaceChildren(el("div", "smsg", t("screenOffline"))); } }, 15000);
+}
+async function stopScreen() { await putCtl("screen-req", { state: "stop", at: nowIso() }); }
+async function fetchFrame() {
+  if (scrFetching || scr.state !== "on" || !scr.seq || scr.seq === scrLastSeq) return;
+  scrFetching = true;
+  const want = scr.seq;
+  try {
+    const { data } = await sb.storage.from(BUCKET).download("screen/frame.jpg");
+    if (data) {
+      const u = URL.createObjectURL(data), im = $("sImg");
+      if (im) { im.src = u; }
+      if (scrUrl) URL.revokeObjectURL(scrUrl);
+      scrUrl = u; scrLastSeq = want;
+    }
+  } catch (e) {}
+  scrFetching = false;
+  if (scr.state === "on" && scr.seq !== scrLastSeq) fetchFrame();
+}
+function tickScreen() {
+  clearInterval(scrTimer);
+  const upd = () => {
+    if (scr.state !== "on") { clearInterval(scrTimer); return; }
+    const left = Math.max(0, Math.floor((Date.parse(scr.expires) - Date.now()) / 1000));
+    $("sLeft").textContent = t("screenLeft") + " " + Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0");
+  };
+  upd(); scrTimer = setInterval(upd, 1000);
+}
+async function sendInput(events) {
+  await putCtl("screen-in", { seq: Date.now(), events });
+}
+function bindScreenImg(im) {
+  let d = null;
+  const norm = (e) => { const r = im.getBoundingClientRect(); return { x: Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), y: Math.min(1, Math.max(0, (e.clientY - r.top) / r.height)), r }; };
+  let lastTap = { t: 0, x: 0, y: 0 };
+  im.addEventListener("pointerdown", (e) => { d = { x: e.clientX, y: e.clientY, t: Date.now() }; });
+  im.addEventListener("pointerup", (e) => {
+    if (!d) return;
+    const dx = e.clientX - d.x, dy = e.clientY - d.y, dt = Date.now() - d.t; d = null;
+    const n = norm(e);
+    if (Math.abs(dy) > 18 && Math.abs(dy) > Math.abs(dx)) { sendInput([{ t: "scroll", x: n.x, y: n.y, dy: Math.round((-dy / n.r.height) * 1500) }]); return; }
+    if (Math.abs(dx) > 18) return;
+    const dbl = Date.now() - lastTap.t < 350 && Math.abs(e.clientX - lastTap.x) < 25 && Math.abs(e.clientY - lastTap.y) < 25;
+    lastTap = { t: dbl ? 0 : Date.now(), x: e.clientX, y: e.clientY };
+    sendInput([{ t: "click", x: n.x, y: n.y, b: dt > 550 ? "right" : "left", dbl }]);
+  });
+  im.addEventListener("contextmenu", (e) => e.preventDefault());
+}
+function openScreen() { scrOpen = true; $("screenView").hidden = false; renderScreen(); }
+function closeScreen() { scrOpen = false; $("screenView").hidden = true; }
+$("screenBtn").onclick = openScreen;
+$("sClose").onclick = closeScreen;
+$("sStop").onclick = stopScreen;
+$("sMore").onclick = () => putCtl("screen-req", { state: "extend", at: nowIso() });
+$("sKbd").onclick = () => { $("skbd").hidden = !$("skbd").hidden; if (!$("skbd").hidden) $("sText").focus(); };
+$("skbd").addEventListener("submit", (e) => { e.preventDefault(); const v = $("sText").value; if (v) { sendInput([{ t: "text", s: v }]); $("sText").value = ""; } });
+[["sEnter", "enter"], ["sEsc", "esc"], ["sTab", "tab"], ["sBack", "backspace"]].forEach(([id, k]) => { $(id).onclick = () => sendInput([{ t: "key", k }]); });
+$("sUp").onclick = () => sendInput([{ t: "scroll", x: 0.5, y: 0.5, dy: 360 }]);
+$("sDown").onclick = () => sendInput([{ t: "scroll", x: 0.5, y: 0.5, dy: -360 }]);
+
 /* ---------- team chat: who gets the next message, and who takes part ---------- */
 let target = "claude";
 try { const v = localStorage.getItem("aim-target"); if (v && /^[a-z0-9]+$/.test(v)) target = v; } catch (e) {}
