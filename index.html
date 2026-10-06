@@ -935,6 +935,7 @@ async function pushUnsubscribe() {
   } catch (e) {}
   try { localStorage.setItem("aim-push", "0"); } catch (e) {}
 }
+if ("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message", (e) => { if (e.data && e.data.type === "reply") $("composer").focus(); });
 function plainText(s) { return String(s || "").replace(/```[\s\S]*?```/g, " ").replace(/[*_`#>\[\]]/g, "").replace(/\s+/g, " ").trim(); }
 function maybeNotify(m) {
   if (!notifOn() || !m || m.sender === "me" || (m.kind !== "reply" && m.kind !== "question")) return;
@@ -953,6 +954,7 @@ let channel = null;
 function subscribe() {
   if (channel) return;
   if (notifOn()) pushSubscribe();
+  if (location.hash === "#reply") setTimeout(() => $("composer").focus(), 500);
   channel = sb.channel("aim")
     .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, (p) => {
       if (p.eventType === "INSERT") maybeNotify(p.new);
