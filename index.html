@@ -281,6 +281,7 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
         <div class="lang-label" id="membersHint" style="font-weight:400"></div>
       </div>
       <div class="row-btns">
+        <button class="btn-plain" id="notifBtn" type="button" hidden></button>
         <button class="btn-warn" id="pauseBtn" type="button"></button>
         <button class="btn-plain" id="signOutBtn" type="button" data-t="signOut"></button>
       </div>
@@ -408,6 +409,7 @@ const I18N = {
     sending: "שולח…", read: "נקרא", sent: "נשלח", thinking: "חושב…",
     pPaused: "הקו מושהה. ההודעה תחכה.", pOffline: "המחשב לא מחובר. ההודעה תחכה עד שתקליד /phone במחשב.",
     pWorking: "Claude באמצע עבודה ויקרא את זה בין שלב לשלב.", pLive: "Claude יקבל את זה תוך שניות.",
+    notifOffBtn: "הפעל התראות ורטט", notifOnBtn: "התראות פעילות · לחץ לכיבוי", notifDenied: "התראות חסומות בהגדרות הדפדפן", notifTest: "התראות פעילות. כך תקבל הודעה כשמשהו מסתיים.",
     sendErr: "ההודעה לא נשלחה. בדוק חיבור ונסה שוב.", picErr: "התמונה לא נשלחה. נסה תמונה אחרת או קטנה יותר.",
     loginLead: "כניסה לצ'אט הפרטי שלך עם Claude.", signIn: "כניסה", firstTime: "פעם ראשונה? יצירת סיסמה",
     signUpDone: "שלחנו מייל אישור. לחץ על הקישור שבו, וחזור לכאן להתחבר עם הסיסמה.",
@@ -440,6 +442,7 @@ const I18N = {
     sending: "Sending…", read: "Read", sent: "Sent", thinking: "Thinking…",
     pPaused: "The line is paused. This message waits.", pOffline: "The computer is offline. This message waits until you type /phone on the computer.",
     pWorking: "Claude is mid-task and will read this between steps.", pLive: "Claude gets this within seconds.",
+    notifOffBtn: "Turn on notifications and vibration", notifOnBtn: "Notifications on · tap to turn off", notifDenied: "Notifications are blocked in the browser settings", notifTest: "Notifications are on. This is how you will be told when something finishes.",
     sendErr: "The message wasn't sent. Check your connection and try again.", picErr: "The photo wasn't sent. Try another or a smaller one.",
     loginLead: "Sign in to your private chat with Claude.", signIn: "Sign in", firstTime: "First time? Create a password",
     signUpDone: "We sent a confirmation email. Tap the link in it, then come back here and sign in with the password.",
@@ -599,6 +602,7 @@ function renderHeader() {
   if (curS().project) { const s = el("span", null, t("project")); s.append(el("b", null, curS().project)); meta.append(s); }
   if (curW().at) meta.append(el("span", null, t("lastSeen", ago(Date.now() - toMs(curW().at)))));
   $("pauseBtn").textContent = isOff() ? t("resume") : t("pause");
+  paintNotif();
 }
 
 /* ---------- photos ---------- */
@@ -886,11 +890,42 @@ function renderOldBar() {
   $("oldbar").hidden = !old; $("form").hidden = old;
 }
 $("backCurrent").onclick = () => { viewConv = currentConv; loadMessages(); renderConvs(); };
+/* ---------- notifications (vibrate + banner when something arrives and the app is in the background) ---------- */
+let swReg = null;
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").then((r) => { swReg = r; }).catch(() => {});
+const notifSupported = () => "Notification" in window && "serviceWorker" in navigator;
+function notifOn() { try { return notifSupported() && Notification.permission === "granted" && localStorage.getItem("aim-notif") === "1"; } catch (e) { return false; } }
+function paintNotif() {
+  const b = $("notifBtn");
+  if (!notifSupported()) { b.hidden = true; return; }
+  b.hidden = false;
+  b.textContent = Notification.permission === "denied" ? t("notifDenied") : notifOn() ? t("notifOnBtn") : t("notifOffBtn");
+}
+async function notify(title, body, tag) {
+  try {
+    const reg = swReg || await navigator.serviceWorker.ready;
+    await reg.showNotification(title, { body, tag: tag || "aim", renotify: true, icon: "icon-192.png", badge: "favicon-32.png", vibrate: [250, 120, 250], lang });
+  } catch (e) {}
+}
+function plainText(s) { return String(s || "").replace(/```[\s\S]*?```/g, " ").replace(/[*_`#>\[\]]/g, "").replace(/\s+/g, " ").trim(); }
+function maybeNotify(m) {
+  if (!notifOn() || !m || m.sender === "me" || (m.kind !== "reply" && m.kind !== "question")) return;
+  if (!document.hidden && document.hasFocus()) return;
+  notify("AIM", plainText(m.text).slice(0, 120), "aim-" + (m.conv || "x"));
+}
+$("notifBtn").onclick = async () => {
+  if (notifOn()) { try { localStorage.setItem("aim-notif", "0"); } catch (e) {} paintNotif(); return; }
+  if (Notification.permission === "denied") return;
+  const perm = Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
+  if (perm === "granted") { try { localStorage.setItem("aim-notif", "1"); } catch (e) {} notify("AIM", t("notifTest"), "aim-test"); }
+  paintNotif();
+};
 let channel = null;
 function subscribe() {
   if (channel) return;
   channel = sb.channel("aim")
     .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, (p) => {
+      if (p.eventType === "INSERT") maybeNotify(p.new);
       if (p.eventType === "DELETE") msgs = msgs.filter((m) => m.id !== p.old.id);
       else if (viewConv ? (p.new.conv === viewConv || (!p.new.conv && model === "claude")) : model === "claude") upsertMsg(p.new);
       renderThread(); renderTail();
