@@ -409,7 +409,7 @@ const I18N = {
     sending: "שולח…", read: "נקרא", sent: "נשלח", thinking: "חושב…",
     pPaused: "הקו מושהה. ההודעה תחכה.", pOffline: "המחשב לא מחובר. ההודעה תחכה עד שתקליד /phone במחשב.",
     pWorking: "Claude באמצע עבודה ויקרא את זה בין שלב לשלב.", pLive: "Claude יקבל את זה תוך שניות.",
-    notifOffBtn: "הפעל התראות ורטט", notifOnBtn: "התראות פעילות · לחץ לכיבוי", notifDenied: "התראות חסומות בהגדרות הדפדפן", notifTest: "התראות פעילות. כך תקבל הודעה כשמשהו מסתיים.",
+    notifOffBtn: "הפעל התראות ורטט", notifOnBtn: "התראות פעילות · לחץ לכיבוי", notifDenied: "התראות חסומות בהגדרות הדפדפן", notifTest: "התראות פעילות. כך תקבל הודעה כשמשהו מסתיים.", notifTestPush: "התראות פעילות, גם כשהמסך נעול והאפליקציה סגורה.",
     sendErr: "ההודעה לא נשלחה. בדוק חיבור ונסה שוב.", picErr: "התמונה לא נשלחה. נסה תמונה אחרת או קטנה יותר.",
     loginLead: "כניסה לצ'אט הפרטי שלך עם Claude.", signIn: "כניסה", firstTime: "פעם ראשונה? יצירת סיסמה",
     signUpDone: "שלחנו מייל אישור. לחץ על הקישור שבו, וחזור לכאן להתחבר עם הסיסמה.",
@@ -442,7 +442,7 @@ const I18N = {
     sending: "Sending…", read: "Read", sent: "Sent", thinking: "Thinking…",
     pPaused: "The line is paused. This message waits.", pOffline: "The computer is offline. This message waits until you type /phone on the computer.",
     pWorking: "Claude is mid-task and will read this between steps.", pLive: "Claude gets this within seconds.",
-    notifOffBtn: "Turn on notifications and vibration", notifOnBtn: "Notifications on · tap to turn off", notifDenied: "Notifications are blocked in the browser settings", notifTest: "Notifications are on. This is how you will be told when something finishes.",
+    notifOffBtn: "Turn on notifications and vibration", notifOnBtn: "Notifications on · tap to turn off", notifDenied: "Notifications are blocked in the browser settings", notifTest: "Notifications are on. This is how you will be told when something finishes.", notifTestPush: "Notifications are on, even when the screen is locked and the app is closed.",
     sendErr: "The message wasn't sent. Check your connection and try again.", picErr: "The photo wasn't sent. Try another or a smaller one.",
     loginLead: "Sign in to your private chat with Claude.", signIn: "Sign in", firstTime: "First time? Create a password",
     signUpDone: "We sent a confirmation email. Tap the link in it, then come back here and sign in with the password.",
@@ -907,22 +907,52 @@ async function notify(title, body, tag) {
     await reg.showNotification(title, { body, tag: tag || "aim", renotify: true, icon: "icon-192.png", badge: "favicon-32.png", vibrate: [250, 120, 250], lang });
   } catch (e) {}
 }
+const VAPID_PUBLIC = "BImaI1EXl0q-k2JRbtlqptYy2GSHneQS96ToM6qqa5R5j86K6-d19a8rR5yq8TemH_TFRab2er8X0GnICgWhHVc";
+function vapidBytes() { const b = atob((VAPID_PUBLIC + "=".repeat((4 - VAPID_PUBLIC.length % 4) % 4)).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(b, (c) => c.charCodeAt(0)); }
+async function pushRow() { const r = await sb.from("control").select("data").eq("id", "push").maybeSingle(); return (r.data && r.data.data && r.data.data.subs) || []; }
+async function pushSubscribe() {   // real Web Push: the computer wakes this phone even when the app is asleep
+  try {
+    const reg = swReg || await navigator.serviceWorker.ready;
+    if (!reg.pushManager) return false;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: vapidBytes() });
+    const j = sub.toJSON();
+    const subs = (await pushRow()).filter((x) => x.endpoint !== j.endpoint); subs.push(j);
+    const { error } = await sb.from("control").upsert({ id: "push", data: { subs }, updated_at: new Date().toISOString() });
+    if (error) return false;
+    try { localStorage.setItem("aim-push", "1"); } catch (e) {}
+    return true;
+  } catch (e) { return false; }
+}
+async function pushUnsubscribe() {
+  try {
+    const reg = swReg || await navigator.serviceWorker.ready;
+    const sub = reg.pushManager && await reg.pushManager.getSubscription();
+    if (sub) {
+      const ep = sub.endpoint; await sub.unsubscribe();
+      await sb.from("control").upsert({ id: "push", data: { subs: (await pushRow()).filter((x) => x.endpoint !== ep) }, updated_at: new Date().toISOString() });
+    }
+  } catch (e) {}
+  try { localStorage.setItem("aim-push", "0"); } catch (e) {}
+}
 function plainText(s) { return String(s || "").replace(/```[\s\S]*?```/g, " ").replace(/[*_`#>\[\]]/g, "").replace(/\s+/g, " ").trim(); }
 function maybeNotify(m) {
   if (!notifOn() || !m || m.sender === "me" || (m.kind !== "reply" && m.kind !== "question")) return;
+  try { if (localStorage.getItem("aim-push") === "1") return; } catch (e) {}   // the computer sends a real push instead
   if (!document.hidden && document.hasFocus()) return;
   notify("AIM", plainText(m.text).slice(0, 120), "aim-" + (m.conv || "x"));
 }
 $("notifBtn").onclick = async () => {
-  if (notifOn()) { try { localStorage.setItem("aim-notif", "0"); } catch (e) {} paintNotif(); return; }
+  if (notifOn()) { try { localStorage.setItem("aim-notif", "0"); } catch (e) {} await pushUnsubscribe(); paintNotif(); return; }
   if (Notification.permission === "denied") return;
   const perm = Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
-  if (perm === "granted") { try { localStorage.setItem("aim-notif", "1"); } catch (e) {} notify("AIM", t("notifTest"), "aim-test"); }
+  if (perm === "granted") { try { localStorage.setItem("aim-notif", "1"); } catch (e) {} const ok = await pushSubscribe(); notify("AIM", ok ? t("notifTestPush") : t("notifTest"), "aim-test"); }
   paintNotif();
 };
 let channel = null;
 function subscribe() {
   if (channel) return;
+  if (notifOn()) pushSubscribe();
   channel = sb.channel("aim")
     .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, (p) => {
       if (p.eventType === "INSERT") maybeNotify(p.new);
