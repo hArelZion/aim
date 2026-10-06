@@ -11,7 +11,7 @@ self.addEventListener("push", (e) => {
     if (list.some((c) => c.visibilityState === "visible" && c.focused)) return;   // already looking at the app
     const o = {
       body: d.body || "", tag: "aim-" + (d.conv || "x"), renotify: true,
-      icon: "icon-192.png", badge: "favicon-32.png", vibrate: [250, 120, 250],
+      icon: "icon-192.png?v=3", badge: "favicon-32.png?v=3", vibrate: [250, 120, 250],
     };
     if (d.style === "code") o.image = "notif-code.png";
     else o.actions = [{ action: "open", title: "פתח" }, { action: "reply", title: "השב" }];
