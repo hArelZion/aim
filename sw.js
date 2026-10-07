@@ -8,7 +8,7 @@ self.addEventListener("push", (e) => {
   try { d = e.data ? e.data.json() : {}; } catch (_) {}
   e.waitUntil((async () => {
     const list = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
-    if (list.some((c) => c.visibilityState === "visible" && c.focused)) return;   // already looking at the app
+    if (list.some((c) => c.visibilityState === "visible")) return;   // already looking at the app
     const o = {
       body: d.body || "", tag: "aim-" + (d.conv || "x"), renotify: true,
       icon: "icon-192.png?v=3", badge: "favicon-32.png?v=3", vibrate: [250, 120, 250],
