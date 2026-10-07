@@ -1252,7 +1252,7 @@ function speakText(text) {
   try {
     const plain = String(text || "").replace(/[*_`#>\[\]]/g, "").replace(/\s+/g, " ").trim().slice(0, 900);
     if (!plain || !window.speechSynthesis) return;
-    const u = new SpeechSynthesisUtterance(plain); u.lang = lang === "en" ? "en-US" : "he-IL";
+    const u = new SpeechSynthesisUtterance(plain); u.lang = /[֐-׿]/.test(plain) ? "he-IL" : "en-US";
     window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
   } catch (e) {}
 }
