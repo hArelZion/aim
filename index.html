@@ -1102,7 +1102,10 @@ function subscribe() {
     .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, (p) => {
       if (p.eventType === "INSERT") maybeNotify(p.new);
       if (p.eventType === "DELETE") msgs = msgs.filter((m) => m.id !== p.old.id);
-      else if (viewConv ? (p.new.conv === viewConv || (!p.new.conv && model === "claude")) : model === "claude") upsertMsg(p.new);
+      else if (viewConv ? (p.new.conv === viewConv || (!p.new.conv && model === "claude")) : model === "claude") {
+        upsertMsg(p.new);
+        if (speakNext && p.eventType === "INSERT" && p.new.sender === "claude" && !["system", "agent", "escalate"].includes(p.new.kind) && p.new.text) { speakNext = false; speakText(p.new.text); }
+      }
       renderThread(); renderTail();
     })
     .on("postgres_changes", { event: "*", schema: "public", table: "conversations" }, () => loadConvs())
@@ -1237,9 +1240,40 @@ $("signUpBtn").onclick = async () => {
   loginMsg(error ? error.message : t("signUpDone"), !!error);
 };
 
+/* ---------- voice shortcut: ?say=text sends a message on its own (for "Hey Siri, Claude") ---------- */
+const DEEP = (() => {
+  try {
+    const q = new URLSearchParams(location.search), say = (q.get("say") || "").trim();
+    return say ? { say: say.slice(0, 2000), to: q.get("to"), speak: q.get("speak") !== "0" } : null;
+  } catch (e) { return null; }
+})();
+let speakNext = false;
+function speakText(text) {
+  try {
+    const plain = String(text || "").replace(/[*_`#>\[\]]/g, "").replace(/\s+/g, " ").trim().slice(0, 900);
+    if (!plain || !window.speechSynthesis) return;
+    const u = new SpeechSynthesisUtterance(plain); u.lang = lang === "en" ? "en-US" : "he-IL";
+    window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
+  } catch (e) {}
+}
+async function runDeepLink() {
+  const d = DEEP; if (!d) return;
+  try { history.replaceState(null, "", location.pathname); } catch (e) {}
+  if (d.to && MODELS.includes(d.to) && d.to !== model) {
+    viewByModel[model] = viewConv; model = d.to;
+    try { localStorage.setItem("aim-model", model); } catch (e) {}
+    currentConv = curByModel[model]; viewConv = currentConv;
+    paintModel(); applyLang(); paintTarget(); renderConvs(); await loadMessages();
+  }
+  if (!ta) return;
+  ta.value = d.say; fit(); syncSend();
+  speakNext = d.speak;
+  $("form").requestSubmit();
+}
+let deepDone = false;
 function showApp(on) {
   $("login").hidden = on; $("app").hidden = !on;
-  if (on && !signedIn) { signedIn = true; loadAll(); subscribe(); }
+  if (on && !signedIn) { signedIn = true; loadAll().then(() => { if (!deepDone) { deepDone = true; runDeepLink(); } }); subscribe(); }
 }
 sb.auth.onAuthStateChange((_ev, session) => showApp(!!session));
 
