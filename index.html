@@ -1282,6 +1282,15 @@ applyLang(); fit(); syncSend();
 sb.auth.getSession().then(({ data }) => showApp(!!(data && data.session)));
 setInterval(() => { renderHeader(); renderTail(); }, 30000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden && signedIn) loadAll(); });
+/* presence: tells the computer whether the app is on screen, so it skips the push banner while you are looking at it */
+function pingPresence() {
+  if (!signedIn) return;
+  const visible = !document.hidden;
+  sb.from("control").upsert({ id: "presence", data: { visible, ts: Date.now() }, updated_at: new Date().toISOString() }).then(() => {}, () => {});
+}
+setInterval(() => { if (!document.hidden) pingPresence(); }, 20000);
+document.addEventListener("visibilitychange", pingPresence);
+window.addEventListener("pagehide", pingPresence);
 </script>
 </body>
 </html>
