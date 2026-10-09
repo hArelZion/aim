@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Long Game — fifteen centuries of chess</title>
+  <meta name="description" content="An exhibition of chess history in seven rooms: from chaturanga in India and shatranj in Persia to the Lewis chessmen, the mad queen, the café masters and the machines.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%231a0d0e'/%3E%3Ctext x='16' y='24' font-size='21' text-anchor='middle' fill='%23c9a14a'%3E%E2%99%9B%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="kit.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav__inner">
+      <a class="logo" href="#top">The Long <b>Game</b></a>
+      <button class="nav__toggle" aria-label="Menu"><span></span></button>
+      <ul class="nav__links">
+        <li><a href="#rooms">The rooms</a></li>
+        <li><a href="#object">The object</a></li>
+        <li><a href="#queen">The queen</a></li>
+        <li><a href="#numbers">In numbers</a></li>
+        <li><a class="btn btn--accent" href="#rooms">Enter</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <img class="hero__bg" src="assets/hero.jpg" alt="Antique ivory chess pieces in a dark museum display case under a single spotlight" width="1344" height="768">
+      <div class="wrap">
+        <span class="eyebrow">An exhibition in seven rooms</span>
+        <h1>The <em>long</em> game.</h1>
+        <p class="lede">Fifteen centuries, a dozen empires and one board of sixty-four squares. This is how a war game from India became the world's.</p>
+        <a class="btn btn--accent" href="#rooms">Begin the visit <span class="arrow">→</span></a>
+        <div class="hero__meta"><span>c. 600 – today</span><span>7 rooms · 1 object · 1 queen</span><span>About 12 minutes</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="rooms" aria-labelledby="rooms-title">
+      <div class="wrap">
+        <div class="head">
+          <span class="eyebrow reveal">The rooms</span>
+          <h2 id="rooms-title" class="reveal" data-delay="1">How the game <em>travelled.</em></h2>
+          <p class="lede reveal" data-delay="2">Every culture that adopted chess rewrote it a little. Walk through in order.</p>
+        </div>
+
+        <article class="room">
+          <div class="room__no reveal">I<small>c. 600 · India</small></div>
+          <div class="reveal" data-delay="1">
+            <span class="eyebrow">Chaturanga</span>
+            <h3>An army on a board</h3>
+            <p>In the Gupta empire, a game called chaturanga — “four divisions” — set infantry, cavalry, elephants and chariots against each other on an eight-by-eight grid. Win by capturing the raja.</p>
+            <p class="fact">The four divisions became the pawn, knight, bishop and rook you still play with.</p>
+          </div>
+          <div class="reveal" data-delay="2"><p class="lede">A rule from the very first boards survives intact: the pawn moves one square forward and captures diagonally, like a foot soldier with a spear held across his body.</p></div>
+        </article>
+
+        <article class="room">
+          <div class="room__no reveal">II<small>c. 650 · Persia</small></div>
+          <div class="reveal" data-delay="1">
+            <span class="eyebrow">Shatranj</span>
+            <h3>A courtly pastime</h3>
+            <p>When the game reached the Sasanian court it became shatranj. After the Arab conquest of Persia it spread across the Islamic world, where masters such as al-Adli and as-Suli wrote the first books of openings and problems.</p>
+            <p class="fact">“Shah mat” — the king is helpless — is where our word checkmate comes from.</p>
+          </div>
+          <figure class="media ratio-34 reveal" data-delay="2"><img src="assets/persia.jpg" alt="A Persian miniature of two nobles at a chessboard in a palace garden" width="896" height="1152" loading="lazy"></figure>
+        </article>
+
+        <article class="room">
+          <div class="room__no reveal">III<small>c. 1000 · Europe</small></div>
+          <div class="reveal" data-delay="1">
+            <span class="eyebrow">Into Christendom</span>
+            <h3>Kings, bishops, worried faces</h3>
+            <p>Through Moorish Spain, Sicily and the Viking trade routes, chess reached Europe around the year 1000. The elephant became a bishop, the vizier a queen — still a weak piece that crept one square diagonally.</p>
+            <p class="fact">Chess was so popular among clergy that several church councils tried, and failed, to ban it.</p>
+          </div>
+          <figure class="media ratio-43 reveal" data-delay="2"><img src="assets/lewis.jpg" alt="Medieval walrus-ivory chess pieces with carved, anxious faces" width="1152" height="896" loading="lazy"></figure>
+        </article>
+
+        <article class="room room--text">
+          <div class="room__no reveal">IV<small>1475 · Valencia</small></div>
+          <div class="reveal" data-delay="1">
+            <span class="eyebrow">The mad queen</span>
+            <h3>The day the game sped up</h3>
+            <div class="cols">
+              <p>Some time in the late fifteenth century, in Spain, the queen was given the power to move any distance in any straight line. The bishop got its long diagonal too. Games that had dragged on for hours were suddenly decided in a few dozen moves.</p>
+              <p>Contemporaries called it <em>ajedrez de la dama</em>, the queen's chess, or more bluntly, <em>scacchi alla rabiosa</em>, mad chess. Within a generation it had swept Europe; the old game simply vanished. Modern chess is barely 550 years old.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="room">
+          <div class="room__no reveal">V<small>1750–1900 · Paris, London</small></div>
+          <div class="reveal" data-delay="1">
+            <span class="eyebrow">The café masters</span>
+            <h3>Coffee, smoke and sacrifices</h3>
+            <p>At the Café de la Régence in Paris and Simpson's Divan in London, players gambled, sacrificed pieces with abandon and drew crowds. In 1851 London hosted the first international tournament; in 1886 Steinitz became the first official World Champion.</p>
+            <p class="fact">Philidor, the café's star, also composed operas, and played three blindfold games at once.</p>
+          </div>
+          <figure class="media ratio-43 reveal" data-delay="2"><img src="assets/cafe.jpg" alt="Nineteenth-century Parisian café with gentlemen playing chess under gas lamps" width="1216" height="832" loading="lazy"></figure>
+        </article>
+
+        <article class="room room--text">
+          <div class="room__no reveal">VI<small>1948–1990 · USSR</small></div>
+          <div class="reveal" data-delay="1">
+            <span class="eyebrow">The Soviet school</span>
+            <h3>Chess as a state science</h3>
+            <div class="cols">
+              <p>The Soviet Union turned chess into a national project: clubs in every town, trainers in every school, preparation like scientific research. From 1948 until 1972 every world champion was Soviet.</p>
+              <p>Then, in Reykjavík, an American named Bobby Fischer beat Boris Spassky at the height of the Cold War, and the whole world watched a board game on the evening news.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="room">
+          <div class="room__no reveal">VII<small>1997 – today</small></div>
+          <div class="reveal" data-delay="1">
+            <span class="eyebrow">The machines</span>
+            <h3>Deep Blue, and after</h3>
+            <p>In May 1997 IBM's Deep Blue beat the reigning champion Garry Kasparov in a six-game match. Twenty years later AlphaZero taught itself the game in hours and played with a strangely human daring.</p>
+            <p class="fact">Machines didn't kill the game: more people play chess today than at any point in its history.</p>
+          </div>
+          <figure class="media ratio-43 reveal" data-delay="2"><img src="assets/machine.jpg" alt="A chessboard beside glowing monitors in a 1990s computer room" width="1152" height="896" loading="lazy"></figure>
+        </article>
+      </div>
+    </section>
+
+    <section class="section object" id="object" aria-labelledby="object-title">
+      <div class="wrap split">
+        <figure class="media reveal"><img src="assets/lewis.jpg" alt="The Lewis chessmen: carved walrus-ivory figures" width="1152" height="896" loading="lazy"><figcaption>Object of the exhibition</figcaption></figure>
+        <div>
+          <span class="eyebrow reveal">The object</span>
+          <h2 id="object-title" class="reveal" data-delay="1">The Lewis <em>chessmen.</em></h2>
+          <p class="reveal dim" data-delay="2">Found in a sand dune on the Isle of Lewis in 1831, these 93 pieces of walrus ivory and whale tooth were probably carved in Norway around 1150. The queens hold their cheeks in dismay; some rooks bite their shields like berserkers.</p>
+          <dl class="reveal" data-delay="2">
+            <dt>Made</dt><dd>c. 1150–1200, probably Trondheim</dd>
+            <dt>Found</dt><dd>1831, Uig Bay, Isle of Lewis</dd>
+            <dt>Pieces</dt><dd>93, from at least four sets</dd>
+            <dt>Now</dt><dd>British Museum and National Museum of Scotland</dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="section queen" id="queen" aria-labelledby="queen-title">
+      <div class="wrap">
+        <div class="head">
+          <span class="eyebrow reveal">The queen</span>
+          <h2 id="queen-title" class="reveal" data-delay="1">The piece that <em>changed most.</em></h2>
+        </div>
+        <div class="moves">
+          <article class="reveal"><span class="era">c. 600 · Mantri</span><h3>The counsellor</h3>
+            <div class="mini" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i class="m"></i><i></i><i class="m"></i><i></i><i></i><i></i><i class="q"></i><i></i><i></i><i></i><i class="m"></i><i></i><i class="m"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <p>One square diagonally. Barely more useful than a pawn.</p></article>
+          <article class="reveal" data-delay="1"><span class="era">c. 1000 · Fers</span><h3>The lady</h3>
+            <div class="mini" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i class="m"></i><i></i><i class="m"></i><i></i><i></i><i></i><i class="q"></i><i></i><i></i><i></i><i class="m"></i><i></i><i class="m"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <p>Renamed a queen in Europe, still the same timid single step.</p></article>
+          <article class="reveal" data-delay="2"><span class="era">1475 · Dama</span><h3>The mad queen</h3>
+            <div class="mini" aria-hidden="true"><i class="m"></i><i></i><i class="m"></i><i></i><i class="m"></i><i></i><i class="m"></i><i class="m"></i><i class="m"></i><i></i><i class="m"></i><i class="m"></i><i class="q"></i><i class="m"></i><i class="m"></i><i></i><i class="m"></i><i class="m"></i><i class="m"></i><i></i><i class="m"></i><i></i><i class="m"></i><i></i><i class="m"></i></div>
+            <p>Any distance, any line. The strongest piece on the board, overnight.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt numbers" id="numbers" aria-labelledby="numbers-title">
+      <div class="wrap">
+        <div class="head"><span class="eyebrow reveal">In numbers</span><h2 id="numbers-title" class="reveal" data-delay="1">A game of <em>large numbers.</em></h2></div>
+        <div class="grid-4">
+          <div class="stat reveal"><b>1,400+</b><span>Years of recorded play</span></div>
+          <div class="stat reveal" data-delay="1"><b>10<sup>120</sup></b><span>Possible games (Shannon)</span></div>
+          <div class="stat reveal" data-delay="2"><b>605M</b><span>People who play today</span></div>
+          <div class="stat reveal" data-delay="3"><b>17</b><span>Undisputed world champions</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section quote" aria-label="Quotation">
+      <div class="wrap">
+        <blockquote class="reveal">“Chess is a sea in which a gnat may drink and an elephant may bathe.”<cite>— Indian proverb</cite></blockquote>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p class="footer__big">Your move, <em>for the next century.</em></p>
+      <div class="footer__row"><span>© 2026 The Long Game · An exhibition of chess history</span><span>India · Persia · Europe · the world</span></div>
+    </div>
+  </footer>
+  <script src="kit.js"></script>
+</body>
+</html>
