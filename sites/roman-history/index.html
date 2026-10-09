@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPQR — The Long Story of Rome</title>
+  <meta name="description" content="An immersive chronological journey through the history of ancient Rome, from a small muddy village on the Palatine Hill to the world-shaping empire.">
+  
+  <!-- Inline SVG Favicon representing a Roman Laurel/SPQR -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239c3b22'%3E%3Cpath d='M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5h-2v-5h2zm0-6.5h-2V8h2z'/%3E%3C/svg%3E">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  
+  <style>
+    /* Inline layout overrides/assistants for rich visual rhythm */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    @media (max-width: 992px) {
+      .split {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+    }
+    @media (max-width: 992px) {
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+    @media (max-width: 768px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+    @media (max-width: 992px) {
+      .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 576px) {
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+    }
+    .legacy-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      margin-top: 4rem;
+    }
+    @media (max-width: 992px) {
+      .legacy-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 576px) {
+      .legacy-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .text-center { text-align: center; }
+    .max-w-md { max-width: 750px; margin-left: auto; margin-right: auto; }
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="nav">
+    <div class="wrap nav__inner">
+      <a href="#" class="logo">SPQR</a>
+      <button class="nav__toggle" aria-label="Menu"><span></span></button>
+      <ul class="nav__links">
+        <li><a href="#kingdom">Kingdom</a></li>
+        <li><a href="#republic">Republic</a></li>
+        <li><a href="#empire">Empire</a></li>
+        <li><a href="#legacy">Legacy</a></li>
+        <li><a href="#timeline">Timeline</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <img class="hero__bg" src="assets/hero.jpg" alt="A cinematic view of the ruins of the Roman Forum under a dramatic sunset" width="1920" height="1080">
+    <div class="wrap">
+      <span class="eyebrow" style="color: var(--line);">A Cinematic Chronology</span>
+      <h1>All roads lead to Rome.</h1>
+      <p class="lede">One thousand two hundred and twenty-nine years. Discover the journey from a mud-walled village on seven hills to the legendary empire that permanently shaped the destiny of the West.</p>
+      
+      <div class="hero-meta">
+        <span>753 BC</span>
+        <span class="sep">·</span>
+        <span>509 BC</span>
+        <span class="sep">·</span>
+        <span>27 BC</span>
+        <span class="sep">·</span>
+        <span>AD 476</span>
+      </div>
+      
+      <a href="#kingdom" class="btn btn--accent">Begin at the Beginning <span class="arrow">→</span></a>
+    </div>
+  </section>
+
+  <!-- Section I: The Kingdom -->
+  <section id="kingdom" class="section reveal">
+    <div class="wrap">
+      <div class="numeral-header">
+        <span class="numeral">I</span>
+        <span class="eyebrow">The Dawn of the Tiber</span>
+        <h2>The Kingdom</h2>
+        <div class="numeral-divider"></div>
+        <p class="lede max-w-md">753 – 509 BC · From mythic twins to Etruscan kings</p>
+      </div>
+
+      <div class="split">
+        <div>
+          <span class="eyebrow">The Origin Myth</span>
+          <p>Rome began not with grand marble architecture, but with a fratricide. According to legend, the twin brothers Romulus and Remus—sons of Mars—were abandoned to drown in the Tiber River, only to be saved by a she-wolf who nursed them. When they grew to manhood, they disagreed on where to locate their new city. Romulus killed Remus, drew the sacred boundary of the city on the Palatine Hill, and became Rome’s first king in 753 BC.</p>
+          <p>Over the next two and a half centuries, Rome was ruled by seven successive kings. These early monarchs transformed the small pastoral settlement into a regional power, draining the marshy valley that would become the Roman Forum and establishing the foundational structures of Roman religion, law, and defense.</p>
+          <p>The early Roman kingdom was heavily influenced by the sophisticated Etruscans to the north. However, the tyranny of the final Etruscan king, Tarquin the Proud, drove the Romans to action. In 509 BC, following a citizen revolt led by Lucius Junius Brutus, the monarchy was overthrown, and the citizens swore a solemn oath never to let a single man rule Rome again.</p>
+        </div>
+        <div>
+          <blockquote class="pull-quote">
+            "So perish anyone else who shall leap over my walls."
+            <cite>— Romulus, upon slaying Remus</cite>
+          </blockquote>
+          <div style="margin-top: 2rem; border-top: 1px solid var(--line); padding-top: 1.5rem;">
+            <h4 style="font-family: var(--display); font-size: 1.1rem; color: var(--accent); margin-bottom: 0.5rem;">The Etruscan Influence</h4>
+            <p style="font-size: 1.1rem; color: var(--fg-dim);">From engineering secrets (the arch) to administrative symbols (the fasces), Etruscan rule gave Rome the physical and political tools to conquer its surrounding neighbors.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section II: The Republic -->
+  <section id="republic" class="section section--alt reveal">
+    <div class="wrap">
+      <div class="numeral-header">
+        <span class="numeral">II</span>
+        <span class="eyebrow">Senatus Populusque Romanus</span>
+        <h2>The Republic</h2>
+        <div class="numeral-divider"></div>
+        <p class="lede max-w-md">509 – 27 BC · The experiment of collective governance and the rise of a Mediterranean powerhouse</p>
+      </div>
+
+      <div class="split" style="margin-bottom: 6rem;">
+        <div class="media">
+          <img src="assets/republic.jpg" alt="A marble bust of Cicero looking off into the distance" width="600" height="450">
+          <figcaption>The Roman Republic was defined by tension between the elite Senate and the plebeian assembly.</figcaption>
+        </div>
+        <div>
+          <span class="eyebrow">The Great Experiment</span>
+          <p>In place of a king, the Romans designed a radically balanced government. Power was shared between the Senate (composed of patrician elders) and two yearly elected consuls who held executive command. Under this system of shared ambition, Rome expanded rapidly.</p>
+          <p>But growth brought external existential threats. The Punic Wars against Carthage pushed Rome to the brink, most famously when Hannibal crossed the snowy Alps with war elephants to ravage the Italian heartland. Emerging victorious, Rome claimed total hegemony over the Mediterranean.</p>
+          <p>Yet, the Republic's greatest enemy lay within. Massive wealth inequality and ambitious military commanders eventually paralyzed the system. In 49 BC, Julius Caesar defied the Senate, crossed the Rubicon River with his legion, and triggered a devastating civil war. Though Caesar declared himself dictator for life, his reign was abruptly cut short on the Ides of March, 44 BC, by conspirators seeking to save the Republic—only to plunge it into final, fatal chaos.</p>
+        </div>
+      </div>
+
+      <div class="text-center" style="margin-bottom: 3rem;">
+        <span class="eyebrow">Architects of the Republic</span>
+        <h3 style="font-size: 1.75rem;">Key Figures of the Era</h3>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>Cincinnatus</h3>
+          <p style="font-family: var(--display); font-size: 0.9rem; color: var(--accent); margin-bottom: 1rem;">The Model Citizen</p>
+          <p>Granted absolute dictatorial power to save a besieged Roman army, he defeated the enemy in fifteen days, promptly resigned his command, and returned to his small farm.</p>
+        </div>
+        <div class="card">
+          <h3>Scipio Africanus</h3>
+          <p style="font-family: var(--display); font-size: 0.9rem; color: var(--accent); margin-bottom: 1rem;">The Conqueror of Hannibal</p>
+          <p>A visionary military tactician who took the fight directly to Carthage, defeating Hannibal Barca at the Battle of Zama in 202 BC and securing Rome’s dominance.</p>
+        </div>
+        <div class="card">
+          <h3>Cicero</h3>
+          <p style="font-family: var(--display); font-size: 0.9rem; color: var(--accent); margin-bottom: 1rem;">The Voice of the Senate</p>
+          <p>Rome’s legendary orator and statesman who passionately defended republican liberty against populist demagogues and military dictators through the power of speech.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Legion (Imperial Purple Band) -->
+  <section class="section section--legion reveal">
+    <div class="wrap">
+      <div class="split">
+        <div>
+          <span class="eyebrow" style="color: var(--line);">The Imperial War Machine</span>
+          <h2 style="color: #fff;">The Legion</h2>
+          <p class="lede" style="color: #eae3d5;">The highly disciplined force that engineered, constructed, and guarded an empire stretching from Britain to the sands of Mesopotamia.</p>
+          <p>The Roman soldier was not just a warrior, but an engineer, builder, and administrator. Armed with the gladius and protected by modular lorica segmentata, legions marched along perfectly paved military roads to secure remote frontiers, build fortified outposts, and project the terrifying majesty of Rome to the edge of the known world.</p>
+        </div>
+        <div class="media">
+          <img src="assets/legion.jpg" alt="A bronze helmet and iron weapons of a Roman Legionary on display" width="600" height="400" style="filter: sepia(0.2) contrast(1.1);">
+          <figcaption style="color: #eae3d5; opacity: 0.8;">The professionalized legionary sworn to absolute loyalty</figcaption>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="stat__number">5,000</div>
+          <div class="stat__label">Men Per Legion</div>
+        </div>
+        <div class="stat">
+          <div class="stat__number">30 km</div>
+          <div class="stat__label">Standard Daily March</div>
+        </div>
+        <div class="stat">
+          <div class="stat__number">80k+</div>
+          <div class="stat__label">Kilometers of Paved Roads</div>
+        </div>
+        <div class="stat">
+          <div class="stat__number">25 yrs</div>
+          <div class="stat__label">Length of Military Service</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section III: The Empire -->
+  <section id="empire" class="section reveal">
+    <div class="wrap">
+      <div class="numeral-header">
+        <span class="numeral">III</span>
+        <span class="eyebrow">Pax Romana and Divine Rule</span>
+        <h2>The Empire</h2>
+        <div class="numeral-divider"></div>
+        <p class="lede max-w-md">27 BC – AD 476 · An age of emperors, soaring monuments, and monumental transformation</p>
+      </div>
+
+      <div class="split" style="margin-bottom: 6rem;">
+        <div>
+          <span class="eyebrow">Augustus and the Pax Romana</span>
+          <p>Out of the ashes of civil war emerged Caesar's adopted son, Octavian. In 27 BC, he took the name Augustus, establishing the Principate. While maintaining the illusion of a Republic, Augustus took supreme control as the first Roman Emperor, inaugurating the Pax Romana—two centuries of unprecedented peace and cultural prosperity.</p>
+          <p>During this golden age, the "Five Good Emperors" brought the empire to its absolute zenith. Rome’s architectural ingenuity exploded, giving rise to marvels like the colossal Flavian Amphitheatre (the Colosseum) and the vast dome of the Pantheon. Wealth and trade flowed across continents safely under Roman law.</p>
+          <p>But peace was not eternal. Under spiritual and military pressure, the old order shifted. Emperor Constantine embraced Christianity, relocating the capital to the thriving Greek city of Byzantium (re-named Constantinople). In AD 395, the immense weight of administrative borders forced the official split of the empire into the Western and Eastern halves.</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+          <div class="media">
+            <img src="assets/empire.jpg" alt="The Prima Porta statue of Emperor Augustus Caesar in white marble" width="550" height="400">
+            <figcaption>Augustus: "I found Rome built of clay and left it clad in marble."</figcaption>
+          </div>
+          <div class="media">
+            <img src="assets/colosseum.jpg" alt="Dramatic angle of the Colosseum walls under a blue sky" width="550" height="400">
+            <figcaption>The Colosseum, completed in AD 80, hosted grand spectacles for 50,000 spectators.</figcaption>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center" style="margin-bottom: 3rem;">
+        <span class="eyebrow">Caesars of Dynasty & Transformation</span>
+        <h3 style="font-size: 1.75rem;">Four Pivotal Emperors</h3>
+      </div>
+
+      <div class="grid-4">
+        <div class="card">
+          <h4 style="font-family: var(--display); font-size: 1.2rem; color: var(--accent); margin-bottom: 0.5rem;">Augustus</h4>
+          <p style="font-size: 1rem; color: var(--muted); margin-bottom: 0.75rem;">27 BC – AD 14</p>
+          <p>Laid the imperial foundation, stabilized borders, and organized a sprawling professional administration.</p>
+        </div>
+        <div class="card">
+          <h4 style="font-family: var(--display); font-size: 1.2rem; color: var(--accent); margin-bottom: 0.5rem;">Trajan</h4>
+          <p style="font-size: 1rem; color: var(--muted); margin-bottom: 0.75rem;">AD 98 – 117</p>
+          <p>The soldier-emperor who expanded the boundaries of Rome to their absolute territorial limits.</p>
+        </div>
+        <div class="card">
+          <h4 style="font-family: var(--display); font-size: 1.2rem; color: var(--accent); margin-bottom: 0.5rem;">Marcus Aurelius</h4>
+          <p style="font-size: 1rem; color: var(--muted); margin-bottom: 0.75rem;">AD 161 – 180</p>
+          <p>The Stoic philosopher who defended the northern border while authoring his timeless book "Meditations."</p>
+        </div>
+        <div class="card">
+          <h4 style="font-family: var(--display); font-size: 1.2rem; color: var(--accent); margin-bottom: 0.5rem;">Constantine</h4>
+          <p style="font-size: 1rem; color: var(--muted); margin-bottom: 0.75rem;">AD 306 – 337</p>
+          <p>Legalized Christianity, built a majestic eastern capital, and fundamentally reshaped European culture.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section IV: The Fall -->
+  <section class="section section--alt reveal">
+    <div class="wrap">
+      <div class="numeral-header">
+        <span class="numeral">IV</span>
+        <span class="eyebrow">The Twilight of the West</span>
+        <h2>The Fall</h2>
+        <div class="numeral-divider"></div>
+        <p class="lede max-w-md">AD 410 – 476 (and its echo) · The gradual fracturing of an empire and its continuous legacy</p>
+      </div>
+
+      <div class="split">
+        <div>
+          <p>The fall of Rome was not a singular catastrophic day, but a long, complex process of decay and external pressure. Over decades, economic instability, internal political corruption, plaque, inflation, and relentless pressure from migrating Germanic tribes weakened the Western Roman Empire. The psychological blow came in AD 410, when Alaric, King of the Visigoths, breached Rome's city walls and sacked the historic capital for the first time in eight centuries.</p>
+          <p>The symbolic end came quickly thereafter. In AD 476, the Germanic chieftain Odoacer deposed the teenage western emperor, Romulus Augustulus, sending the imperial insignia back to Constantinople. The Western Empire was no more, transitioning into fragmented tribal kingdoms.</p>
+        </div>
+        <div>
+          <p>Yet, while Rome fell in the West, the flame was never fully extinguished. The Eastern Roman Empire—which we today call Byzantium—endured from its fortress city of Constantinople. For another thousand years, Byzantine emperors preserved Roman law, administrative records, and advanced architecture, surviving until the city finally fell to the Ottoman Empire in 1453.</p>
+          <blockquote class="pull-quote" style="font-size: 1.6rem; margin-top: 1.5rem;">
+            "My city is fallen and yet I live."
+            <cite>— Constantine XI, Last Emperor of Byzantium (1453)</cite>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section V: Legacy -->
+  <section id="legacy" class="section reveal">
+    <div class="wrap">
+      <div class="numeral-header">
+        <span class="numeral">V</span>
+        <span class="eyebrow">What the Romans Left Behind</span>
+        <h2>The Legacy</h2>
+        <div class="numeral-divider"></div>
+        <p class="lede max-w-md">The modern world is built upon ancient ruins. Explore the systems, concepts, and structures we inherit directly from Rome.</p>
+      </div>
+
+      <div class="media" style="margin-bottom: 4rem;">
+        <img src="assets/aqueduct.jpg" alt="A colossal Roman aqueduct towering over the Spanish countryside under a blue sky" width="1200" height="600" style="max-height: 500px; object-fit: cover;">
+        <figcaption>The Pont du Gard and other aqueducts combined flawless artistic proportion with life-sustaining utility.</figcaption>
+      </div>
+
+      <div class="legacy-grid">
+        <div class="card">
+          <h3>1. Roman Law</h3>
+          <p>The foundational concepts of trial by jury, written legal codes, and "innocent until proven guilty" stem directly from Roman civil jurisprudence (Corpus Juris Civilis).</p>
+        </div>
+        <div class="card">
+          <h3>2. Latin & Language</h3>
+          <p>Latin remains the mother of the Romance languages (Italian, French, Spanish, Portuguese, Romanian) and continues to form the vocabulary of modern science, medicine, and law.</p>
+        </div>
+        <div class="card">
+          <h3>3. Engineering & Roads</h3>
+          <p>Their masterful networks of straight, paved roads, colossal stone bridges, and gravity-powered aqueducts stood strong through millennia of regular wear.</p>
+        </div>
+        <div class="card">
+          <h3>4. The Calendar</h3>
+          <p>Our division of the year into twelve months, including July (for Julius Caesar) and August (for Augustus), comes directly from the ancient Julian calendar reform.</p>
+        </div>
+        <div class="card">
+          <h3>5. Republics & Senates</h3>
+          <p>Modern representative democracies utilize bicameral houses, supreme courts, and veto systems inspired directly by the checks and balances of the Roman Republic.</p>
+        </div>
+        <div class="card">
+          <h3>6. Concrete & Domes</h3>
+          <p>Invented by Rome, volcanic pozzolana concrete allowed for massive architectural spans, colossal arches, and domes that survived centuries submerged in seawater.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Timeline -->
+  <section id="timeline" class="section section--alt reveal">
+    <div class="wrap">
+      <div class="numeral-header">
+        <span class="numeral">Timeline</span>
+        <span class="eyebrow">A Chronology of Empire</span>
+        <h2>10 Key Milestones</h2>
+        <div class="numeral-divider"></div>
+      </div>
+
+      <div class="timeline-container">
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-date">753 BC</div>
+          <div class="timeline-content">
+            <h4>The Founding</h4>
+            <p>Romulus marks the boundary of the Palatine Hill, building the first settlement of Rome.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-date">509 BC</div>
+          <div class="timeline-content">
+            <h4>Birth of the Republic</h4>
+            <p>The tyrannical king Tarquin the Proud is deposed; Rome establishes the consulship.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-date">218 BC</div>
+          <div class="timeline-content">
+            <h4>Hannibal Crosses the Alps</h4>
+            <p>Carthage launches its massive surprise invasion of Italy during the Second Punic War.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-date">49 BC</div>
+          <div class="timeline-content">
+            <h4>Crossing the Rubicon</h4>
+            <p>Julius Caesar defies the Senate and crosses into Italy, initiating civil war.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-date">44 BC</div>
+          <div class="timeline-content">
+            <h4>The Ides of March</h4>
+            <p>Julius Caesar is assassinated in the Senate theater by Brutus, Cassius, and conspirators.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-date">27 BC</div>
+          <div class="timeline-content">
+            <h4>The First Emperor</h4>
+            <p>Octavian accepts the sacred title of Augustus, establishing the Roman Empire.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-date">AD 80</div>
+          <div class="timeline-content">
+            <h4>The Colosseum Opens</h4>
+            <p>Emperor Titus inaugurates the Flavian Amphitheatre with 100 days of grand games.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-date">AD 313</div>
+          <div class="timeline-content">
+            <h4>Edict of Milan</h4>
+            <p>Emperor Constantine legalizes Christian worship, shifting the empire's religious landscape.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-date">AD 476</div>
+          <div class="timeline-content">
+            <h4>Fall of the Western Empire</h4>
+            <p>Romulus Augustulus is deposed, bringing an end to ancient Roman power in Western Europe.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-date">AD 1453</div>
+          <div class="timeline-content">
+            <h4>Fall of Byzantium</h4>
+            <p>The Eastern Roman Empire officially falls when Constantinople is taken by Sultan Mehmed II.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer__big">Roma aeterna.</div>
+      
+      <div class="footer__row">
+        <span>© SPQR Chronology. Designed for history enthusiasts.</span>
+        <span>All roads lead to the past. <a href="#">Back to Top ↑</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="kit.js"></script>
+</body>
+</html>
