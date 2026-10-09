@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Caesars — A Complete Hall of Roman Emperors</title>
+  <meta name="description" content="Browse every Roman Emperor from Augustus to Romulus Augustulus. Grouped by dynasty, with crisp historical verdicts, reign dates, and their ultimate fates.">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%232a1430' stroke='%23c9a24e' stroke-width='4'/%3E%3Ctext x='50' y='60' font-family='Cinzel, serif' font-size='35' fill='%23c9a24e' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E">
+
+  <!-- Framework & Google Fonts -->
+  <link rel="stylesheet" href="kit.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="nav">
+    <div class="wrap nav__inner">
+      <a href="#" class="logo">THE CAESARS</a>
+      <button class="nav__toggle" aria-label="Toggle Menu">
+        <span></span>
+      </button>
+      <ul class="nav__links">
+        <li><a href="#julio-claudian" class="nav__link">Julio-Claudians</a></li>
+        <li><a href="#flavians" class="nav__link">Flavians</a></li>
+        <li><a href="#golden-age" class="nav__link">Golden Age</a></li>
+        <li><a href="#crisis" class="nav__link">Crisis</a></li>
+        <li><a href="#the-end" class="nav__link">The End</a></li>
+        <li><a href="#stats" class="nav__link">Stats</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <img class="hero__bg" src="assets/hero.jpg" width="1600" height="900" alt="Classical marble columns standing proud against a dramatic evening sky">
+    <div class="wrap reveal">
+      <span class="eyebrow">27 BC – AD 476</span>
+      <h1>Seventy-odd men.<br>One purple robe.</h1>
+      <p class="lede" style="color: #f2ece2; max-width: 600px;">From Augustus to Romulus Augustulus, meet every man who ruled the Western Roman Empire—and discover how most of them met their bitter, chaotic end.</p>
+      <a href="#intro" class="btn btn--accent" style="margin-top: 1.5rem;">Meet the emperors <span class="arrow">→</span></a>
+    </div>
+  </section>
+
+  <!-- Intro Split Section -->
+  <section id="intro" class="section">
+    <div class="wrap">
+      <div class="split align-center">
+        <div class="reveal">
+          <span class="eyebrow">The Concept of Imperium</span>
+          <h2 style="margin-top: 0.5rem;">The Weight of the Purple</h2>
+          <p class="lede">To rule Rome was not to inherit a peaceful throne, but to survive a high-stakes arena of shifting alliances and military might.</p>
+          <p style="margin-bottom: 1.5rem;">An emperor was legally just the <em>princeps</em> ("first citizen") or the <em>imperator</em> ("commander-in-chief"). Power was fragile, anchored to the allegiance of the legions and the volatile Praetorian Guard. Wearing the imperial purple meant accepting a life where paranoia was a prerequisite for survival—and where luxury was constantly shadowed by the threat of poison or the assassin's blade.</p>
+        </div>
+        <div class="reveal" data-delay="1">
+          <div class="media ratio-43">
+            <img src="assets/augustus.jpg" width="600" height="450" alt="Classic marble bust of Emperor Augustus looking serene and noble" style="object-fit: cover;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Browsing Gallery with Interactive Filters -->
+  <section id="gallery" class="section section--alt">
+    <div class="wrap">
+      <div class="head text-center reveal">
+        <span class="eyebrow">The Hall of Sovereigns</span>
+        <h2>Meet the Caesars</h2>
+        <p class="lede">Filter the dynasty lines by their final moments or their ultimate legacy.</p>
+        
+        <!-- Interactive Filter Buttons -->
+        <div class="gallery-filters">
+          <button class="btn-filter active" data-filter="all">All Emperors</button>
+          <button class="btn-filter" data-filter="good">The "Good" Emperors</button>
+          <button class="btn-filter" data-filter="murdered">Murdered</button>
+          <button class="btn-filter" data-filter="natural">Natural Causes</button>
+        </div>
+      </div>
+
+      <!-- Julio-Claudian Dynasty -->
+      <div id="julio-claudian" class="dynasty-gallery reveal">
+        <div class="dynasty-header">
+          <div class="dynasty-title">
+            <h3>Julio-Claudian Dynasty</h3>
+            <span class="dynasty-dates">27 BC – AD 68</span>
+          </div>
+        </div>
+        <div class="grid-3">
+          <!-- Augustus -->
+          <article class="card-emperor" data-end="natural" data-good="true">
+            <div>
+              <div class="coin-avatar">AV</div>
+              <h4 class="emperor-name">Augustus</h4>
+              <div class="reign-years">27 BC – AD 14</div>
+              <p class="verdict">Found Rome built of sun-dried clay, and left it constructed of solid marble.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Tiberius -->
+          <article class="card-emperor" data-end="natural">
+            <div>
+              <div class="coin-avatar">TB</div>
+              <h4 class="emperor-name">Tiberius</h4>
+              <div class="reign-years">AD 14 – 37</div>
+              <p class="verdict">A brilliant general who grew bitter, retreating to Capri to indulge in dark vices.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Caligula -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">CL</div>
+              <h4 class="emperor-name">Caligula</h4>
+              <div class="reign-years">AD 37 – 41</div>
+              <p class="verdict">Declared himself a god and supposedly planned to make his favorite horse a consul.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+          <!-- Claudius -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">CD</div>
+              <h4 class="emperor-name">Claudius</h4>
+              <div class="reign-years">AD 41 – 54</div>
+              <p class="verdict">Spared by executioners because they thought him dim; conquered Britain nonetheless.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+          <!-- Nero -->
+          <article class="card-emperor" data-end="suicide">
+            <div>
+              <div class="coin-avatar">NR</div>
+              <h4 class="emperor-name">Nero</h4>
+              <div class="reign-years">AD 54 – 68</div>
+              <p class="verdict">Fiddled while Rome burned—metaphorically, but his tyranny was devastatingly real.</p>
+            </div>
+            <span class="end-tag" data-end="suicide">Suicide</span>
+          </article>
+        </div>
+      </div>
+
+      <!-- Year of the Four Emperors -->
+      <div id="four-emperors" class="dynasty-gallery reveal">
+        <div class="dynasty-header">
+          <div class="dynasty-title">
+            <h3>Year of the Four Emperors</h3>
+            <span class="dynasty-dates">AD 69</span>
+          </div>
+        </div>
+        <div class="grid-3">
+          <!-- Galba -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">GL</div>
+              <h4 class="emperor-name">Galba</h4>
+              <div class="reign-years">AD 68 – 69</div>
+              <p class="verdict">Strict, old-school and wildly unpopular; hacked to death by the Praetorians.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+          <!-- Otho -->
+          <article class="card-emperor" data-end="suicide">
+            <div>
+              <div class="coin-avatar">OT</div>
+              <h4 class="emperor-name">Otho</h4>
+              <div class="reign-years">AD 69</div>
+              <p class="verdict">Ruled for just three brief months before taking his own life to prevent further civil war.</p>
+            </div>
+            <span class="end-tag" data-end="suicide">Suicide</span>
+          </article>
+          <!-- Vitellius -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">VT</div>
+              <h4 class="emperor-name">Vitellius</h4>
+              <div class="reign-years">AD 69</div>
+              <p class="verdict">Famed mostly for his legendary gluttony; dragged through the streets and killed.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+        </div>
+      </div>
+
+      <!-- Flavian Dynasty -->
+      <div id="flavians" class="dynasty-gallery reveal">
+        <div class="dynasty-header">
+          <div class="dynasty-title">
+            <h3>Flavian Dynasty</h3>
+            <span class="dynasty-dates">AD 69 – 96</span>
+          </div>
+        </div>
+        <div class="grid-3">
+          <!-- Vespasian -->
+          <article class="card-emperor" data-end="natural">
+            <div>
+              <div class="coin-avatar">VS</div>
+              <h4 class="emperor-name">Vespasian</h4>
+              <div class="reign-years">AD 69 – 79</div>
+              <p class="verdict">Restored order, taxed urine, started the Colosseum, and died standing up as a "god."</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Titus -->
+          <article class="card-emperor" data-end="natural">
+            <div>
+              <div class="coin-avatar">TT</div>
+              <h4 class="emperor-name">Titus</h4>
+              <div class="reign-years">AD 79 – 81</div>
+              <p class="verdict">Extremely popular; opened the Colosseum and presided over the aftermath of Vesuvius.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Domitian -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">DM</div>
+              <h4 class="emperor-name">Domitian</h4>
+              <div class="reign-years">AD 81 – 96</div>
+              <p class="verdict">A paranoid autocrat who kept Rome stable but was stabbed to death in a palace conspiracy.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- First Wide Divider -->
+  <div class="wide-divider">
+    <img src="assets/coins.jpg" width="1600" height="380" alt="A collection of genuine gold and silver Roman coins featuring imperial profiles">
+  </div>
+
+  <!-- Nerva-Antonine & Severan Sections -->
+  <section id="golden-age" class="section">
+    <div class="wrap">
+      
+      <!-- Nerva–Antonine (Five Good Emperors) -->
+      <div class="dynasty-gallery reveal">
+        <div class="dynasty-header">
+          <div class="dynasty-title">
+            <h3>Nerva–Antonine Dynasty</h3>
+            <span class="dynasty-dates">AD 96 – 192</span>
+          </div>
+        </div>
+        <div class="grid-3">
+          <!-- Nerva -->
+          <article class="card-emperor" data-end="natural" data-good="true">
+            <div>
+              <div class="coin-avatar">NV</div>
+              <h4 class="emperor-name">Nerva</h4>
+              <div class="reign-years">AD 96 – 98</div>
+              <p class="verdict">Saved Rome from instability by establishing the tradition of adopting his successor.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Trajan -->
+          <article class="card-emperor" data-end="natural" data-good="true">
+            <div>
+              <div class="coin-avatar">TR</div>
+              <h4 class="emperor-name">Trajan</h4>
+              <div class="reign-years">AD 98 – 117</div>
+              <p class="verdict">The ultimate soldier-emperor; under his reign, the Roman Empire reached its greatest geographical extent.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Hadrian -->
+          <article class="card-emperor" data-end="natural" data-good="true">
+            <div>
+              <div class="coin-avatar">HD</div>
+              <h4 class="emperor-name">Hadrian</h4>
+              <div class="reign-years">AD 117 – 138</div>
+              <p class="verdict">A builder and lover of Greek culture; spent his reign traveling and fortifying frontiers with massive walls.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Antoninus Pius -->
+          <article class="card-emperor" data-end="natural" data-good="true">
+            <div>
+              <div class="coin-avatar">AP</div>
+              <h4 class="emperor-name">Antoninus Pius</h4>
+              <div class="reign-years">AD 138 – 161</div>
+              <p class="verdict">Unusually peaceful and remarkably capable; ruled for 23 years without ever leaving Italy.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Marcus Aurelius -->
+          <article class="card-emperor" data-end="natural" data-good="true">
+            <div>
+              <div class="coin-avatar">MA</div>
+              <h4 class="emperor-name">Marcus Aurelius</h4>
+              <div class="reign-years">AD 161 – 180</div>
+              <p class="verdict">The Stoic philosopher who governed with wisdom, though his reign was plagued by Germanic wars.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Commodus -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">CM</div>
+              <h4 class="emperor-name">Commodus</h4>
+              <div class="reign-years">AD 180 – 192</div>
+              <p class="verdict">Fought as a gladiator in public; strangled in his bath by his personal wrestling partner.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+        </div>
+      </div>
+
+      <!-- Severan Dynasty -->
+      <div id="severans" class="dynasty-gallery reveal">
+        <div class="dynasty-header">
+          <div class="dynasty-title">
+            <h3>Severan Dynasty</h3>
+            <span class="dynasty-dates">AD 193 – 235</span>
+          </div>
+        </div>
+        <div class="grid-4">
+          <!-- Septimius Severus -->
+          <article class="card-emperor" data-end="natural">
+            <div>
+              <div class="coin-avatar">SS</div>
+              <h4 class="emperor-name">Septimius Severus</h4>
+              <div class="reign-years">AD 193 – 211</div>
+              <p class="verdict">Told his sons to "pay the soldiers, and ignore all the rest." Solid advice for the era.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Caracalla -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">CR</div>
+              <h4 class="emperor-name">Caracalla</h4>
+              <div class="reign-years">AD 211 – 217</div>
+              <p class="verdict">Granted universal citizenship, built massive baths, and was stabbed while relieving himself.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+          <!-- Elagabalus -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">EL</div>
+              <h4 class="emperor-name">Elagabalus</h4>
+              <div class="reign-years">AD 218 – 222</div>
+              <p class="verdict">Shocked Rome with religious eccentricities and gender-fluid escapades. Killed at eighteen.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+          <!-- Severus Alexander -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">SA</div>
+              <h4 class="emperor-name">Severus Alexander</h4>
+              <div class="reign-years">AD 222 – 235</div>
+              <p class="verdict">Well-meaning but dominated by his mother; assassinated by mutinous soldiers in Germany.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Second Wide Divider -->
+  <div class="wide-divider">
+    <img src="assets/palatine.jpg" width="1600" height="380" alt="Scenic ruins of the grand palaces on Palatine Hill in Rome">
+  </div>
+
+  <!-- Crisis, Tetrarchy & The End -->
+  <section id="crisis" class="section section--alt">
+    <div class="wrap">
+      
+      <!-- Crisis of the Third Century -->
+      <div class="dynasty-gallery reveal">
+        <div class="dynasty-header">
+          <div class="dynasty-title">
+            <h3>Crisis of the Third Century</h3>
+            <span class="dynasty-dates">AD 235 – 284</span>
+          </div>
+        </div>
+        <div class="grid-3">
+          <!-- Maximinus Thrax -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">MT</div>
+              <h4 class="emperor-name">Maximinus Thrax</h4>
+              <div class="reign-years">AD 235 – 238</div>
+              <p class="verdict">A giant of a peasant-soldier; never set foot in Rome during his violent reign.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+          <!-- Gordian III -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">G3</div>
+              <h4 class="emperor-name">Gordian III</h4>
+              <div class="reign-years">AD 238 – 244</div>
+              <p class="verdict">Became emperor at just thirteen; died on campaign in mysterious, bloody circumstances.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+          <!-- Philip the Arab -->
+          <article class="card-emperor" data-end="battle">
+            <div>
+              <div class="coin-avatar">PA</div>
+              <h4 class="emperor-name">Philip the Arab</h4>
+              <div class="reign-years">AD 244 – 249</div>
+              <p class="verdict">Hosted Rome's spectacular thousandth anniversary celebrations before dying in civil war.</p>
+            </div>
+            <span class="end-tag" data-end="battle">Battle</span>
+          </article>
+          <!-- Decius -->
+          <article class="card-emperor" data-end="battle">
+            <div>
+              <div class="coin-avatar">DC</div>
+              <h4 class="emperor-name">Decius</h4>
+              <div class="reign-years">AD 249 – 251</div>
+              <p class="verdict">The first emperor to be slain in battle by a foreign foe—the Goths in a swampy bog.</p>
+            </div>
+            <span class="end-tag" data-end="battle">Battle</span>
+          </article>
+          <!-- Valerian -->
+          <article class="card-emperor" data-end="deposed">
+            <div>
+              <div class="coin-avatar">VL</div>
+              <h4 class="emperor-name">Valerian</h4>
+              <div class="reign-years">AD 253 – 260</div>
+              <p class="verdict">Captured by the Persian King Shapur; served as a footstool and was eventually stuffed.</p>
+            </div>
+            <span class="end-tag" data-end="deposed">Deposed</span>
+          </article>
+          <!-- Gallienus -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">GN</div>
+              <h4 class="emperor-name">Gallienus</h4>
+              <div class="reign-years">AD 253 – 268</div>
+              <p class="verdict">Fought tirelessly against dozens of internal usurpers and external hordes; stabbed anyway.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+          <!-- Aurelian -->
+          <article class="card-emperor" data-end="murdered" data-good="true">
+            <div>
+              <div class="coin-avatar">AL</div>
+              <h4 class="emperor-name">Aurelian</h4>
+              <div class="reign-years">AD 270 – 275</div>
+              <p class="verdict">Earned the title "Restorer of the World" by reunifying the empire, but was assassinated over a lie.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+        </div>
+      </div>
+
+      <!-- Tetrarchy & Constantine -->
+      <div id="tetrarchy" class="dynasty-gallery reveal">
+        <div class="dynasty-header">
+          <div class="dynasty-title">
+            <h3>Tetrarchy & Constantine</h3>
+            <span class="dynasty-dates">AD 284 – 363</span>
+          </div>
+        </div>
+        <div class="grid-3">
+          <!-- Diocletian -->
+          <article class="card-emperor" data-end="natural">
+            <div>
+              <div class="coin-avatar">DL</div>
+              <h4 class="emperor-name">Diocletian</h4>
+              <div class="reign-years">AD 284 – 305</div>
+              <p class="verdict">Saved the Empire by dividing it into four segments, then happily retired to grow cabbages.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Constantine the Great -->
+          <article class="card-emperor" data-end="natural" data-good="true">
+            <div>
+              <div class="coin-avatar">CG</div>
+              <h4 class="emperor-name">Constantine I</h4>
+              <div class="reign-years">AD 306 – 337</div>
+              <p class="verdict">Legalized Christianity, founded Constantinople, and profoundly transformed world history.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Julian the Apostate -->
+          <article class="card-emperor" data-end="battle">
+            <div>
+              <div class="coin-avatar">JL</div>
+              <h4 class="emperor-name">Julian</h4>
+              <div class="reign-years">AD 361 – 363</div>
+              <p class="verdict">Attempted to reverse the Christian tide and restore ancient paganism. Died in a skirmish.</p>
+            </div>
+            <span class="end-tag" data-end="battle">Battle</span>
+          </article>
+        </div>
+      </div>
+
+      <!-- The Last Emperors of the West -->
+      <div id="the-end" class="dynasty-gallery reveal">
+        <div class="dynasty-header">
+          <div class="dynasty-title">
+            <h3>The Last Western Emperors</h3>
+            <span class="dynasty-dates">AD 364 – 476</span>
+          </div>
+        </div>
+        <div class="grid-4">
+          <!-- Theodosius I -->
+          <article class="card-emperor" data-end="natural">
+            <div>
+              <div class="coin-avatar">TD</div>
+              <h4 class="emperor-name">Theodosius I</h4>
+              <div class="reign-years">AD 379 – 395</div>
+              <p class="verdict">The final sovereign of a unified Roman Empire before its definitive split into East and West.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Honorius -->
+          <article class="card-emperor" data-end="natural">
+            <div>
+              <div class="coin-avatar">HN</div>
+              <h4 class="emperor-name">Honorius</h4>
+              <div class="reign-years">AD 395 – 423</div>
+              <p class="verdict">Fled to Ravenna while Rome was sacked; reportedly cared more for his pet chickens than the city.</p>
+            </div>
+            <span class="end-tag" data-end="natural">Natural</span>
+          </article>
+          <!-- Valentinian III -->
+          <article class="card-emperor" data-end="murdered">
+            <div>
+              <div class="coin-avatar">V3</div>
+              <h4 class="emperor-name">Valentinian III</h4>
+              <div class="reign-years">AD 425 – 455</div>
+              <p class="verdict">Personally stabbed his brilliant general Aetius, and was killed shortly after by Aetius's loyalists.</p>
+            </div>
+            <span class="end-tag" data-end="murdered">Murdered</span>
+          </article>
+          <!-- Romulus Augustulus -->
+          <article class="card-emperor" data-end="deposed">
+            <div>
+              <div class="coin-avatar">RA</div>
+              <h4 class="emperor-name">Romulus Augustulus</h4>
+              <div class="reign-years">AD 475 – 476</div>
+              <p class="verdict">A child puppet-ruler quietly sent into retirement by Odoacer. The light of Rome flickers out.</p>
+            </div>
+            <span class="end-tag" data-end="deposed">Deposed</span>
+          </article>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Statistics Band (Purple JPG Background) -->
+  <section id="stats" class="section-stats">
+    <img class="stats-bg" src="assets/purple.jpg" width="1600" height="600" alt="Exquisite deep purple imperial porphyry texture">
+    <div class="wrap reveal">
+      <div class="head text-center" style="margin-bottom: 4rem;">
+        <span class="eyebrow" style="color: var(--accent);">By The Numbers</span>
+        <h2>How They Ended</h2>
+        <p class="lede" style="color: #d1c5d4;">The ultimate outcomes of Roman imperial leadership, in cold figures.</p>
+      </div>
+      <div class="grid-4 text-center">
+        <div class="stat">
+          <div class="stat-value">1 in 3</div>
+          <p class="stat-label">Assassinated or Executed</p>
+        </div>
+        <div class="stat">
+          <div class="stat-value">21 Days</div>
+          <p class="stat-label">Shortest Reign (Gordian I & II)</p>
+        </div>
+        <div class="stat">
+          <div class="stat-value">41 Years</div>
+          <p class="stat-label">Longest Reign (Augustus)</p>
+        </div>
+        <div class="stat">
+          <div class="stat-value">13</div>
+          <p class="stat-label">Youngest Sovereign (Gordian III)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer__row" style="border-bottom: 1px solid rgba(199, 162, 78, 0.2); padding-bottom: 3rem; margin-bottom: 3rem;">
+        <div>
+          <span class="logo" style="font-size: 1.8rem; display: block; margin-bottom: 1rem;">THE CAESARS</span>
+          <p style="max-width: 400px; color: #d1c5d4; font-size: 1rem;">An editorial guide documenting the lives, reigns, and untimely departures of the Western Roman emperors.</p>
+        </div>
+        <div style="text-align: right;">
+          <p style="font-family: var(--mono); font-size: 0.8rem; text-transform: uppercase; color: var(--accent);">A Historical Chronicle</p>
+          <p style="color: #d1c5d4; font-size: 1rem;">Also: The East lasted until 1453.</p>
+        </div>
+      </div>
+      <div class="footer-ave">AVE, CAESAR</div>
+    </div>
+  </footer>
+
+  <!-- Filter & UI Toggles (Injected Before kit.js) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const filterButtons = document.querySelectorAll('.btn-filter');
+      const emperorCards = document.querySelectorAll('.card-emperor');
+
+      filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // Update Active Button
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+
+          const filterValue = button.getAttribute('data-filter');
+
+          // Process Emperor Cards
+          emperorCards.forEach(card => {
+            if (filterValue === 'all') {
+              card.classList.remove('hidden');
+            } else if (filterValue === 'good') {
+              if (card.getAttribute('data-good') === 'true') {
+                card.classList.remove('hidden');
+              } else {
+                card.classList.add('hidden');
+              }
+            } else {
+              if (card.getAttribute('data-end') === filterValue) {
+                card.classList.remove('hidden');
+              } else {
+                card.classList.add('hidden');
+              }
+            }
+          });
+        });
+      });
+    });
+  </script>
+
+  <!-- Kit Scripts -->
+  <script src="kit.js"></script>
+</body>
+</html>

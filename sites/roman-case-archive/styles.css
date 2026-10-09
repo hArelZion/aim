@@ -1,0 +1,430 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #f2ece2;
+  --bg-2: #e8e0d5;
+  --fg: #1c111e;
+  --fg-dim: #4d3e4f;
+  --muted: #8c7c8e;
+  --accent: #c9a24e;
+  --accent-2: #8f1d21;
+  --line: rgba(199, 162, 78, 0.3);
+  --display: 'Cinzel', serif;
+  --body: 'Cormorant Garamond', serif;
+  --mono: 'Inter', sans-serif;
+  --radius: 0px;
+}
+
+/* Core Document styling */
+body {
+  font-family: var(--body);
+  background-color: var(--bg);
+  color: var(--fg);
+  font-size: 19px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Section Alternatives (Deep Imperial Purple vs Warm Marble) */
+.section {
+  background-color: #f2ece2;
+  color: #1c111e;
+  border-bottom: 1px solid var(--line);
+}
+
+.section--alt {
+  background-color: #2a1430;
+  color: #f2ece2;
+  --fg: #f2ece2;
+  --fg-dim: #d1c5d4;
+  --line: rgba(199, 162, 78, 0.2);
+  border-bottom: 1px solid rgba(199, 162, 78, 0.2);
+}
+
+/* Scroll reveals */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Typography & Headings */
+h1, h2, h3, h4, h5, h6, .logo {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+h2 {
+  font-size: 2.5rem;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.lede {
+  font-size: 1.35rem;
+  line-height: 1.5;
+  font-style: italic;
+  color: var(--fg-dim);
+}
+
+/* Navigation Header */
+header.nav {
+  background: rgba(42, 20, 48, 0.95);
+  border-bottom: 1px solid var(--accent);
+  backdrop-filter: blur(10px);
+}
+
+header.nav .logo {
+  color: var(--accent);
+  font-size: 1.3rem;
+  letter-spacing: 0.15em;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+header.nav a.nav__link {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #f2ece2;
+  transition: color 0.3s;
+}
+
+header.nav a.nav__link:hover {
+  color: var(--accent);
+}
+
+/* Hero Section */
+.hero {
+  position: relative;
+  background-color: #1a081e;
+  overflow: hidden;
+  padding: 10rem 0 8rem 0;
+}
+
+.hero__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+  filter: sepia(30%) grayscale(20%);
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 150px;
+  background: linear-gradient(to top, #2a1430, transparent);
+  pointer-events: none;
+}
+
+.hero h1 {
+  font-size: 4rem;
+  line-height: 0.95;
+  color: #ffffff;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  margin: 1.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+}
+
+/* Custom CSS Coin Monogram */
+.coin-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: radial-gradient(circle, #42254a 0%, #1e0b23 100%);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.35), inset 0 0 10px rgba(199, 162, 78, 0.5);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s;
+}
+
+/* Dynamic Emperor Gallery Grid and Cards */
+.dynasty-gallery {
+  margin-top: 4rem;
+}
+
+.dynasty-header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.dynasty-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dynasty-title h3 {
+  font-size: 1.8rem;
+  color: var(--accent);
+  margin: 0;
+}
+
+.dynasty-dates {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  letter-spacing: 0.05em;
+}
+
+/* Cards */
+.card-emperor {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  padding: 2.2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.section:not(.section--alt) .card-emperor {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.card-emperor:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.section:not(.section--alt) .card-emperor:hover {
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 10px 30px rgba(42, 20, 48, 0.08);
+}
+
+.card-emperor:hover .coin-avatar {
+  transform: scale(1.05) rotate(8deg);
+  box-shadow: 0 8px 20px rgba(199, 162, 78, 0.4), inset 0 0 12px rgba(199, 162, 78, 0.6);
+}
+
+.emperor-name {
+  font-size: 1.45rem;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.2;
+}
+
+.reign-years {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.2rem;
+}
+
+.verdict {
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: var(--fg-dim);
+  margin-bottom: 1.8rem;
+  flex-grow: 1;
+}
+
+/* Editorial End Tags */
+.end-tag {
+  display: inline-flex;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 2px;
+  width: fit-content;
+}
+
+.end-tag[data-end="murdered"] {
+  background-color: var(--accent-2);
+  color: #ffffff;
+}
+
+.end-tag[data-end="suicide"] {
+  background-color: #554457;
+  color: #ece5ee;
+}
+
+.end-tag[data-end="natural"] {
+  background-color: #3b5a40;
+  color: #f2ece2;
+}
+
+.end-tag[data-end="battle"] {
+  background-color: #b56c2d;
+  color: #ffffff;
+}
+
+.end-tag[data-end="deposed"] {
+  background-color: #274c67;
+  color: #ffffff;
+}
+
+/* Beautiful Inter-Dynasty Image Dividers */
+.wide-divider {
+  height: 380px;
+  overflow: hidden;
+  position: relative;
+  border-top: 1px solid var(--accent);
+  border-bottom: 1px solid var(--accent);
+}
+
+.wide-divider img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(40%) sepia(20%) brightness(85%);
+}
+
+/* Filtering System Styles */
+.gallery-filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 2.5rem 0 3.5rem 0;
+}
+
+.btn-filter {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--fg-dim);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.7rem 1.4rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-filter:hover {
+  border-color: var(--accent);
+  color: var(--fg);
+}
+
+.btn-filter.active {
+  background-color: var(--accent);
+  color: #1c111e;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+/* Dynamic hiding animation for filter script */
+.card-emperor.hidden {
+  display: none !important;
+}
+
+/* Interactive & Standard Buttons */
+.btn--accent {
+  background-color: var(--accent);
+  color: #1c111e;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  border: 1px solid var(--accent);
+  padding: 1rem 2rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn--accent:hover {
+  background-color: transparent;
+  color: var(--accent);
+  box-shadow: 0 0 15px rgba(199, 162, 78, 0.2);
+}
+
+/* Stats Section with Purple Image Background */
+.section-stats {
+  position: relative;
+  background-color: #1a081e;
+  color: #ffffff;
+  padding: 8rem 0;
+}
+
+.stats-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.2;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.stat-value {
+  font-family: var(--display);
+  font-size: 4.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #d1c5d4;
+}
+
+/* Footer Accentuation */
+footer.footer {
+  background-color: #150917;
+  color: #f2ece2;
+  border-top: 2px solid var(--accent);
+  padding: 8rem 0 4rem 0;
+}
+
+.footer-ave {
+  font-size: 7vw;
+  line-height: 1;
+  color: rgba(199, 162, 78, 0.08);
+  font-weight: 800;
+  text-align: center;
+  user-select: none;
+  pointer-events: none;
+  margin-top: 2rem;
+}
