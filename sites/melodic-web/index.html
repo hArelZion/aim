@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AERIS — Generative Ambient Sanctuary &amp; Web Acoustics</title>
+  <meta name="description" content="A digital acoustic sanctuary pairing generative ambient harmonics with tactile Japanese-modernist aesthetics. Compose, listen, and recalibrate neural resonance.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230D0F12'/><circle cx='16' cy='16' r='9' fill='none' stroke='%234E8CFF' stroke-width='2'/><circle cx='16' cy='16' r='3' fill='%23EAEFF5'/></svg>" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="kit.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Single Navigation Bar -->
+  <header class="nav">
+    <div class="wrap nav__inner">
+      <a href="#hero" class="logo" aria-label="AERIS Acoustic Sanctuary">
+        <span style="font-family: var(--display); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; font-size: 1.15rem; color: var(--fg);">AERIS</span>
+      </a>
+
+      <div class="nav__badge">
+        <span class="nav__badge-dot" aria-hidden="true"></span>
+        <span id="navStatus">432 Hz Generative Stream</span>
+      </div>
+
+      <button class="nav__toggle" aria-label="Toggle Menu">
+        <span></span>
+      </button>
+
+      <ul class="nav__links">
+        <li><a href="#tunes">Soundscapes</a></li>
+        <li><a href="#instrument">Synthesizer</a></li>
+        <li><a href="#philosophy">Architecture</a></li>
+        <li><a href="#listen">Spatial Feed</a></li>
+        <li><a href="#manifest" class="btn btn--accent" style="padding: 0.45rem 1rem; font-size: 0.8rem;">Archive Stems</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Section 1: Hero with Ambient Audio Visualizer -->
+  <section class="hero" id="hero">
+    <!-- Generative Acoustic Visual Graphic backdrop replacing static broken asset -->
+    <svg class="hero__bg-graphic" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="600" cy="400" r="380" stroke="#4E8CFF" stroke-width="1" stroke-dasharray="4 8" opacity="0.3"/>
+      <circle cx="600" cy="400" r="280" stroke="#7AA9FF" stroke-width="1.5" opacity="0.2"/>
+      <circle cx="600" cy="400" r="180" stroke="#EAEFF5" stroke-width="0.75" opacity="0.15"/>
+      <path d="M 100 400 Q 300 280, 600 400 T 1100 400" stroke="#4E8CFF" stroke-width="2" opacity="0.4" fill="none"/>
+      <path d="M 100 400 Q 300 520, 600 400 T 1100 400" stroke="#7AA9FF" stroke-width="1.5" opacity="0.25" fill="none"/>
+    </svg>
+
+    <canvas id="frequencyCanvas" class="hero__visualizer" width="1280" height="600" aria-hidden="true"></canvas>
+
+    <div class="wrap">
+      <div class="hero__content reveal">
+        <p class="eyebrow">Harmonic Resonance 0.1 &bull; Ambient Web Audio</p>
+        <h1>
+          Acoustic horizon for <span class="gradient">contemplative</span> minds.
+        </h1>
+        <p class="lede">
+          A calm auditory sanctuary pairing real-time procedural frequencies with tactile Japanese modernism. Unclutter perception, slow heart rate variability, and explore generative sound design directly within the browser.
+        </p>
+
+        <div class="hero__player-bar">
+          <button class="play-toggle" id="masterPlayBtn" aria-label="Toggle generative ambient soundscape">
+            <svg id="playIcon" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+          </button>
+          <div class="player-meta">
+            <span class="player-meta__title" id="currentTrackTitle">Sine Chamber: Solfeggio 528 Hz</span>
+            <span class="player-meta__freq" id="audioEngineStatus">Status: Idling &bull; Click to synthesize real-time harmonics</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Selected Soundscapes -->
+  <section class="section section--alt" id="tunes">
+    <div class="wrap">
+      <div class="head reveal">
+        <p class="eyebrow">Curated Micro-Tunings</p>
+        <h2>Selected Soundscapes</h2>
+        <p class="lede">Four calibrated procedural chambers engineered for cognitive decompression, somatic stillness, and deep focus.</p>
+      </div>
+
+      <div class="grid-4 reveal" data-delay="1">
+        <!-- Soundscape 01 -->
+        <article class="soundscape-card is-active" data-tone="breeze" data-hz="174 Hz">
+          <div>
+            <div class="soundscape-card__header">
+              <span class="soundscape-card__num">01 / AURA</span>
+              <span class="soundscape-card__freq">174 Hz &bull; Sub</span>
+            </div>
+            <h3 class="soundscape-card__title">Breeze</h3>
+            <p class="soundscape-card__desc">Gentle low-velocity pink noise filtered through resonant bandpass nodes, mirroring ocean drafts over basalt cliffs.</p>
+          </div>
+          <div class="soundscape-card__controls">
+            <button class="btn-track track-trigger" aria-label="Play Breeze tuning">
+              <span>Engage</span>
+              <span class="arrow">&rarr;</span>
+            </button>
+            <div class="waveform-mini" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Soundscape 02 -->
+        <article class="soundscape-card" data-tone="resonance" data-hz="432 Hz">
+          <div>
+            <div class="soundscape-card__header">
+              <span class="soundscape-card__num">02 / CORE</span>
+              <span class="soundscape-card__freq">432 Hz &bull; Pure</span>
+            </div>
+            <h3 class="soundscape-card__title">Resonance</h3>
+            <p class="soundscape-card__desc">Verdi’s acoustic tuning paired with a slow dual-oscillator tremolo, dissolving sympathetic room tension.</p>
+          </div>
+          <div class="soundscape-card__controls">
+            <button class="btn-track track-trigger" aria-label="Play Resonance tuning">
+              <span>Engage</span>
+              <span class="arrow">&rarr;</span>
+            </button>
+            <div class="waveform-mini" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Soundscape 03 -->
+        <article class="soundscape-card" data-tone="lowsun" data-hz="528 Hz">
+          <div>
+            <div class="soundscape-card__header">
+              <span class="soundscape-card__num">03 / RAY</span>
+              <span class="soundscape-card__freq">528 Hz &bull; Gold</span>
+            </div>
+            <h3 class="soundscape-card__title">Low Sun</h3>
+            <p class="soundscape-card__desc">Warm additive sines bathed in analog diffusion and gentle flutter tape saturation. Elicits twilight reverie.</p>
+          </div>
+          <div class="soundscape-card__controls">
+            <button class="btn-track track-trigger" aria-label="Play Low Sun tuning">
+              <span>Engage</span>
+              <span class="arrow">&rarr;</span>
+            </button>
+            <div class="waveform-mini" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Soundscape 04 -->
+        <article class="soundscape-card" data-tone="midnigt" data-hz="639 Hz">
+          <div>
+            <div class="soundscape-card__header">
+              <span class="soundscape-card__num">04 / VOID</span>
+              <span class="soundscape-card__freq">639 Hz &bull; Deep</span>
+            </div>
+            <h3 class="soundscape-card__title">Midnight Echo</h3>
+            <p class="soundscape-card__desc">A wide stereo reverb space with descending fifth intervals and binaural sub-pulses. For nocturnal solitude.</p>
+          </div>
+          <div class="soundscape-card__controls">
+            <button class="btn-track track-trigger" aria-label="Play Midnight Echo tuning">
+              <span>Engage</span>
+              <span class="arrow">&rarr;</span>
+            </button>
+            <div class="waveform-mini" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Interactive Synthesizer Pad Matrix -->
+  <section class="section" id="instrument">
+    <div class="wrap">
+      <div class="head reveal">
+        <p class="eyebrow">Tactile Melodic Matrix</p>
+        <h2>Interactive Synthesizer Pad</h2>
+        <p class="lede">Touch or click the pads below (or use computer keys 1–8) to trigger polyphonic sine tones tuned to the Japanese Insen / Hirajōshi pentatonic scale.</p>
+      </div>
+
+      <div class="synth-container reveal" data-delay="1">
+        <div class="synth-header">
+          <div>
+            <span style="font-family: var(--display); font-size: 1.15rem; font-weight: 600; color: var(--fg);">Hirajōshi Pentatonic Matrix</span>
+            <p style="font-size: 0.85rem; color: var(--muted); margin: 0.2rem 0 0;">Polyphonic envelope: 350ms Attack / 2400ms Exponential Decay</p>
+          </div>
+          <div class="synth-tuning">
+            Key Signature: <span>C3 Hirajōshi (C - Db - F - G - Bb)</span>
+          </div>
+        </div>
+
+        <div class="synth-grid" id="synthPadGrid">
+          <button class="synth-pad" data-key="1" data-hz="130.81" data-note="C3" aria-label="Synthesizer pad C3 130.81 Hz">
+            <span class="synth-pad__key">Key 1</span>
+            <span class="synth-pad__note">C<sub style="font-size: 0.9rem;">3</sub></span>
+            <span class="synth-pad__hz">130.81 Hz</span>
+          </button>
+
+          <button class="synth-pad" data-key="2" data-hz="138.59" data-note="D♭3" aria-label="Synthesizer pad Db3 138.59 Hz">
+            <span class="synth-pad__key">Key 2</span>
+            <span class="synth-pad__note">D♭<sub style="font-size: 0.9rem;">3</sub></span>
+            <span class="synth-pad__hz">138.59 Hz</span>
+          </button>
+
+          <button class="synth-pad" data-key="3" data-hz="174.61" data-note="F3" aria-label="Synthesizer pad F3 174.61 Hz">
+            <span class="synth-pad__key">Key 3</span>
+            <span class="synth-pad__note">F<sub style="font-size: 0.9rem;">3</sub></span>
+            <span class="synth-pad__hz">174.61 Hz</span>
+          </button>
+
+          <button class="synth-pad" data-key="4" data-hz="196.00" data-note="G3" aria-label="Synthesizer pad G3 196.00 Hz">
+            <span class="synth-pad__key">Key 4</span>
+            <span class="synth-pad__note">G<sub style="font-size: 0.9rem;">3</sub></span>
+            <span class="synth-pad__hz">196.00 Hz</span>
+          </button>
+
+          <button class="synth-pad" data-key="5" data-hz="233.08" data-note="B♭3" aria-label="Synthesizer pad Bb3 233.08 Hz">
+            <span class="synth-pad__key">Key 5</span>
+            <span class="synth-pad__note">B♭<sub style="font-size: 0.9rem;">3</sub></span>
+            <span class="synth-pad__hz">233.08 Hz</span>
+          </button>
+
+          <button class="synth-pad" data-key="6" data-hz="261.63" data-note="C4" aria-label="Synthesizer pad C4 261.63 Hz">
+            <span class="synth-pad__key">Key 6</span>
+            <span class="synth-pad__note">C<sub style="font-size: 0.9rem;">4</sub></span>
+            <span class="synth-pad__hz">261.63 Hz</span>
+          </button>
+
+          <button class="synth-pad" data-key="7" data-hz="277.18" data-note="D♭4" aria-label="Synthesizer pad Db4 277.18 Hz">
+            <span class="synth-pad__key">Key 7</span>
+            <span class="synth-pad__note">D♭<sub style="font-size: 0.9rem;">4</sub></span>
+            <span class="synth-pad__hz">277.18 Hz</span>
+          </button>
+
+          <button class="synth-pad" data-key="8" data-hz="349.23" data-note="F4" aria-label="Synthesizer pad F4 349.23 Hz">
+            <span class="synth-pad__key">Key 8</span>
+            <span class="synth-pad__note">F<sub style="font-size: 0.9rem;">4</sub></span>
+            <span class="synth-pad__hz">349.23 Hz</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Editorial Split - Harp Strings & Acoustic Philosophy -->
+  <section class="section section--alt" id="philosophy">
+    <div class="wrap">
+      <div class="split reveal">
+        <div class="media ratio-32">
+          <svg viewBox="0 0 600 400" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Visual representation of acoustic string tension">
+            <rect width="600" height="400" fill="#161A22"/>
+            <line x1="50" y1="20" x2="550" y2="380" stroke="#4E8CFF" stroke-width="1.5" opacity="0.6"/>
+            <line x1="100" y1="20" x2="600" y2="350" stroke="#7AA9FF" stroke-width="1" opacity="0.5"/>
+            <line x1="0" y1="50" x2="500" y2="380" stroke="#EAEFF5" stroke-width="0.75" opacity="0.4"/>
+            <circle cx="300" cy="200" r="120" stroke="#4E8CFF" stroke-width="1" stroke-dasharray="3 6" opacity="0.3"/>
+          </svg>
+          <figcaption>Fig. 01 — Polished tension: mechanical harmonic ratios in steel and gut wire.</figcaption>
+        </div>
+
+        <div class="essay-content">
+          <p class="eyebrow">Acoustic Theory &bull; Neuro-Acoustics</p>
+          <h2 style="font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.1; margin-bottom: 1.5rem; color: var(--fg); font-family: var(--display);">
+            Sound Architecture and Neural Synchrony
+          </h2>
+          <p>
+            The human ear never sleeps. Evolution shaped our auditory cortex to scan for jagged transients in the brush, retaining vigilance even through dream states. When presented with continuous harmonic sines, the parasympathetic nervous system recognizes safety.
+          </p>
+          <div class="quote-box">
+            "Silence is not an emptiness; it is the presence of an unbroken fundamental tone beneath all earthly noise."
+          </div>
+          <p>
+            By restricting sonic structures to the pentatonic intervals favored in Kyoto’s temple gardens and pairing them with microtonal stereo drift, we create an acoustic cradle that encourages brainwaves to slip effortlessly from beta turbulence down to rhythmic theta states.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: Gallery of Acoustic Spaces -->
+  <section class="section">
+    <div class="wrap">
+      <div class="head reveal">
+        <p class="eyebrow">Material Studies</p>
+        <h2>The Physical Chamber</h2>
+        <p class="lede">Tactile artifacts and resonance chambers that inform our computational sound engines.</p>
+      </div>
+
+      <div class="grid-3 reveal" data-delay="1">
+        <!-- Photo Study 01 -->
+        <figure class="media ratio-43">
+          <svg viewBox="0 0 400 300" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diffusive cedar baffling visual">
+            <rect width="400" height="300" fill="#1F2531"/>
+            <path d="M40 0 V300 M80 0 V300 M120 0 V300 M160 0 V300 M200 0 V300 M240 0 V300 M280 0 V300 M320 0 V300 M360 0 V300" stroke="#7A889B" stroke-width="2" opacity="0.25"/>
+            <circle cx="200" cy="150" r="80" stroke="#4E8CFF" stroke-width="1.5" opacity="0.5"/>
+          </svg>
+          <figcaption>Fig. 02 — Diffusive cedar baffling: Kyoto acoustic studio test lab.</figcaption>
+        </figure>
+
+        <!-- Photo Study 02 -->
+        <figure class="media ratio-1">
+          <svg viewBox="0 0 400 400" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Reference transducer graphic">
+            <rect width="400" height="400" fill="#161A22"/>
+            <circle cx="200" cy="200" r="140" stroke="#EAEFF5" stroke-width="1" opacity="0.3"/>
+            <circle cx="200" cy="200" r="90" stroke="#7AA9FF" stroke-width="2" opacity="0.6"/>
+            <circle cx="200" cy="200" r="30" fill="#4E8CFF" opacity="0.8"/>
+          </svg>
+          <figcaption>Fig. 03 — Planar magnetic reference transducers on honed slate.</figcaption>
+        </figure>
+
+        <!-- Photo Study 03 -->
+        <figure class="media ratio-34">
+          <svg viewBox="0 0 300 400" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cymatic nodal wave pattern">
+            <rect width="300" height="400" fill="#1F2531"/>
+            <ellipse cx="150" cy="200" rx="110" ry="160" stroke="#4E8CFF" stroke-width="1" opacity="0.4"/>
+            <ellipse cx="150" cy="200" rx="70" ry="100" stroke="#7AA9FF" stroke-width="1.5" opacity="0.5"/>
+            <ellipse cx="150" cy="200" rx="30" ry="40" stroke="#EAEFF5" stroke-width="1" opacity="0.6"/>
+          </svg>
+          <figcaption>Fig. 04 — Cymatic nodal lines at 174 Hz on volcanic silica.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Continuous Stream & Spatial Audio Settings -->
+  <section class="section section--alt" id="listen">
+    <div class="wrap">
+      <div class="stream-panel reveal">
+        <div>
+          <p class="eyebrow">Real-Time Spatial Node</p>
+          <h2 style="font-size: clamp(2rem, 3.5vw, 2.6rem); margin-bottom: 1.25rem;">Continuous Stream</h2>
+          <p style="color: var(--fg-dim); font-size: 1.05rem; margin-bottom: 2rem;">
+            Calibrate your listening environment. The web-audio nodes adjust panning buffers, stereo widening, and harmonic warmth directly on your client hardware without compression artifacts.
+          </p>
+
+          <div class="control-slider">
+            <div class="control-slider__label">
+              <span>Stereo Field Spread</span>
+              <span id="spreadValue">84%</span>
+            </div>
+            <input type="range" id="spreadSlider" min="0" max="100" value="84" aria-label="Stereo Field Spread">
+          </div>
+
+          <div class="control-slider">
+            <div class="control-slider__label">
+              <span>Warmth (Low-pass Cutoff)</span>
+              <span id="warmthValue">1,240 Hz</span>
+            </div>
+            <input type="range" id="warmthSlider" min="400" max="4000" value="1240" step="20" aria-label="Warmth cutoff slider">
+          </div>
+
+          <div class="control-slider">
+            <div class="control-slider__label">
+              <span>Master Amplitude</span>
+              <span id="volumeValue">72%</span>
+            </div>
+            <input type="range" id="volumeSlider" min="0" max="100" value="72" aria-label="Master Amplitude slider">
+          </div>
+
+          <div class="binaural-toggle">
+            <div class="binaural-info">
+              <span class="binaural-title">Binaural Entrainment Mode</span>
+              <span class="binaural-subtitle">Sends slightly detuned tones to each ear (Best with headphones)</span>
+            </div>
+            <label class="switch" aria-label="Toggle binaural mode">
+              <input type="checkbox" id="binauralToggle" checked>
+              <span class="slider-switch"></span>
+            </label>
+          </div>
+        </div>
+
+        <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--line);">
+          <span class="eyebrow" style="color: var(--accent-2);">Lossless Transmissions</span>
+          <h3 style="font-family: var(--display); font-size: 1.45rem; margin-top: 0.5rem; margin-bottom: 1rem; color: var(--fg);">Spatial Audio Stems</h3>
+          <p style="font-size: 0.95rem; color: var(--fg-dim); margin-bottom: 1.5rem;">
+            Download 24-bit / 96kHz multi-track FLAC stems recorded with binaural dummy-head microphones in our reverberant cedar chamber. Free for non-commercial production and mindfulness works.
+          </p>
+
+          <ul class="list" style="margin-bottom: 1.75rem;">
+            <li><strong style="color:var(--fg)">Stem 01:</strong> 432 Hz Singing Bowl Solfeggio (.FLAC 24/96)</li>
+            <li><strong style="color:var(--fg)">Stem 02:</strong> Insen Harp Micro-Arpeggios (.WAV 32-bit Float)</li>
+            <li><strong style="color:var(--fg)">Stem 03:</strong> Bass Sub-Drone &amp; Binaural Delta Wave (.FLAC)</li>
+          </ul>
+
+          <a href="#manifest" class="btn btn--accent" style="width: 100%; justify-content: center;">
+            Request High-Res Download Pack <span class="arrow">&rarr;</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7: Acquisition & Stem Access Form -->
+  <section class="section" id="manifest">
+    <div class="wrap">
+      <div class="split reveal" style="align-items: center;">
+        <div>
+          <p class="eyebrow">Acoustic Dispatch</p>
+          <h2 style="font-size: clamp(2rem, 3.5vw, 2.75rem);">Join the Harmonic Archive</h2>
+          <p style="color: var(--fg-dim); font-size: 1.1rem; margin-bottom: 1.5rem;">
+            Receive monthly generative patches, physical tape release notices, and architectural acoustic whitepapers curated by sound designer Kenji Sato.
+          </p>
+          <div style="display: flex; gap: 2.5rem; margin-top: 2rem;">
+            <div>
+              <div style="font-family: var(--display); font-size: 2.2rem; font-weight: 700; color: var(--fg);">12.4k</div>
+              <span style="font-size: 0.85rem; color: var(--muted); text-transform: uppercase; font-family: var(--mono);">Listeners Worldwide</span>
+            </div>
+            <div>
+              <div style="font-family: var(--display); font-size: 2.2rem; font-weight: 700; color: var(--accent-2);">0.00%</div>
+              <span style="font-size: 0.85rem; color: var(--muted); text-transform: uppercase; font-family: var(--mono);">Tracking &amp; Ad Noise</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <form class="form" data-confirm="Verification sent. Check your inbox for your 24-bit stem download key." style="background: var(--bg-2); padding: 2.25rem; border-radius: var(--radius); border: 1px solid var(--line);">
+            <div class="field">
+              <label for="subscriberName" style="font-family: var(--mono); font-size: 0.8rem; text-transform: uppercase; color: var(--fg-dim);">Full Name</label>
+              <input type="text" id="subscriberName" name="name" placeholder="Elena Vance" required style="background: var(--surface); border: 1px solid var(--line); color: var(--fg); padding: 0.75rem 1rem; border-radius: var(--radius); width: 100%;">
+            </div>
+            <div class="field" style="margin-top: 1.25rem;">
+              <label for="subscriberEmail" style="font-family: var(--mono); font-size: 0.8rem; text-transform: uppercase; color: var(--fg-dim);">Audio Enthusiast Email</label>
+              <input type="email" id="subscriberEmail" name="email" placeholder="elena@studio-acoustics.org" required style="background: var(--surface); border: 1px solid var(--line); color: var(--fg); padding: 0.75rem 1rem; border-radius: var(--radius); width: 100%;">
+            </div>
+            <div class="field" style="margin-top: 1.25rem;">
+              <label for="listeningMode" style="font-family: var(--mono); font-size: 0.8rem; text-transform: uppercase; color: var(--fg-dim);">Primary Transducer</label>
+              <select id="listeningMode" name="transducer" style="background: var(--surface); border: 1px solid var(--line); color: var(--fg); padding: 0.75rem 1rem; border-radius: var(--radius); width: 100%;">
+                <option value="planar">Planar Magnetic Headphones</option>
+                <option value="iem">In-Ear Reference Monitors</option>
+                <option value="speakers">Near-Field Studio Monitors</option>
+                <option value="ambient">Open Room / Ambient Speaker</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn--accent" style="width: 100%; margin-top: 1.5rem; justify-content: center;">
+              Request Archive Key <span class="arrow">&rarr;</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Technical Specifications -->
+      <div class="specs-list reveal" data-delay="1">
+        <div class="spec-item">
+          <span class="spec-item__term">DSP Engine</span>
+          <span class="spec-item__value">Web Audio API (WebAudio v2)</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-item__term">Fundamental Frequency</span>
+          <span class="spec-item__value">432.000 Hz / Concert A</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-item__term">Scale Calibration</span>
+          <span class="spec-item__value">Hirajōshi Pentatonic Modality</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-item__term">Sampling Precision</span>
+          <span class="spec-item__value">32-bit Floating Point Internal</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="wrap footer__row">
+      <div>
+        <p style="font-family: var(--display); font-size: 1.2rem; font-weight: 700; color: var(--fg); margin-bottom: 0.25rem;">AERIS ACOUSTICS</p>
+        <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Designed in Kyoto &amp; Zürich. Pure generative tranquility for deep work and sleep.</p>
+      </div>
+      <div style="font-family: var(--mono); font-size: 0.8rem; color: var(--muted); text-align: right;">
+        <span>&copy; <span id="year">2025</span> AERIS Sanctuary. All acoustic rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Web Audio Synthesis & Visualizer Engine Script -->
+  <script>
+    (function() {
+      let audioCtx = null;
+      let masterGain = null;
+      let filterNode = null;
+      let isPlaying = false;
+      let activeOscs = [];
+
+      const masterPlayBtn = document.getElementById('masterPlayBtn');
+      const navStatus = document.getElementById('navStatus');
+      const trackTitle = document.getElementById('currentTrackTitle');
+      const engineStatus = document.getElementById('audioEngineStatus');
+      const warmthSlider = document.getElementById('warmthSlider');
+      const warmthVal = document.getElementById('warmthValue');
+      const volumeSlider = document.getElementById('volumeSlider');
+      const volumeVal = document.getElementById('volumeValue');
+      const binauralToggle = document.getElementById('binauralToggle');
+
+      function initAudio() {
+        if (!audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioContext();
+
+          masterGain = audioCtx.createGain();
+          masterGain.gain.setValueAtTime(0.72, audioCtx.currentTime);
+
+          filterNode = audioCtx.createBiquadFilter();
+          filterNode.type = 'lowpass';
+          filterNode.frequency.setValueAtTime(parseFloat(warmthSlider.value) || 1240, audioCtx.currentTime);
+
+          filterNode.connect(masterGain);
+          masterGain.connect(audioCtx.destination);
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      function startAmbientDrone(fundamental = 108) {
+        stopAmbientDrone();
+        initAudio();
+
+        const freqs = [fundamental, fundamental * 1.5, fundamental * 2, fundamental * 2.5];
+        freqs.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const oscGain = audioCtx.createGain();
+          
+          osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+          osc.frequency.setValueAtTime(freq + (Math.random() * 0.4 - 0.2), audioCtx.currentTime);
+
+          oscGain.gain.setValueAtTime(0, audioCtx.currentTime);
+          oscGain.gain.linearRampToValueAtTime(0.12 / (idx + 1), audioCtx.currentTime + 3);
+
+          osc.connect(oscGain);
+          oscGain.connect(filterNode);
+          osc.start();
+          activeOscs.push({ osc, gain: oscGain });
+        });
+
+        if (binauralToggle && binauralToggle.checked) {
+          const bOsc1 = audioCtx.createOscillator();
+          const bOsc2 = audioCtx.createOscillator();
+          const bGain = audioCtx.createGain();
+          bGain.gain.value = 0.08;
+
+          bOsc1.frequency.value = 216;
+          bOsc2.frequency.value = 222;
+
+          bOsc1.connect(bGain);
+          bOsc2.connect(bGain);
+          bGain.connect(filterNode);
+          bOsc1.start();
+          bOsc2.start();
+          activeOscs.push({ osc: bOsc1, gain: bGain });
+          activeOscs.push({ osc: bOsc2, gain: bGain });
+        }
+
+        isPlaying = true;
+        if (masterPlayBtn) {
+          masterPlayBtn.classList.add('is-playing');
+          masterPlayBtn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+        }
+        if (navStatus) navStatus.textContent = 'Audio Active • 432 Hz';
+        if (engineStatus) engineStatus.textContent = 'Real-time additive synthesis online • Lowpass ' + warmthSlider.value + ' Hz';
+      }
+
+      function stopAmbientDrone() {
+        if (!activeOscs.length) return;
+        const now = audioCtx ? audioCtx.currentTime : 0;
+        activeOscs.forEach(item => {
+          try {
+            item.gain.gain.linearRampToValueAtTime(0.0001, now + 1);
+            setTimeout(() => item.osc.stop(), 1100);
+          } catch(e) {}
+        });
+        activeOscs = [];
+        isPlaying = false;
+        if (masterPlayBtn) {
+          masterPlayBtn.classList.remove('is-playing');
+          masterPlayBtn.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>';
+        }
+        if (navStatus) navStatus.textContent = 'Generator Paused';
+        if (engineStatus) engineStatus.textContent = 'Status: Idling • Click to synthesize real-time harmonics';
+      }
+
+      if (masterPlayBtn) {
+        masterPlayBtn.addEventListener('click', () => {
+          if (isPlaying) {
+            stopAmbientDrone();
+          } else {
+            startAmbientDrone(108);
+          }
+        });
+      }
+
+      // Soundscape Card Play Triggers
+      const cards = document.querySelectorAll('.soundscape-card');
+      cards.forEach(card => {
+        const btn = card.querySelector('.btn-track');
+        if (btn) {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            cards.forEach(c => c.classList.remove('is-active'));
+            card.classList.add('is-active');
+
+            const hz = parseFloat(card.dataset.hz) || 216;
+            const title = card.querySelector('.soundscape-card__title').innerText;
+            if (trackTitle) trackTitle.textContent = title + ': Procedural ' + card.dataset.hz;
+            startAmbientDrone(hz / 2);
+          });
+        }
+      });
+
+      // Interactive Synth Pads
+      function triggerSynthPad(freq, padElement) {
+        initAudio();
+        if (padElement) {
+          padElement.classList.add('is-triggered');
+          setTimeout(() => padElement.classList.remove('is-triggered'), 300);
+        }
+
+        const osc = audioCtx.createOscillator();
+        const noteGain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        noteGain.gain.setValueAtTime(0.35, audioCtx.currentTime);
+        noteGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.4);
+
+        osc.connect(noteGain);
+        noteGain.connect(filterNode);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 2.5);
+      }
+
+      const synthPads = document.querySelectorAll('.synth-pad');
+      synthPads.forEach(pad => {
+        pad.addEventListener('click', () => {
+          const freq = parseFloat(pad.dataset.hz);
+          if (freq) triggerSynthPad(freq, pad);
+        });
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+        const pad = document.querySelector(`.synth-pad[data-key="${e.key}"]`);
+        if (pad) {
+          const freq = parseFloat(pad.dataset.hz);
+          if (freq) triggerSynthPad(freq, pad);
+        }
+      });
+
+      // Controls Binding
+      if (warmthSlider && warmthVal) {
+        warmthSlider.addEventListener('input', (e) => {
+          const val = e.target.value;
+          warmthVal.textContent = Number(val).toLocaleString() + ' Hz';
+          if (filterNode && audioCtx) {
+            filterNode.frequency.setValueAtTime(val, audioCtx.currentTime);
+          }
+        });
+      }
+
+      if (volumeSlider && volumeVal) {
+        volumeSlider.addEventListener('input', (e) => {
+          const val = e.target.value;
+          volumeVal.textContent = val + '%';
+          if (masterGain && audioCtx) {
+            masterGain.gain.setValueAtTime((val / 100), audioCtx.currentTime);
+          }
+        });
+      }
+    })();
+  </script>
+  <script src="kit.js"></script>
+</body>
+</html>
