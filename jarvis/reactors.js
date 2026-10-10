@@ -15,6 +15,7 @@ const hexRgb = h => { h = (h || "#ffffff").trim().replace("#", ""); if (h.length
 const noise = (i, t) => (Math.sin(i * 1.7 + t * 9.1) + Math.sin(i * .63 + t * 13.7) * .6 + Math.sin(i * 3.1 + t * 5.3) * .4) / 2;
 
 const Skin = {
+  assetBase: "/static/",   // where a skin's pictures live (the phone app keeps them next to its page: "")
   fontsLoaded: new Set(),
   loadFonts(skin) {
     const q = skin.fonts_css;
@@ -225,6 +226,106 @@ const REACTORS = {
     } };
   },
 
+  /* Mouth: real lips on black, animated like a mouth rather than faded between photographs.
+     The closed-mouth photo is cut along the lip line into an upper and a lower lip; they part along that curve (the
+     corners stay joined), narrow as the mouth opens and thin out as lips do when they stretch. Behind them the open-mouth
+     photo gives the teeth and the tongue: the upper teeth ride with the upper lip, the lower teeth and tongue with the jaw.
+     How wide it opens follows the loudness of the voice, how wide it stretches follows how bright it sounds ("ee", "s"
+     wide, "oo", "o" pursed); a closing consonant shuts it. Coordinates below are pixels of the 1254-px photographs. */
+  mouth(opts) {
+    const load = n => { const im = new Image(); im.src = Skin.assetBase + "mouth/" + n + ".webp"; return im; };
+    const closed = load(1), wideOpen = load(3);
+    const lag = (opts && opts.lag != null ? opts.lag : .11) * 1000;   // the level arrives a little before its sound is heard
+    const CX = 618, X0 = 56, X1 = 1180, STRIP = 8, TOP = 352, BOT = 915, SEAM_BAND = [540, 700];
+    const IX = 640, IY = 610;            // centre of the open-mouth photo's opening
+    const GAP = 735;                     // its height at the middle: upper gum line (245) to lower lip edge (985)
+    let seam = null, inner = null, ready = false, open = 0, wide = .5, hist = [];
+
+    function prepare() {   // once both photographs are in: find the lip line, cut the inside of the open mouth
+      const c = document.createElement("canvas"); c.width = c.height = 1254;
+      const x = c.getContext("2d", { willReadFrequently: true }); x.drawImage(closed, 0, 0);
+      const px = x.getImageData(0, SEAM_BAND[0], 1254, SEAM_BAND[1] - SEAM_BAND[0]).data, W = 1254, h = SEAM_BAND[1] - SEAM_BAND[0];
+      const n = Math.ceil((X1 - X0) / STRIP) + 1, raw = [];
+      for (let i = 0; i < n; i++) {
+        let best = 1e9, by = (SEAM_BAND[0] + SEAM_BAND[1]) / 2;
+        for (let y = 0; y < h; y++) {
+          let s = 0, k = 0;
+          for (let xx = X0 + i * STRIP; xx < X0 + (i + 1) * STRIP && xx < W; xx += 2) { const o = (y * W + xx) * 4; s += px[o] * .3 + px[o + 1] * .55 + px[o + 2] * .15; k++; }
+          s /= k; if (s < best) { best = s; by = SEAM_BAND[0] + y; }
+        }
+        raw.push(by);
+      }
+      seam = raw.slice();
+      for (let pass = 0; pass < 3; pass++) { const t = seam.slice(); for (let i = 1; i < n - 1; i++) seam[i] = (t[i - 1] + 2 * t[i] + t[i + 1]) / 4; }
+      // the inside of the open mouth: the photograph through a soft ellipse (lips and cheeks fade away)
+      inner = document.createElement("canvas"); inner.width = inner.height = 1254;
+      const g = inner.getContext("2d"); g.drawImage(wideOpen, 0, 0);
+      g.globalCompositeOperation = "destination-in";
+      g.save(); g.translate(IX, IY); g.scale(352, 372);
+      const gr = g.createRadialGradient(0, 0, 0, 0, 0, 1); gr.addColorStop(0, "#000"); gr.addColorStop(.9, "#000"); gr.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = gr; g.beginPath(); g.arc(0, 0, 1, 0, Math.PI * 2); g.fill(); g.restore();
+      ready = true;
+    }
+
+    return { ring: null, bright: true, draw(g, R, T, L, P, k) {
+      if (!ready) { if (closed.complete && closed.naturalWidth && wideOpen.complete && wideOpen.naturalWidth) prepare(); else return; }
+      const now = k.now, raw = k.raw != null ? k.raw : L;
+      hist.push([now, raw, k.shape != null ? k.shape : .5]);
+      while (hist.length > 2 && hist[1][0] <= now - lag) hist.shift();
+      const cur = hist[0], voice = k.src !== "mic";
+      let want = voice ? Math.min(1, Math.pow(Math.max(0, cur[1]), .9) * 1.4) * .92 : 0;
+      if (k.state === "think" && want < .03) want = .03 + .025 * Math.sin(T * 3);          // a thoughtful "mm"
+      if (k.state === "listen") want = .018 + .012 * Math.sin(T * 2);                       // lips just parted, listening
+      if (want < .02 && k.state === "idle") want = .004 + .004 * Math.sin(T * 1.1);         // breathing
+      const dt = k.dt || .04;
+      open += (want - open) * (1 - Math.exp(-dt * (want > open ? 32 : 24)));                // opens fast, a consonant shuts it fast
+      wide += (cur[2] - wide) * (1 - Math.exp(-dt * 16));
+      const o = Math.max(0, Math.min(1, open)), w = Math.max(-1, Math.min(1, (wide - .4) * 2.2)) * Math.min(1, o * 2.2);
+      const sx = (1 - .29 * o) * (1 + .075 * w), ty = 1 - .46 * o;                           // narrower and thinner as it opens
+      const G = o * GAP, up = .38, dn = .62, hw = 468 * 1.0;                                 // the jaw moves more than the lip
+      const sc = R * 1.9 / 1090;
+      g.save(); g.scale(sc, sc); g.translate(0, -(640 + 45 * o) + Math.sin(T * .9) * 2 + 10 * o);   // the mouth's middle at the origin
+      const n = seam.length, prof = x => Math.pow(Math.max(0, 1 - Math.pow((x - CX) / hw, 2)), .65);
+      const dest = x => (x - CX) * sx;   // source x -> dest x (around the origin)
+      // 1. the cavity, dark, between the lips
+      for (let i = 0; i < n; i++) {
+        const x = X0 + i * STRIP, xm = x + STRIP / 2, p = prof(xm), s = seam[i];
+        if (p < .02 || G < 2) continue;
+        g.fillStyle = "#0c0204"; g.fillRect(dest(x), s - G * up * p - 3, STRIP * sx + 1.2, G * p + 6);
+      }
+      // 2. the lower teeth and the tongue (they ride with the jaw), then 3. the upper teeth (they ride with the upper lip)
+      if (G > 6) {
+        for (let i = 0; i < n; i++) {
+          const x = X0 + i * STRIP, xm = x + STRIP / 2, p = prof(xm), s = seam[i], edge = s + G * dn * p;
+          const sxI = x - CX + IX;   // the same column in the open-mouth photograph
+          if (p < .02) continue;
+          const vis = Math.min(555, G * p + 16);   // only what shows between the lips (never above the upper lip)
+          g.drawImage(inner, sxI, 985 - vis, STRIP, vis, dest(x), edge + 6 - vis, STRIP * sx + 1.2, vis);
+        }
+        for (let i = 0; i < n; i++) {
+          const x = X0 + i * STRIP, xm = x + STRIP / 2, p = prof(xm), s = seam[i], edge = s - G * up * p;
+          const sxI = x - CX + IX;
+          if (p < .02) continue;
+          const vis = Math.min(190, G * p + 16);
+          g.drawImage(inner, sxI, 238, STRIP, vis, dest(x), edge - 8, STRIP * sx + 1.2, vis);
+        }
+      }
+      // 4. the lips: the closed-mouth photograph cut along its lip line, the halves moving apart
+      for (let i = 0; i < n; i++) {
+        const x = X0 + i * STRIP, xm = x + STRIP / 2, p = prof(xm), s = seam[i];
+        const su = G * up * p, sl = G * dn * p, dw = STRIP * sx + 1.2;
+        g.drawImage(closed, x, TOP, STRIP, s - TOP + 1, dest(x), s - su - (s - TOP) * ty, dw, (s - TOP + 1) * ty);          // upper lip
+        g.drawImage(closed, x, s - 1, STRIP, BOT - s + 1, dest(x), s + sl - 1 * ty, dw, (BOT - s + 1) * ty);               // lower lip
+      }
+      g.restore();
+      if (k.progress != null && k.started) {   // the build's progress: a thin line under the lips
+        const y = R * 1.02, x0 = -R * .75, len = R * 1.5;
+        g.lineWidth = 2; g.strokeStyle = col(P.c, .2); g.beginPath(); g.moveTo(x0, y); g.lineTo(x0 + len, y); g.stroke();
+        g.strokeStyle = k.building ? col(P.a, .9) : col(P.g, .85); g.beginPath(); g.moveTo(x0, y); g.lineTo(x0 + len * k.progress, y); g.stroke();
+      }
+    } };
+  },
+
   /* Nebula: a two-armed galaxy turning slowly */
   galaxy() {
     const stars = Array.from({ length: 240 }, (_, i) => ({ arm: i % 2, r: Math.pow(Math.random(), .7), off: (Math.random() - .5) * .7,
@@ -316,9 +417,10 @@ const REACTORS = {
   },
 };
 
-function makeReactor(kind) { return (REACTORS[kind] || REACTORS.rings)(); }
+function makeReactor(kind, opts) { return (REACTORS[kind] || REACTORS.rings)(opts || {}); }
 
 function progressRing(g, R, ring, progress, building, P) {   // the build's progress, drawn over any reactor
+  if (!ring) return;   // (the mouth draws its own)
   arc(g, R * ring, 0, TAU, 1, col(P.c, .12));
   arc(g, R * ring, -Math.PI / 2, -Math.PI / 2 + TAU * progress, 3, building ? col(P.a, .9) : col(P.g, .85), 1);
 }

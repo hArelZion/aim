@@ -209,6 +209,7 @@ const $ = s => document.querySelector(s);
 const STEPS = ["brief", "design", "imagery", "build", "review", "deliver"];
 const LABEL = {boot: "STARTING", idle: "STANDING BY", listen: "LISTENING", think: "PROCESSING", speak: "SPEAKING"};
 const S = {state: {}, skinId: null, level: 0, target: 0, waiting: 0, playing: false, recording: false, tab: "talk"};
+Skin.assetBase = "";   // the skins' pictures sit beside this page
 let PAL = Skin.palette({}), REACTOR = makeReactor("rings");
 
 function rid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
@@ -274,7 +275,7 @@ function setState(st){
 }
 function applySkin(skin){
   if (!skin || !skin.tokens || skin.id === S.skinId) return;
-  PAL = Skin.apply(skin); REACTOR = makeReactor((skin.reactor || {}).renderer); S.skinId = skin.id;
+  PAL = Skin.apply(skin); REACTOR = makeReactor((skin.reactor || {}).renderer, skin.reactor); S.skinId = skin.id;
   document.querySelector('meta[name="theme-color"]').content = skin.tokens["--bg"];
   try { localStorage.setItem("pj-skin", JSON.stringify(skin)); } catch (_) {}
   $("#p-skin").textContent = (skin.name || skin.id).toUpperCase();
@@ -334,8 +335,18 @@ function onReply(id, d){
 const voice = $("#voice");
 const SILENT = "data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YZABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA";
 let unlocked = false;
+let vAnalyser = null, vBuf = new Uint8Array(512);
+function listenToVoice(){   // the lips follow the real audio: loudness and brightness of what is playing
+  if (vAnalyser) return;
+  try {
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    const src = ac.createMediaElementSource(voice); vAnalyser = ac.createAnalyser(); vAnalyser.fftSize = 512;
+    src.connect(vAnalyser); vAnalyser.connect(ac.destination); vAnalyser._ac = ac;
+  } catch (_) { vAnalyser = null; }
+}
 function unlock(){
   if (unlocked) return; unlocked = true; voice.src = SILENT; voice.play().catch(() => { unlocked = false; });
+  listenToVoice(); if (vAnalyser && vAnalyser._ac.state === "suspended") vAnalyser._ac.resume();
   if (window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance(""));
 }
 function speak(text){
@@ -458,12 +469,17 @@ function frame(now){
   const st = S.recording ? "listen" : S.waiting ? "think" : S.playing ? "speak" : (S.state.state || "idle");
   T += dt * (st === "think" ? 3.2 : st === "listen" ? 1.6 : st === "speak" ? 1.3 : .6);
   if (analyser) { analyser.getByteTimeDomainData(buf); let m = 0; for (const v of buf) m = Math.max(m, Math.abs(v - 128)); S.target = m / 50; }
-  else if (S.playing) S.target = .35 + Math.random() * .5;
+  let raw = 0, shape = .5;
+  if (S.playing && vAnalyser && !voice.paused) {
+    vAnalyser.getByteTimeDomainData(vBuf);
+    let m = 0, zc = 0; for (let i = 0; i < vBuf.length; i++) { m = Math.max(m, Math.abs(vBuf[i] - 128)); if (i && (vBuf[i] - 128) * (vBuf[i - 1] - 128) < 0) zc++; }
+    raw = Math.min(1.5, m / 32); shape = Math.min(1, zc / vBuf.length * 5); S.target = raw;
+  } else if (S.playing) { raw = S.target = .3 + .45 * Math.abs(Math.sin(now / 105)) * (.6 + .4 * Math.sin(now / 331)); shape = .5 + .3 * Math.sin(now / 170); }
   S.level += (S.target - S.level) * (S.target > S.level ? .45 : .12); S.target *= .9;
   const w = cv.width / cv._d, h = cv.height / cv._d;
   g.setTransform(cv._d, 0, 0, cv._d, 0, 0); g.clearRect(0, 0, w, h); g.translate(w / 2, h / 2);
   g.globalAlpha = st === "idle" && !online() ? .45 : 1;
-  REACTOR.draw(g, Math.min(w, h) * .45, T, Math.min(1.2, S.level), PAL, {state: st, building: !!S.state.building, now, dt, src: S.recording ? "mic" : "voice"});
+  REACTOR.draw(g, Math.min(w, h) * .45, T, Math.min(1.2, S.level), PAL, {state: st, building: !!S.state.building, now, dt, src: S.recording ? "mic" : "voice", raw: S.playing ? raw : 0, shape});
   g.globalAlpha = 1;
 }
 requestAnimationFrame(frame);
