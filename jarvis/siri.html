@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070d">
+<title>Jarvis · Siri</title>
+<link rel="icon" href="icon-192.png">
+<style>
+:root{--bg:#05070d;--s1:#0d1320;--s2:#141c2e;--line:rgba(255,255,255,.08);--hi:#eef4ff;--text:#c9d4e6;--muted:#8392ab;--accent:#6cc8ff;--green:#5fe3a1}
+*{box-sizing:border-box;margin:0}
+body{background:radial-gradient(120% 60% at 50% -10%,#0b2140 0,var(--bg) 60%);background-color:var(--bg);color:var(--text);
+  font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;min-height:100dvh;
+  padding:max(20px,env(safe-area-inset-top)) 16px max(28px,env(safe-area-inset-bottom))}
+main{max-width:560px;margin:0 auto}
+.mark{font:700 13px/1 -apple-system,sans-serif;letter-spacing:.42em;color:var(--hi);direction:ltr;text-align:left}
+h1{font-size:30px;line-height:1.15;color:var(--hi);margin:22px 0 6px}
+.sub{color:var(--muted);margin-bottom:22px}
+ol{list-style:none;padding:0;counter-reset:s;display:grid;gap:12px}
+ol>li{counter-increment:s;background:var(--s1);border-radius:20px;box-shadow:inset 0 0 0 1px var(--line);padding:16px 16px 16px 16px;position:relative}
+ol>li::before{content:counter(s);position:absolute;top:16px;inset-inline-start:16px;width:28px;height:28px;border-radius:50%;
+  background:rgba(108,200,255,.16);color:var(--accent);font-weight:700;display:grid;place-items:center;font-size:14px}
+ol>li>*{margin-inline-start:42px}
+h2{font-size:17px;color:var(--hi);margin-bottom:4px}
+p{margin-bottom:6px} small{color:var(--muted);font-size:14px;display:block}
+.en{direction:ltr;unicode-bidi:isolate;font-weight:600;color:var(--hi)}
+.btns{display:grid;gap:8px;margin-top:10px}
+.btn{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;padding:0 16px;border-radius:16px;
+  background:var(--accent);color:#04121f;font-weight:700;text-decoration:none;direction:ltr}
+.btn span{font-weight:500;font-size:14px;opacity:.75}
+.btn.ghost{background:var(--s2);color:var(--hi);box-shadow:inset 0 0 0 1px var(--line)}
+.say{margin-top:22px;text-align:center;background:var(--s2);border-radius:20px;padding:20px;box-shadow:inset 0 0 0 1px var(--line)}
+.say b{display:block;font-size:22px;color:var(--hi);direction:ltr}
+.foot{color:var(--muted);font-size:14px;margin-top:20px}
+</style>
+</head>
+<body>
+<main>
+  <div class="mark">JARVIS</div>
+  <h1>ג'רוויס בסירי</h1>
+  <p class="sub">שלושה קיצורי דרך, וג'רוויס עונה ל־<span class="en">“Hey Siri, Jarvis”</span>: גם כשהמסך נעול, גם מתוך אפליקציות אחרות, וגם באוזניות.</p>
+  <ol>
+    <li><h2>הוסף את שלושת קיצורי הדרך</h2>
+      <p>לחץ על כל אחד מהכפתורים, אשר <span class="en">Download</span>, פתח את ההורדה ולחץ <span class="en">Add Shortcut</span>.
+        השמות חייבים להישאר בדיוק כמו שהם.</p>
+      <div class="btns">
+        <a class="btn" href="shortcuts/Jarvis.shortcut" download>Jarvis <span>what Siri runs</span></a>
+        <a class="btn" href="shortcuts/Jarvis%20Do.shortcut" download>Jarvis Do <span>the phone's hands</span></a>
+        <a class="btn" href="shortcuts/Jarvis%20Setup.shortcut" download>Jarvis Setup <span>pairing</span></a>
+      </div>
+      <small>אם האייפון שואל על קיצורים "לא מהימנים": <span class="en">Settings → Apps → Shortcuts → Advanced</span> → לאפשר.</small></li>
+    <li><h2>חבר את סירי לג'רוויס</h2>
+      <p>במחשב, אמור <span class="en">“Jarvis, pair Siri”</span>, או פתח את הגדרות ג'רוויס (גלגל השיניים) ← <span class="en">Pocket Jarvis → PAIR SIRI</span>.
+        כוון את מצלמת האייפון לקוד ולחץ <span class="en">Open in Shortcuts</span>. ג'רוויס יגיד שלום.</p>
+      <small>בהרצה הראשונה iOS שואל אם לאפשר גישה לקובץ ולשרת: לחץ <span class="en">Always Allow</span>. הקוד תקף לעשר דקות ולשימוש אחד.</small></li>
+    <li><h2>הקול הבריטי</h2>
+      <p><span class="en">Settings → Accessibility → Spoken Content (Read &amp; Speak) → Voices → English → English (UK)</span> ← הורד
+        את <span class="en">Arthur</span> או <span class="en">Daniel (Enhanced)</span> ובחר בו.</p></li>
+    <li><h2>לחיצה אחת: Back Tap</h2>
+      <p><span class="en">Settings → Accessibility → Touch → Back Tap → Double Tap → Jarvis</span>.
+        מעכשיו מספיקות שתי נקישות על גב הטלפון.</p>
+      <small>אייפון 15 Pro ומעלה: אפשר גם <span class="en">Action Button → Shortcut → Jarvis</span>. ב־iOS 18 ומעלה אפשר להוסיף את ג'רוויס גם למרכז הבקרה ולמסך הנעילה.</small></li>
+  </ol>
+  <div class="say"><small>עכשיו נסה</small><b>“Hey Siri, Jarvis”</b><small>ואחרי ה־<span class="en">“Sir?”</span>: <span class="en">“set a timer for five minutes”</span>. כדי לסיים: <span class="en">“thanks”</span>.</small></div>
+  <p class="foot">הודעות וואטסאפ ושיחות תמיד מחכות לאישור שלך. במצב <span class="en">Phone only</span> ג'רוויס לא נוגע במחשב.</p>
+</main>
+</body>
+</html>
