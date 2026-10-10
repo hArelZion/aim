@@ -44,6 +44,12 @@ svg{display:block}
   box-shadow:inset 0 0 0 1px var(--line);font:500 12.5px/1 var(--ui);color:var(--muted)}
 .pill i{width:7px;height:7px;border-radius:50%;background:var(--faint)}
 .pill.on{color:var(--hi)} .pill.on i{background:var(--green);box-shadow:0 0 0 3px rgba(var(--g),.18)}
+.pill.ph{color:var(--hi)} .pill.ph i{background:var(--accent);box-shadow:0 0 0 3px rgba(var(--c),.18)}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;background:var(--s1);border-radius:18px;box-shadow:inset 0 0 0 1px var(--line)}
+.modes button{min-height:48px;border-radius:14px;color:var(--muted);font:600 15px/1 var(--ui);transition:background .2s,color .2s}
+.modes button.on{background:var(--accent);color:var(--bg)}
+.hands{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px} .hands .chip{text-decoration:none;margin:0}
+.hands small{flex-basis:100%;font-size:12px;color:var(--muted)}
 
 /* screens */
 main{position:relative;min-height:0}
@@ -268,9 +274,13 @@ nav button.on{color:var(--hi)} nav button.on svg{stroke:var(--accent)}
           <input class="namein" id="dev-name" autocomplete="off" enterkeyhint="done"></label>
       </form>
       <p class="note">The name your computer shows for this phone.</p>
+      <div class="lbl">Who does the work</div>
+      <div class="modes" id="modes" role="radiogroup" aria-label="Who does the work">
+        <button data-mode="auto" role="radio">Auto</button><button data-mode="phone" role="radio">Phone only</button><button data-mode="pc" role="radio">Computer</button></div>
+      <p class="note" id="mode-t"></p>
       <div class="lbl">Pocket Jarvis</div>
       <div class="card"><p class="muted" style="font-size:15px">Your phone talks to Jarvis through your own private database. No port is open on the computer,
-        and no key is in this page. When the computer is off, what you send waits and runs when it's back.</p></div>
+        and no key is in this page. When the computer is asleep, I answer from the cloud; what only the computer can do waits for it if you say so.</p></div>
       <div class="lbl">Account</div>
       <div class="list"><button class="row danger" id="signout"><span class="ic red"><svg viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg></span><span class="tx">Sign out on this phone</span></button></div>
     </section>
@@ -304,7 +314,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);   // same s
 const $ = s => document.querySelector(s);
 const STEPS = ["brief", "design", "imagery", "build", "review", "deliver"];
 const LABEL = {boot: "Starting", idle: "Standing by", listen: "Listening", think: "Thinking", speak: "Speaking"};
-const S = {state: {}, skinId: null, level: 0, target: 0, waiting: 0, playing: false, recording: false, tab: "talk"};
+const S = {mode: "auto", state: {}, skinId: null, level: 0, target: 0, waiting: 0, playing: false, recording: false, tab: "talk"};
 Skin.assetBase = "";   // the skins' pictures sit beside this page
 let PAL = Skin.palette({}), REACTOR = makeReactor("rings");
 
@@ -349,20 +359,21 @@ async function start(){
     const row = p.new || {}; if (!row.id) return;
     if (row.id === "jarvis_state") setState(row.data);
     else if (row.id === "jarvis_projects") renderSites(row.data);
+    else if (row.id === "jarvis_mode") setMode((row.data || {}).mode);
     else if (row.id.startsWith("jrep-")) onReply(row.id.slice(5), row.data);
   }).subscribe();
   refresh(); setInterval(() => renderOnline(), 5000);
 }
 async function refresh(){
-  const { data } = await sb.from("control").select("id,data").in("id", ["jarvis_state", "jarvis_projects"]);
-  for (const r of data || []) (r.id === "jarvis_state" ? setState : renderSites)(r.data);
+  const { data } = await sb.from("control").select("id,data").in("id", ["jarvis_state", "jarvis_projects", "jarvis_mode"]);
+  for (const r of data || []) r.id === "jarvis_mode" ? setMode((r.data || {}).mode) : (r.id === "jarvis_state" ? setState : renderSites)(r.data);
 }
 function hello(){ sb.from("control").upsert({id: "jdev-" + DEVICE, data: {name: devName(), last: Date.now() / 1000, ua: navigator.userAgent.slice(0, 120)}}); }
 function online(){ return S.state.ts && Date.now() / 1000 - S.state.ts < 60; }
 function renderOnline(){
-  const on = online(); $("#pc").classList.toggle("on", on);
+  const on = online(), ph = S.mode === "phone"; $("#pc").classList.toggle("on", on && !ph); $("#pc").classList.toggle("ph", ph);
   const ago = S.state.ts ? Math.round((Date.now() / 1000 - S.state.ts) / 60) : null;
-  $("#pc-t").textContent = on ? "Computer online" : ago === null ? "Computer offline" : "Asleep · " + (ago < 60 ? ago + " min" : Math.round(ago / 60) + " h");
+  $("#pc-t").textContent = ph ? "Phone only" : on ? "Computer · online" : "Computer asleep";
   $("#p-state").textContent = on ? (S.state.building ? "Online · building" : "Online") : "Asleep" + (ago === null ? "" : " for " + (ago < 60 ? ago + " min" : Math.round(ago / 60) + " h"));
 }
 function setState(st){
@@ -411,6 +422,72 @@ async function poll(id){   // realtime usually answers first; this is the safety
     const { data } = await sb.from("control").select("data").eq("id", "jrep-" + id).maybeSingle();
     if (data) return onReply(id, data.data);
   }
+}
+// who does the work: Auto · Phone only · Computer (the `jarvis_mode` row; the HUD and voice change it too)
+const FN = SUPABASE_URL + "/functions/v1/jarvis";
+const MODE_TEXT = {auto: "Your computer when it's awake; my own brain in the cloud when it isn't.",
+  phone: "I answer from the cloud and never touch your computer.",
+  pc: "Always through your computer. When it's asleep, I offer to queue it."};
+function setMode(m){
+  if (!MODE_TEXT[m]) return; S.mode = m;
+  document.querySelectorAll("#modes button").forEach(b => { b.classList.toggle("on", b.dataset.mode === m); b.setAttribute("aria-checked", b.dataset.mode === m); });
+  $("#mode-t").textContent = MODE_TEXT[m]; renderOnline();
+}
+$("#modes").onclick = async e => {
+  const b = e.target.closest("[data-mode]"); if (!b || b.dataset.mode === S.mode) return;
+  const old = S.mode; setMode(b.dataset.mode);
+  const { error } = await sb.from("control").upsert({id: "jarvis_mode", data: {mode: b.dataset.mode, by: "app", ts: Date.now() / 1000}});
+  if (error) { setMode(old); toast("Couldn't change it: " + error.message); }
+};
+function pcFresh(){ return S.state.ts && S.state.online !== false && Date.now() / 1000 - S.state.ts < 45; }
+function route(cmd, youText){   // the computer when it's awake and allowed (its voice, screenshots); otherwise the cloud brain
+  if (cmd.type === "confirm" || (S.mode !== "phone" && pcFresh())) return send(cmd, youText);
+  return cloud(cmd, youText);
+}
+async function cloud(cmd, youText){
+  const quiet = youText === null, you = quiet ? null : bubble("you", youText || "…"), j = quiet ? null : bubble("j wait");
+  S.waiting++; setLabel("Thinking");
+  const body = {via: "app", device: DEVICE, tz: Intl.DateTimeFormat().resolvedOptions().timeZone, text: cmd.text || youText || ""};
+  if (cmd.audio) Object.assign(body, {audio: cmd.audio, mime: cmd.mime, text: ""});
+  if (cmd.type === "build") body.kind = "build";
+  if (cmd.type === "action") body.action = cmd.name;
+  let d;
+  try {
+    const { data } = await sb.auth.getSession();
+    const r = await fetch(FN, {method: "POST", body: JSON.stringify(body),
+      headers: {"Content-Type": "application/json", Authorization: "Bearer " + ((data.session || {}).access_token || "")}});
+    d = await r.json();
+  } catch (_) { d = {say: "I can't reach my brain right now, sir."}; }
+  S.waiting = Math.max(0, S.waiting - 1); if (!S.waiting && !S.playing) setLabel(idle());
+  if (quiet) { if (d.say) toast(d.say.length > 46 ? d.say.slice(0, 44) + "…" : d.say); return; }
+  if (cmd.audio) you.textContent = d.heard || "…";
+  j.classList.remove("wait"); j.textContent = d.say || "";
+  if ((d.do || []).length) j.appendChild(hands(d.do));
+  convo.scrollTop = convo.scrollHeight;
+  if (d.say) speak(d.say);
+}
+// The phone's hands: a web page can't set a timer or send a WhatsApp, so each action is a button that hands it to the
+// "Jarvis Do" shortcut on iPhone (POCKET_PLAN P3); web links simply open.
+const IOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+function handLabel(a){
+  const m = {timer: () => "Timer · " + (a.s >= 3600 ? Math.round(a.s / 360) / 10 + " h" : a.s >= 60 ? Math.round(a.s / 6) / 10 + " min" : a.s + " s"),
+    alarm: () => "Alarm · " + a.time, reminder: () => "Remind · " + a.text, event: () => "Calendar · " + a.title, note: () => "Note",
+    open: () => "Open " + (a.app || "link"), call: () => "Call " + (a.who || a.number), message: () => (a.app === "sms" ? "Text " : "WhatsApp ") + a.who,
+    music: () => "Play · " + a.query, directions: () => "Directions · " + a.to, torch: () => "Torch " + (a.on ? "on" : "off")}[a.a];
+  return m ? m() : a.a[0].toUpperCase() + a.a.slice(1);
+}
+function hands(list){
+  const box = document.createElement("div"); box.className = "hands"; let needs = false;
+  for (const a of list) {
+    const web = a.a === "open" && /^https?:/.test(a.url || "");
+    const el = document.createElement(web || IOS ? "a" : "span"); el.className = "chip"; el.textContent = handLabel(a);
+    if (web) { el.href = a.url; el.target = "_blank"; el.rel = "noopener"; }
+    else if (IOS) { el.href = "shortcuts://run-shortcut?name=Jarvis%20Do&input=text&text=" + encodeURIComponent(JSON.stringify([a])); needs = true; }
+    else needs = true;
+    box.appendChild(el);
+  }
+  if (needs) { const n = document.createElement("small"); n.textContent = IOS ? "Runs with the Jarvis shortcut on this iPhone." : "Needs Jarvis for Android (coming)."; box.appendChild(n); }
+  return box;
 }
 function done(id){ delete waiting[id]; S.waiting = Math.max(0, S.waiting - 1); if (!S.waiting && !S.playing) setLabel(idle()); }
 function onReply(id, d){
@@ -469,9 +546,9 @@ voice.onended = voice.onpause = () => { S.playing = false; if (!S.waiting) setLa
 
 const bar = $("#bar"), sayT = $("#say-t");
 sayT.oninput = () => bar.classList.toggle("typed", !!sayT.value.trim());
-$("#say").onsubmit = e => { e.preventDefault(); const t = sayT.value.trim(); if (!t) return; sayT.value = ""; bar.classList.remove("typed"); sayT.blur(); send({type: "talk", text: t}, t); };
-document.querySelectorAll("[data-say]").forEach(b => b.onclick = () => send({type: "talk", text: b.dataset.say}, b.dataset.say));
-document.querySelectorAll("[data-chip]").forEach(b => b.onclick = () => send({type: "action", name: b.dataset.chip}, b.textContent.trim()));
+$("#say").onsubmit = e => { e.preventDefault(); const t = sayT.value.trim(); if (!t) return; sayT.value = ""; bar.classList.remove("typed"); sayT.blur(); route({type: "talk", text: t}, t); };
+document.querySelectorAll("[data-say]").forEach(b => b.onclick = () => route({type: "talk", text: b.dataset.say}, b.dataset.say));
+document.querySelectorAll("[data-chip]").forEach(b => b.onclick = () => route({type: "action", name: b.dataset.chip}, b.textContent.trim()));
 
 // tap to talk (the core or the small mic): it stops by itself after a pause; tap again to send at once.
 // The recording goes to the computer, which hears it with the same ears it uses at home.
@@ -508,7 +585,7 @@ async function finishRec(){
   if (!heard || Date.now() - recStart < 450) { setLabel(idle()); return toast("I didn't catch that"); }
   const blob = new Blob(chunks, {type: rec.mimeType || "audio/webm"});
   const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(",")[1]); fr.readAsDataURL(blob); });
-  send({type: "talk", audio: b64, mime: blob.type}, "");
+  route({type: "talk", audio: b64, mime: blob.type}, "");
 }
 function toggleRec(){ if (S.recording) { heard = heard || Date.now() - recStart > 600; stopRec(); } else startRec(); }
 $("#mic").onclick = toggleRec;
@@ -516,7 +593,7 @@ $("#core").onclick = toggleRec;
 
 // ---------- build ----------
 $("#b-form").onsubmit = e => { e.preventDefault(); const t = $("#b-text").value.trim(); if (!t) return; $("#b-text").value = ""; $("#b-text").blur();
-  show("talk"); send({type: "build", text: t}, t); };
+  show("talk"); route({type: "build", text: t}, t); };
 function renderBuild(){
   const st = S.state, p = st.project, card = $("#b-card");
   if (p && p.title) {
@@ -546,8 +623,8 @@ function renderPC(){
 }
 document.querySelectorAll("[data-act]").forEach(b => b.onclick = () => {
   const a = b.dataset.act, label = (b.textContent.trim() || b.getAttribute("aria-label"));
-  if (a === "screen" || a === "lock" || a === "stop_build") { show("talk"); send({type: "action", name: a}, label); }
-  else { send({type: "action", name: a}, null); toast(label); if (navigator.vibrate) navigator.vibrate(8); }
+  if (a === "screen" || a === "lock" || a === "stop_build") { show("talk"); route({type: "action", name: a}, label); }
+  else { route({type: "action", name: a}, null); if (pcFresh() && S.mode !== "phone") toast(label); if (navigator.vibrate) navigator.vibrate(8); }
 });
 
 // ---------- sites ----------
@@ -600,7 +677,7 @@ function frame(now){
 requestAnimationFrame(frame);
 
 function demo(){
-  const now = Date.now() / 1000;
+  const now = Date.now() / 1000; setMode((location.search.match(/[?&]mode=(\w+)/) || [])[1] || "auto");
   setState({ts: now, online: true, state: "idle", building: true, sys: {cpu: 41, ram: 78},
     project: {title: "Brickle Wood-fired Kitchen", slug: "brickle", started: now - 74}, steps: {phase: "build", seen: ["brief", "design", "imagery"]},
     log: [{tag: "BUILD", text: "New project: Brickle Wood-fired Kitchen"}, {tag: "IMG", text: "Commissioning 5 photographs"},
