@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Serenity Tea House – Handcrafted Loose Leaf Teas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Discover Serenity Tea House, where artisanal loose‑leaf teas are sourced from boutique gardens. Explore tasting notes, brewing guides, and shop premium blends delivered to your door.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22 font-family=%22serif%22 fill=%22%23663%22>☕</text></svg>">
+<style>
+:root{
+  --font-heading:"Playfair Display",serif;
+  --font-body:"Inter",sans-serif;
+  --color-bg:#faf9f5;
+  --color-primary:#6b4f4f;
+  --color-accent:#c49e6c;
+  --color-text:#333;
+  --color-muted:#777;
+  --gradient-overlay:linear-gradient(to bottom,rgba(0,0,0,0.4),rgba(0,0,0,0.6));
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);
+  color:var(--color-text);
+  background:var(--color-bg);
+  line-height:1.6;
+}
+a{
+  color:var(--color-primary);
+  text-decoration:none;
+}
+a:focus{outline:2px solid var(--color-accent);}
+nav{
+  position:sticky;
+  top:0;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid #e2e0d9;
+  z-index:10;
+}
+nav ul{
+  display:flex;
+  gap:2rem;
+  list-style:none;
+  padding:1rem 2rem;
+  justify-content:flex-end;
+}
+nav a{
+  font-weight:600;
+  font-size:clamp(0.9rem,1vw,1.1rem);
+}
+.hero{
+  position:relative;
+  height:70vh;
+  min-height:400px;
+}
+.hero img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:var(--gradient-overlay);
+}
+.hero .hero-content{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  color:#fff;
+  padding:0 1rem;
+}
+.hero h1{
+  font-family:var(--font-heading);
+  font-size:clamp(2.5rem,6vw,4rem);
+  margin-bottom:0.5rem;
+}
+.hero p{
+  font-size:clamp(1rem,2vw,1.25rem);
+  max-width:45ch;
+}
+section{
+  padding:4rem 2rem;
+  max-width:1200px;
+  margin:auto;
+}
+section:not(:last-of-type){border-bottom:1px solid #e2e0d9;}
+h2{
+  font-family:var(--font-heading);
+  font-size:clamp(2rem,4vw,2.5rem);
+  margin-bottom:1rem;
+  color:var(--color-primary);
+}
+p{margin-bottom:1rem;}
+.grid{
+  display:grid;
+  gap:2rem;
+}
+@media(min-width:768px){
+  .grid-2{grid-template-columns:repeat(2,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+}
+img[data-brief]{
+  width:100%;
+  height:auto;
+  border-radius:8px;
+  transition:transform .3s;
+}
+img[data-brief]:hover{
+  transform:scale(1.02);
+}
+.fade-in{
+  opacity:0;
+  transform:translateY(20px);
+  transition:opacity .6s ease-out, transform .6s ease-out;
+}
+.fade-in.visible{
+  opacity:1;
+  transform:none;
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;}
+}
+footer{
+  background:#222;
+  color:#ddd;
+  text-align:center;
+  padding:2rem 1rem;
+  font-size:0.9rem;
+}
+footer a{color:#c49e6c;}
+</style>
+</head>
+<body>
+<nav>
+  <ul>
+    <li><a href="#story">Our Story</a></li>
+    <li><a href="#blends">Blends</a></li>
+    <li><a href="#brew">Brew Guide</a></li>
+    <li><a href="#shop">Shop</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<header class="hero">
+  <img src="assets/hero.jpg" data-brief="sunlit tea garden rows, early morning mist, 50mm prime, muted green palette" alt="Rows of tea bushes in a misty garden at sunrise" width="1600" height="900">
+  <div class="hero-content">
+    <h1>Serenity in Every Sip</h1>
+    <p>Hand‑crafted loose leaf teas sourced from boutique farms, curated for moments of calm.</p>
+  </div>
+</header>
+
+<main>
+<section id="story" class="fade-in">
+  <h2>Our Story</h2>
+  <div class="grid grid-2">
+    <div>
+      <p>Founded in 2015 by former botanist Maya Liu, Serenity Tea House began as a small stall at a Kyoto market. Today we partner with three generations of tea growers across Darjeeling, Uji, and Yunnan, ensuring each leaf is harvested at peak flavor.</p>
+      <p>Our commitment is simple: sustainable cultivation, transparent sourcing, and a ritual that turns everyday tea time into a pause for mindfulness.</p>
+    </div>
+    <img src="assets/story.jpg" data-brief="close‑up of hand‑picked tea leaves on a bamboo mat, soft diffused light, macro lens, warm earth tones" alt="Hand‑picked tea leaves spread on a bamboo mat" width="800" height="600">
+  </div>
+</section>
+
+<section id="blends" class="fade-in">
+  <h2>Signature Blends</h2>
+  <div class="grid grid-3">
+    <div>
+      <img src="assets/blend1.jpg" data-brief="golden sunrise over a misty Darjeeling tea estate, wide angle, pastel palette" alt="Darjeeling sunrise view" width="400" height="300">
+      <h3>Morning Mist – Darjeeling First Flush</h3>
+      <p>Light and floral with notes of jasmine and citrus. Best brewed at 85 °C for 3 minutes.</p>
+    </div>
+    <div>
+      <img src="assets/blend2.jpg" data-brief="steam rising from a porcelain cup of green tea, side lighting, 85mm lens, cool teal tones" alt="Steaming cup of green tea" width="400" height="300">
+      <h3>Zen Green – Uji Matcha Blend</h3>
+      <p>Vibrant umami and a hint of seaweed. Whisk 1 tsp with 70 ml water at 80 °C.</p>
+    </div>
+    <div>
+      <img src="assets/blend3.jpg" data-brief="rich amber tea in a glass teapot, warm backlight, 35mm lens, amber‑brown palette" alt="Amber tea in glass teapot" width="400" height="300">
+      <h3>Evening Ember – Yunnan Black</h3>
+      <p>Full‑bodied, caramel‑sweet with subtle spice. Steep at 95 °C for 4 minutes.</p>
+    </div>
+  </div>
+</section>
+
+<section id="brew" class="fade-in">
+  <h2>Perfect Brew Guide</h2>
+  <div class="grid grid-2">
+    <div>
+      <p>Temperature and time are the two variables that unlock a tea’s personality. Use a kitchen scale for 2 g of leaves per 200 ml of water and follow the chart below.</p>
+      <ul>
+        <li><strong>White Tea:</strong> 75 °C – 2 min</li>
+        <li><strong>Green Tea:</strong> 80 °C – 2 min</li>
+        <li><strong>Oolong:</strong> 85 °C – 3 min</li>
+        <li><strong>Black Tea:</strong> 95 °C – 4 min</li>
+      </ul>
+    </div>
+    <img src="assets/brew.jpg" data-brief="hands pouring hot water over a tea infuser, natural window light, 50mm lens, soft neutral tones" alt="Hot water being poured over a tea infuser" width="800" height="600">
+  </div>
+</section>
+
+<section id="shop" class="fade-in">
+  <h2>Shop Our Collection</h2>
+  <p>All blends are available in 50 g tins, 100 g tins, and sampler boxes. Free worldwide shipping on orders over $75.</p>
+  <a href="#" style="display:inline-block;margin-top:1rem;padding:0.75rem 1.5rem;background:var(--color-primary);color:#fff;border-radius:4px;font-weight:600;">Visit the Store →</a>
+</section>
+
+<section id="contact" class="fade-in">
+  <h2>Get in Touch</h2>
+  <p>We love hearing from fellow tea enthusiasts. Whether you have a question about brewing or want to share your tea story, drop us a line.</p>
+  <p>Email: <a href="mailto:hello@serenitytea.com">hello@serenitytea.com</a> | Phone: +1 (555) 123‑4567</p>
+  <p>Follow us on Instagram <a href="https://instagram.com/serenitytea" target="_blank">@serenitytea</a></p>
+</section>
+</main>
+
+<footer>
+  © 2026 Serenity Tea House. All rights reserved. | <a href="#">Privacy Policy</a>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries)=> {
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
