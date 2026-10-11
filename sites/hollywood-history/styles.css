@@ -1,0 +1,707 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0B0A09;
+  --bg-2: #171513;
+  --fg: #EAE5DC;
+  --fg-dim: #C5BFB5;
+  --muted: #8A847C;
+  --accent: #D4AF37;
+  --accent-2: #9E2A2B;
+  --line: rgba(212, 175, 55, 0.18);
+  --line-strong: rgba(212, 175, 55, 0.38);
+  --display: 'Cinzel Decorative', Georgia, serif;
+  --body: 'Cormorant Garamond', Garamond, 'Times New Roman', serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 2px;
+  --letterbox: 48px;
+  --sprocket-gap: 24px;
+  --grid-gutter: 2rem;
+  --max-width: 1200px;
+}
+
+/* Ambient Grain & Celluloid Vignette */
+body {
+  position: relative;
+  font-size: 19px;
+  line-height: 1.7;
+  letter-spacing: 0.015em;
+  background-color: var(--bg);
+  color: var(--fg);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 70%),
+    radial-gradient(circle at 80% 80%, rgba(158, 42, 43, 0.04) 0%, transparent 60%),
+    linear-gradient(to bottom, #0B0A09 0%, #100E0D 50%, #0B0A09 100%);
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Cinema Letterbox Framing Bars */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.85);
+  border-top: 1px solid rgba(212, 175, 55, 0.15);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+/* Cinematic Typography */
+h1, h2, h3, h4 {
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+  line-height: 1.15;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-size: clamp(2.4rem, 6vw, 4.75rem);
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.85);
+  margin-bottom: 1.2rem;
+}
+
+h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+h3 {
+  font-size: clamp(1.3rem, 2.5vw, 1.85rem);
+  letter-spacing: 0.05em;
+  color: var(--fg);
+  margin-bottom: 1rem;
+}
+
+p {
+  font-size: 1.18rem;
+  color: var(--fg-dim);
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+
+.lede {
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+  line-height: 1.55;
+  color: var(--fg);
+  font-style: normal;
+  max-width: 48ch;
+  margin-bottom: 2rem;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.eyebrow::before,
+.eyebrow::after {
+  content: "♦";
+  font-size: 0.65rem;
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+/* Navigation - Monograph Title Bar */
+.nav {
+  background: rgba(11, 10, 9, 0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  transition: all 0.4s ease;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav.is-condensed {
+  background: rgba(11, 10, 9, 0.96);
+  border-bottom-color: var(--line-strong);
+}
+
+.logo {
+  font-family: var(--display);
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  color: var(--fg);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo::before {
+  content: "■";
+  color: var(--accent-2);
+  font-size: 0.9rem;
+}
+
+.nav__links a {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  transition: color 0.3s ease, letter-spacing 0.3s ease;
+  padding: 1.25rem 0;
+}
+
+.nav__links a:hover {
+  color: var(--accent);
+  letter-spacing: 0.2em;
+}
+
+/* Hero - Nitrate Projection Opening */
+.hero {
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 8rem 0 6rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, var(--bg) 0%, rgba(11, 10, 9, 0.65) 50%, rgba(11, 10, 9, 0.85) 100%),
+    radial-gradient(circle at 50% 50%, transparent 30%, rgba(11, 10, 9, 0.75) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.hero .wrap {
+  position: relative;
+  z-index: 3;
+}
+
+.hero-meta-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+}
+
+.hero-meta-bar span strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* Film Slate & Act Headers */
+.act-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+.act-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+.act-number {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  color: var(--accent-2);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Grid System */
+.wrap {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--grid-gutter);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--grid-gutter);
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--grid-gutter);
+}
+
+/* Sections Styling */
+.section {
+  padding: 7rem 0;
+  position: relative;
+  border-bottom: 1px solid var(--line);
+}
+
+.section--alt {
+  background-color: var(--bg-2);
+  background-image: linear-gradient(180deg, rgba(23, 21, 19, 0.6), rgba(11, 10, 9, 0.9));
+}
+
+/* Editorial Split and Film Reel Layouts */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: var(--grid-gutter);
+}
+
+.split--reversed {
+  direction: rtl;
+}
+.split--reversed > * {
+  direction: ltr;
+}
+
+/* Celluloid Frame Treatment */
+.media {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #000;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+}
+
+.media::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.85);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: contrast(1.08) saturate(0.92);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease;
+}
+
+.media:hover img {
+  transform: scale(1.03);
+  filter: contrast(1.12) saturate(1.05);
+}
+
+/* Anamorphic & Film Ratio Badges */
+.ratio-169 {
+  aspect-ratio: 16/9;
+}
+
+.ratio-34 {
+  aspect-ratio: 3/4;
+}
+
+.ratio-43 {
+  aspect-ratio: 4/3;
+}
+
+.ratio-11 {
+  aspect-ratio: 1/1;
+}
+
+figcaption {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.85rem 1rem;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+figcaption span:last-child {
+  color: var(--accent);
+}
+
+/* Archival Cards & Film Slates */
+.card {
+  background: rgba(23, 21, 19, 0.55);
+  border: 1px solid var(--line);
+  padding: 2.5rem;
+  position: relative;
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--line-strong);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.08);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-2), var(--accent), transparent);
+  opacity: 0.6;
+}
+
+.card__year {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.card h3 {
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+}
+
+.card p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* Production Notes / Archival Script Style */
+.script-quote {
+  position: relative;
+  padding: 2.5rem 3rem;
+  margin: 2.5rem 0;
+  background: rgba(11, 10, 9, 0.75);
+  border-left: 2px solid var(--accent);
+  border-right: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.script-quote p {
+  font-style: italic;
+  font-size: 1.35rem;
+  color: var(--fg);
+  line-height: 1.6;
+}
+
+.script-quote cite {
+  display: block;
+  margin-top: 1.25rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-style: normal;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Interactive Decade Archive Tabs */
+[role="tablist"] {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1.5rem;
+}
+
+.tab {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.6rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  color: var(--fg);
+  border-color: var(--accent);
+}
+
+.tab[aria-selected="true"] {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 500;
+}
+
+[role="tabpanel"] {
+  animation: reelFlicker 0.4s ease;
+}
+
+@keyframes reelFlicker {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Archival Stats Counter */
+.stat {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: rgba(23, 21, 19, 0.4);
+  border: 1px solid var(--line);
+}
+
+.stat strong {
+  font-family: var(--display);
+  font-size: 2.8rem;
+  color: var(--accent);
+  display: block;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+
+.stat span {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+}
+
+/* Buttons and Action Triggers */
+.btn {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border-radius: var(--radius);
+  padding: 1rem 2rem;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+.btn--accent {
+  background: var(--accent);
+  color: #0B0A09;
+  border: 1px solid var(--accent);
+  font-weight: 600;
+}
+
+.btn--accent:hover {
+  background: #E5C358;
+  border-color: #E5C358;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
+  transform: translateY(-2px);
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--line-strong);
+}
+
+.btn--outline:hover {
+  background: rgba(212, 175, 55, 0.08);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Archival Form & Screening Registration */
+.form {
+  background: rgba(23, 21, 19, 0.7);
+  padding: 3rem;
+  border: 1px solid var(--line);
+}
+
+.field label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  background: rgba(11, 10, 9, 0.9);
+  border: 1px solid var(--line);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 1.15rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius);
+  transition: border-color 0.3s ease;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+/* Filmstrip Sprocket Perforations Header / Separator */
+.filmstrip-rule {
+  height: 28px;
+  width: 100%;
+  margin: 4rem 0;
+  background-color: #070706;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  background-image: radial-gradient(circle, #000 35%, transparent 36%);
+  background-size: var(--sprocket-gap) 100%;
+  background-position: center;
+  opacity: 0.85;
+}
+
+/* Footer - End Credits Sequence */
+.footer {
+  background: #050504;
+  border-top: 1px solid var(--line-strong);
+  padding: 6rem 0 3rem;
+  position: relative;
+}
+
+.footer__big {
+  font-family: var(--display);
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  color: rgba(234, 229, 220, 0.18);
+  text-align: center;
+  margin-bottom: 4rem;
+  letter-spacing: 0.12em;
+}
+
+.footer__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding-top: 2rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .grid-2, .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .split {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 6rem 0 4rem;
+    min-height: auto;
+  }
+
+  .card {
+    padding: 1.8rem;
+  }
+
+  .form {
+    padding: 2rem 1.5rem;
+  }
+
+  .script-quote {
+    padding: 1.8rem 1.5rem;
+  }
+
+  .footer__row {
+    flex-direction: column;
+    gap: 1.25rem;
+    text-align: center;
+  }
+
+  .nav__links a {
+    padding: 0.75rem 0;
+  }
+
+  .nav__toggle {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .nav__links {
+    padding: 1rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --grid-gutter: 1rem;
+  }
+
+  .hero-meta-bar {
+    gap: 1rem;
+    flex-direction: column;
+  }
+
+  .act-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .section {
+    padding: 5rem 0;
+  }
+}
