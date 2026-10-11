@@ -281,6 +281,9 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 .pc .bar2 { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
 .pc .bar2 i { display: block; height: 100%; background: var(--accent); }
 .pc .tile.wide { grid-column: 1 / -1; }
+.pc .uhead { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; font-size: .82rem; font-weight: 600; margin-top: 4px; text-align: start; }
+.pc .uhead .logo { width: 16px; height: 16px; }
+.pc .unote { grid-column: 1 / -1; font-size: .72rem; color: var(--muted); text-align: start; margin-top: -2px; }
 .pc .lines { display: grid; gap: 4px; font-size: .82rem; }
 .pc .lines div { display: flex; align-items: center; gap: 6px; }
 .pc .lines .logo { width: 14px; height: 14px; }
@@ -536,6 +539,7 @@ const I18N = {
     password: "סיסמה (8 תווים לפחות)",
     convsTitle: "השיחות שלך", conversations: "שיחות", currentTag: "נוכחית",
     oldConv: "זו שיחה קודמת. אפשר לקרוא, לא לשלוח.", backCurrent: "לשיחה הנוכחית", untitled: "שיחה בלי שם",
+    gemToday: "בקשות היום", gemNote: "מתאפס בחצות שעון קליפורניה", gemLimit: "מגבלת החינם", gemLimited: "הגיע למגבלה", gemOk: "תקין", noUsage: "עוד אין נתונים", gptNo5h: "אין", gptNote: "לפי התשובה האחרונה של ChatGPT, ",
     edited: "נערכה", editMsg: "עריכת ההודעה", saveEdit: "שמירה ושליחה מחדש",
     quickHint: "כפתור בכל שורה. לחיצה על כפתור שולחת את הטקסט שלו מיד.", save: "שמירה", cancel: "ביטול", reset: "ברירת מחדל", editQuick: "עריכת הכפתורים",
     quickDefault: ["המשך", "מה המצב?", "עצור", "תסכם בקצרה", "פרסם", "תבדוק שוב ותתקן"],
@@ -581,6 +585,7 @@ const I18N = {
     password: "Password (8+ characters)",
     convsTitle: "Your conversations", conversations: "Conversations", currentTag: "current",
     oldConv: "This is an earlier conversation. You can read it, not send to it.", backCurrent: "Current conversation", untitled: "Untitled conversation",
+    gemToday: "Requests today", gemNote: "resets at midnight Pacific", gemLimit: "Free limit", gemLimited: "limit reached", gemOk: "OK", noUsage: "No data yet", gptNo5h: "none", gptNote: "As of ChatGPT's last answer, ",
     edited: "edited", editMsg: "Edit message", saveEdit: "Save and resend",
     quickHint: "One button per line. Tapping a button sends its text right away.", save: "Save", cancel: "Cancel", reset: "Defaults", editQuick: "Edit buttons",
     quickDefault: ["Continue", "What's the status?", "Stop", "Summarize briefly", "Publish", "Check again and fix"],
@@ -770,13 +775,33 @@ function lineState(k) {
   return wAt && now - wAt < 75000 ? "lineOn" : "lineOff";
 }
 const curWFor = (k) => { const a = watchers.claude || {}, b = watchers.team || {}; return toMs(b.at) > toMs(a.at) ? b : a; };
+function usageTiles(k, head) {
+  const out = [], u = k === "claude" ? pc : pc[k] || null;
+  const rs = (iso) => (iso ? t("resetsIn") + stamp(toMs(iso)) : "");
+  if (head) { const h = el("div", "uhead"); h.append(logoEl(k), document.createTextNode(AUTHORS[k].name)); out.push(h); }
+  if (k === "gemini") {
+    const today = u && u.day === new Date(Date.now() - 7 * 3600000).toISOString().slice(0, 10) ? u : null;
+    const lim = today ? Object.keys(today.limited || {}) : [];
+    out.push(tile(t("gemToday"), String(today ? today.count : 0), null, t("gemNote")));
+    out.push(tile(t("gemLimit"), lim.length ? t("gemLimited") : t("gemOk"), null, lim.length ? lim.join(", ") : ""));
+    return out;
+  }
+  if (!u || (u.use5h == null && u.useWeek == null)) { out.push(tile(t("use5h"), "—", null, t("noUsage"), true)); return out; }
+  if (u.use5h != null) out.push(tile(t("use5h"), pct(u.use5h) + "%", pct(u.use5h), rs(u.reset5h)));
+  if (u.useWeek != null) out.push(tile(t("useWeek"), pct(u.useWeek) + "%", pct(u.useWeek), rs(u.resetWeek)));
+  if (k === "gpt") {
+    if (u.use5h == null) out.push(tile(t("use5h"), t("gptNo5h"), null, u.plan ? "ChatGPT " + u.plan : ""));
+    if (u.at) out.push(el("small", "unote", t("gptNote") + ago(Date.now() - toMs(u.at))));
+  }
+  return out;
+}
 function renderPc() {
   const box = $("pc"); if (!box) return; box.replaceChildren();
   const fresh = pc.at && Date.now() - toMs(pc.at) < 5 * 60000;
-  if (pc.use5h != null) box.append(tile(t("use5h"), pct(pc.use5h) + "%", pct(pc.use5h), pc.reset5h ? t("resetsIn") + stamp(toMs(pc.reset5h)) : ""));
-  if (pc.useWeek != null) box.append(tile(t("useWeek"), pct(pc.useWeek) + "%", pct(pc.useWeek), pc.resetWeek ? t("resetsIn") + stamp(toMs(pc.resetWeek)) : ""));
+  const who = model === "team" ? ["claude", "gpt", "gemini"] : [src()];   // each model shows its own limits; the team page shows everyone's
+  who.forEach((k) => usageTiles(k, model === "team").forEach((x) => box.append(x)));
   if (pc.battery != null && fresh) box.append(tile(t("battery"), pct(pc.battery) + "%" + (pc.plugged ? " ⚡" : ""), pct(pc.battery), pc.plugged ? t("charging") : ""));
-  if (pc.cpu != null && fresh) box.append(tile(t("cpu") + " / " + t("ram"), pct(pc.cpu) + "% · " + pct(pc.ram) + "%", pct(pc.ram)));
+  if (pc.cpu != null && fresh) box.append(tile(t("cpu") + " / " + t("ram"), "⁦" + pct(pc.cpu) + "% · " + pct(pc.ram) + "%⁩", pct(pc.ram)));
   const ln = el("div", "tile wide"); ln.append(el("small", null, t("lines")));
   const list = el("div", "lines");
   ["claude", "gpt", "gemini"].forEach((k) => {
