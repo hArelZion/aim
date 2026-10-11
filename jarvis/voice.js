@@ -104,6 +104,12 @@ export class Wake {
   /** Listen through the microphone (the app must be on screen; iOS shows the orange dot). */
   async start() {
     if (this.running) return;
+    if (this.starting) return this.starting;   // two taps at once must not open two microphones
+    this.starting = this._start().finally(() => { this.starting = null; });
+    return this.starting;
+  }
+
+  async _start() {
     await this.load();
     this.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
     const ac = this.ac = new (window.AudioContext || window.webkitAudioContext)();
