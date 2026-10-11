@@ -110,10 +110,18 @@ export class Wake {
   }
 
   async _start() {
-    await this.load();
-    this.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
-    const ac = this.ac = new (window.AudioContext || window.webkitAudioContext)();
-    if (ac.state === "suspended") await ac.resume().catch(() => {});
+    // each step is labelled, so a failure says where it happened (the app shows it and reports it)
+    const stage = (name, p) => Promise.resolve(p).catch((e) => { try { e.stage = e.stage || name; } catch (_) {} throw e; });
+    const fail = (name, msg) => { const e = new Error(msg); e.name = "Unsupported"; e.stage = name; throw e; };
+    await stage("models", this.load());
+    try { if (navigator.audioSession) navigator.audioSession.type = "play-and-record"; } catch (_) {}   // "playback" would refuse the microphone
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) fail("microphone", "this browser has no microphone access");
+    this.stream = await stage("microphone", navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }));
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) fail("audio", "no Web Audio here");
+    const ac = this.ac = new AC();
+    if (ac.state === "suspended") ac.resume().catch(() => {});   // never wait for it: iOS keeps that promise pending until a touch
+    if (!ac.audioWorklet) fail("audio", "no AudioWorklet here");
     const worklet = `class D extends AudioWorkletProcessor{constructor(){super();this.r=sampleRate/16000;this.p=0;this.a=0;this.n=0;this.b=[];}
       process(i){const x=i[0]&&i[0][0];if(!x)return true;for(let k=0;k<x.length;k++){let w=1;
       while(this.p+w>=this.r){const f=this.r-this.p;this.a+=x[k]*f;this.n+=f;this.b.push(Math.max(-32768,Math.min(32767,this.a/this.n*32767)));
@@ -121,9 +129,10 @@ export class Wake {
       if(w>0){this.a+=x[k]*w;this.n+=w;this.p+=w;}}
       if(this.b.length>=1280){this.port.postMessage(Float32Array.from(this.b));this.b=[];}return true;}}
       registerProcessor("d16k",D);`;
-    await ac.audioWorklet.addModule(URL.createObjectURL(new Blob([worklet], { type: "application/javascript" })));
+    await stage("worklet", ac.audioWorklet.addModule(URL.createObjectURL(new Blob([worklet], { type: "application/javascript" }))));
     const src = ac.createMediaStreamSource(this.stream);
     const node = this.node = new AudioWorkletNode(ac, "d16k");
+    const mute = ac.createGain(); mute.gain.value = 0; node.connect(mute); mute.connect(ac.destination);   // Safari may not run a node that has no path to the output
     let busy = false, queue = [];
     node.port.onmessage = async (ev) => {
       if (this.onLevel) { let m = 0; for (const v of ev.data) m = Math.max(m, Math.abs(v)); this.onLevel(m / 32768); }
@@ -143,6 +152,7 @@ export class Wake {
     try { this.stream && this.stream.getTracks().forEach((t) => t.stop()); } catch (_) {}
     try { this.ac && this.ac.close(); } catch (_) {}
     this.node = this.stream = this.ac = null;
+    try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (_) {}   // the microphone is off: loud playback again
     if (this.ready) this.reset();
   }
 }

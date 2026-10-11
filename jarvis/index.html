@@ -784,6 +784,7 @@ function mime(){ return ["audio/webm;codecs=opus", "audio/mp4", "audio/webm", "a
 async function startRec(){
   unlock(); wantStop = false; heard = false;
   if (!navigator.mediaDevices || !window.MediaRecorder) return toast("This browser can't record. Type instead.");
+  try { if (navigator.audioSession) navigator.audioSession.type = "play-and-record"; } catch (_) {}
   try { stream = wake && wake.running && wake.stream ? new MediaStream(wake.stream.getAudioTracks().map(t => t.clone()))
                  : await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true}}); }
   catch (_) { return toast("Microphone permission is needed"); }
@@ -811,7 +812,7 @@ function stopRec(){ wantStop = true; clearInterval(recTimer); if (rec && rec.sta
 async function finishRec(){
   stream.getTracks().forEach(t => t.stop()); if (analyser) analyser._ac.close(); analyser = null;
   S.recording = false; bar.classList.remove("rec");
-  try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (_) {}   // the microphone is off: back to loud playback
+  try { if (navigator.audioSession && !(wake && wake.running)) navigator.audioSession.type = "playback"; } catch (_) {}   // the microphone is off: back to loud playback
   const auto = S.autoListen; S.autoListen = false;
   if (!heard || Date.now() - recStart < 450) { setLabel(idle()); if (!auto) toast("I didn't catch that"); return; }
   const blob = new Blob(chunks, {type: rec.mimeType || "audio/webm"});
@@ -924,6 +925,11 @@ function chime(){ try { const ac = new (window.AudioContext || window.webkitAudi
   o.frequency.setValueAtTime(880, ac.currentTime); o.frequency.exponentialRampToValueAtTime(1320, ac.currentTime + .09);
   g.gain.setValueAtTime(.0001, ac.currentTime); g.gain.exponentialRampToValueAtTime(.18, ac.currentTime + .02); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime + .22);
   o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + .25); setTimeout(() => ac.close(), 400); } catch (_) {} }
+function reportDiag(what, e){   // row jdiag-<device>: what failed, where, and on which phone (read by Claude, not shown)
+  try { sb.from("control").upsert({id: "jdiag-" + DEVICE, data: {what, stage: (e && e.stage) || "", name: (e && e.name) || "", message: String((e && e.message) || e || "").slice(0, 300),
+    stack: String((e && e.stack) || "").slice(0, 600), ua: navigator.userAgent.slice(0, 160), standalone: !!navigator.standalone, ts: Date.now() / 1000,
+    audioSession: (navigator.audioSession || {}).type || null, ctx: typeof (window.AudioContext || window.webkitAudioContext), worklet: !!(window.AudioWorkletNode)}}).then(() => {}, () => {}); } catch (_) {}
+}
 // The chip beside JARVIS always says what the ears are doing (and its dot moves with the sound the microphone hears).
 function setEar(kind, text){ const e = $("#ear"); e.hidden = false; e.className = "ear " + kind; $("#ear-t").textContent = text; }
 function earState(){
@@ -944,9 +950,10 @@ async function wakeOn(){
     if (wake.ac) wake.ac.onstatechange = earState;
     earState();
   } catch (e) {
-    const n = (e && e.name) || "", msg = String((e && e.message) || e || "").slice(0, 60);
+    const n = (e && e.name) || "", msg = String((e && e.message) || e || "").slice(0, 60), st = (e && e.stage) || "";
     wake && wake.stop();
-    setEar("err", n === "NotAllowedError" || n === "SecurityError" ? "Microphone blocked · tap to retry" : n === "NotFoundError" ? "No microphone found" : "Ears failed: " + (msg || n));
+    reportDiag("ears", e);   // the exact error goes to the computer's side, so nobody has to copy it by hand
+    setEar("err", n === "NotAllowedError" || n === "SecurityError" ? "Microphone blocked · tap to retry" : n === "NotFoundError" ? "No microphone found" : "Ears failed" + (st ? " · " + st : "") + ": " + (msg || n));
     if (n === "NotAllowedError") toast("Allow the microphone: Settings → Safari → Microphone");
   }
 }
