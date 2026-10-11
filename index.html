@@ -216,6 +216,12 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 .send { flex: none; width: 38px; height: 38px; border-radius: 12px; border: 0; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); }
 .send svg { width: 18px; height: 18px; }
 .send:disabled { opacity: .35; cursor: default; }
+.send.stop { position: relative; border-radius: 50%; }
+.send.stop::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid var(--accent); animation: stopring 1.4s ease-out infinite; pointer-events: none; }
+.send.stop svg { width: 16px; height: 16px; animation: pulse 1.4s ease-in-out infinite; }
+.send.stopping, .send.stopping:disabled { opacity: .6; }
+.send.stopping::after { animation-duration: .7s; }
+@keyframes stopring { from { transform: scale(.85); opacity: .9; } to { transform: scale(1.35); opacity: 0; } }
 .err { padding-bottom: 8px; font-size: .82rem; color: var(--warn); }
 .screenview { position: fixed; inset: 0; z-index: 60; background: #000; color: #fff; display: flex; flex-direction: column; }
 .screenview .sbar { display: flex; gap: 6px; align-items: center; padding: 8px 10px; background: #111; flex-wrap: wrap; }
@@ -539,6 +545,7 @@ const I18N = {
     password: "סיסמה (8 תווים לפחות)",
     convsTitle: "השיחות שלך", conversations: "שיחות", currentTag: "נוכחית",
     oldConv: "זו שיחה קודמת. אפשר לקרוא, לא לשלוח.", backCurrent: "לשיחה הנוכחית", untitled: "שיחה בלי שם",
+    stop: "עצירה", stopping: "עוצר…", stopWord: "עצור", stopSent: "ביקשת לעצור",
     gemToday: "בקשות היום", gemNote: "מתאפס בחצות שעון קליפורניה", gemLimit: "מגבלת החינם", gemLimited: "הגיע למגבלה", gemOk: "תקין", noUsage: "עוד אין נתונים", gptNo5h: "אין", gptNote: "לפי התשובה האחרונה של ChatGPT, ",
     edited: "נערכה", editMsg: "עריכת ההודעה", saveEdit: "שמירה ושליחה מחדש",
     quickHint: "כפתור בכל שורה. לחיצה על כפתור שולחת את הטקסט שלו מיד.", save: "שמירה", cancel: "ביטול", reset: "ברירת מחדל", editQuick: "עריכת הכפתורים",
@@ -585,6 +592,7 @@ const I18N = {
     password: "Password (8+ characters)",
     convsTitle: "Your conversations", conversations: "Conversations", currentTag: "current",
     oldConv: "This is an earlier conversation. You can read it, not send to it.", backCurrent: "Current conversation", untitled: "Untitled conversation",
+    stop: "Stop", stopping: "Stopping…", stopWord: "Stop", stopSent: "You asked to stop",
     gemToday: "Requests today", gemNote: "resets at midnight Pacific", gemLimit: "Free limit", gemLimited: "limit reached", gemOk: "OK", noUsage: "No data yet", gptNo5h: "none", gptNote: "As of ChatGPT's last answer, ",
     edited: "edited", editMsg: "Edit message", saveEdit: "Save and resend",
     quickHint: "One button per line. Tapping a button sends its text right away.", save: "Save", cancel: "Cancel", reset: "Defaults", editQuick: "Edit buttons",
@@ -858,6 +866,7 @@ function renderThread() {
   let prevAi = false, prevAu = ""; const animate = [];
   for (const m of msgs) {
     if (m.kind === "system") { thread.append(el("div", "sys", m.text)); prevAi = false; continue; }
+    if (m.kind === "stop") { thread.append(el("div", "sys", "⏹ " + t("stopSent"))); prevAi = false; continue; }
     const imgs = Array.isArray(m.images) ? m.images : [];
     if (m.sender === "me") {
       const row = el("div", "row me");
@@ -978,7 +987,7 @@ function renderTail() {
   const stick = near();
   const tail = $("tail"); tail.replaceChildren();
   const c = conn();
-  if (msgs.some((m) => m.sender === "me" && !m.seen && !m.pending)) {
+  if (msgs.some((m) => m.sender === "me" && !m.seen && !m.pending && m.kind !== "stop")) {
     const key = { paused: "pPaused", offline: "pOffline", working: "pWorking" }[c] || "pLive";
     tail.append(el("div", "pending", t(key)));
   }
@@ -991,6 +1000,7 @@ function renderTail() {
     row.append(tx); tail.append(row);
   }
   if (stick) toBottom();
+  if (typeof syncSend === "function" && ta) syncSend();   // the send button turns into stop while the model works
 }
 function renderAll() { renderHeader(); renderThread(); renderTail(); }
 
@@ -1457,7 +1467,35 @@ const ta = $("composer");
 let picked = [];
 const MAX_PICS = 4;
 function fit() { ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, window.innerHeight * 0.38) + "px"; }
-function syncSend() { $("send").disabled = sending || (!ta.value.trim() && !picked.length); }
+/* while the model is working and nothing is typed, the send button is a pulsing stop button */
+const SEND_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+const STOP_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/></svg>';
+let stopAt = 0, sendLook = "";
+const stopMode = () => signedIn && ready && !sending && !ta.value.trim() && !picked.length && conn() === "working" && (!viewConv || viewConv === currentConv);
+function syncSend() {
+  const b = $("send"), stop = stopMode(), stopping = stop && Date.now() - stopAt < 90000;
+  const look = stopping ? "stopping" : stop ? "stop" : "send";
+  if (look !== sendLook) {
+    sendLook = look;
+    b.classList.toggle("stop", look !== "send"); b.classList.toggle("stopping", look === "stopping");
+    b.innerHTML = look === "send" ? SEND_ICON : STOP_ICON;
+    b.setAttribute("aria-label", look === "stopping" ? t("stopping") : look === "stop" ? t("stop") : t("send"));
+    b.title = look === "send" ? "" : b.getAttribute("aria-label");
+  }
+  b.disabled = look === "stopping" || (look === "send" && (sending || (!ta.value.trim() && !picked.length)));
+}
+async function sendStop() {
+  stopAt = Date.now(); syncSend();
+  if (navigator.vibrate) navigator.vibrate(30);
+  const ts = Date.now(), id = "m" + ts.toString(36) + Math.random().toString(36).slice(2, 6);
+  const row = { id, sender: "me", kind: "stop", text: (model === "team" ? "@all\n" : "") + t("stopWord"), ts, seen: false };
+  if (currentConv) row.conv = currentConv;
+  const [a, b] = await Promise.all([putCtl("stop", { at: ts, model, conv: currentConv || null }), sb.from("messages").insert(row)]);
+  if (a.error || b.error) { stopAt = 0; showErr(t("sendErr")); }
+  else { upsertMsg(row); renderThread(); }
+  syncSend();
+}
+setInterval(() => { if (sendLook === "stopping") syncSend(); }, 5000);
 function showErr(s) { const e = $("err"); e.textContent = s; e.hidden = !s; }
 function shrink(file) {
   return new Promise((resolve) => {
@@ -1547,7 +1585,10 @@ $("qsave").onclick = async () => {
   const { error } = await putCtl("quick", { list: quickList || [] });
   if (error) showErr(t("sendErr"));
 };
-function sendText(s) { if (!sending) sendMsg(s, [], false); }   // a quick action leaves a half-written draft alone
+function sendText(s) {
+  if (s.trim() === t("stopWord") && conn() === "working") { sendStop(); return; }   // the quick "stop" button really stops
+  if (!sending) sendMsg(s, [], false);
+}   // a quick action leaves a half-written draft alone
 
 /* ---------- outbox: messages written with no network wait in this browser and go out when it's back ---------- */
 const OUTBOX = "aim-outbox";
@@ -1581,6 +1622,7 @@ $("scroller").addEventListener("pointerdown", () => { if (document.activeElement
 $("form").addEventListener("submit", (e) => {
   e.preventDefault();
   stopMic();
+  if (stopMode()) { if (Date.now() - stopAt > 90000) sendStop(); return; }
   sendMsg(ta.value.trim(), picked.slice(), true);
 });
 async function sendMsg(text, pics, fromComposer) {
