@@ -1,0 +1,44 @@
+{
+ "order": 2,
+ "name": "Vision",
+ "tagline": "סגול עמוק ואבן ענבר במרכז. עלי כותרת שנפתחים כשהוא מדבר.",
+ "reactor": {
+  "renderer": "bloom"
+ },
+ "core": "255,240,210",
+ "light": false,
+ "fonts_css": "family=Syncopate:wght@400;700&family=Exo+2:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600",
+ "tokens": {
+  "--bg": "#0b0614",
+  "--bg-a": "#2a1450",
+  "--bg-b": "#140a26",
+  "--panel": "rgba(30,16,58,.55)",
+  "--edge": "rgba(160,120,255,.24)",
+  "--c": "150,110,255",
+  "--c-hi": "#d2c2ff",
+  "--c-deep": "#5a2fd6",
+  "--a": "255,181,71",
+  "--a-hi": "#ffe2b0",
+  "--g": "62,240,168",
+  "--g-hi": "#9ee9cb",
+  "--r": "255,84,112",
+  "--r-hi": "#ffb3c0",
+  "--v": "200,170,255",
+  "--p": "255,122,200",
+  "--text": "#e4dcff",
+  "--text2": "#cbbff2",
+  "--hi": "#f5f0ff",
+  "--muted": "#9a88c7",
+  "--faint": "#6b5a99",
+  "--well": "10,5,22",
+  "--ink": "255,255,255",
+  "--scan": ".12",
+  "--grid": ".03",
+  "--disp": "\"Syncopate\",\"Exo 2\",sans-serif",
+  "--ui": "\"Exo 2\",\"Segoe UI\",sans-serif",
+  "--mono": "\"JetBrains Mono\",ui-monospace,Consolas,monospace"
+ },
+ "voice": {
+  "name": "en-GB-RyanNeural"
+ }
+}

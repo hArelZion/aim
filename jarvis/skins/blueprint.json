@@ -1,0 +1,44 @@
+{
+ "order": 3,
+ "name": "Blueprint",
+ "tagline": "קווים לבנים על כחול שרטוט, נייר מילימטרי ואוסצילוסקופ. השולחן של המהנדס.",
+ "reactor": {
+  "renderer": "scope"
+ },
+ "core": "255,255,255",
+ "light": false,
+ "fonts_css": "family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700",
+ "tokens": {
+  "--bg": "#0a3a8a",
+  "--bg-a": "#1652b8",
+  "--bg-b": "#0d4299",
+  "--panel": "rgba(255,255,255,.06)",
+  "--edge": "rgba(232,241,255,.35)",
+  "--c": "232,241,255",
+  "--c-hi": "#ffffff",
+  "--c-deep": "#9cc3ff",
+  "--a": "255,214,102",
+  "--a-hi": "#fff0c2",
+  "--g": "120,255,190",
+  "--g-hi": "#c8ffe4",
+  "--r": "255,130,130",
+  "--r-hi": "#ffd0d0",
+  "--v": "190,170,255",
+  "--p": "255,170,220",
+  "--text": "#e8f1ff",
+  "--text2": "#cfe0ff",
+  "--hi": "#ffffff",
+  "--muted": "#9cc3ff",
+  "--faint": "#7aa3e0",
+  "--well": "6,40,100",
+  "--ink": "255,255,255",
+  "--scan": "0",
+  "--grid": ".12",
+  "--disp": "\"IBM Plex Mono\",monospace",
+  "--ui": "\"IBM Plex Sans\",\"Segoe UI\",sans-serif",
+  "--mono": "\"IBM Plex Mono\",ui-monospace,monospace"
+ },
+ "voice": {
+  "name": "en-GB-RyanNeural"
+ }
+}

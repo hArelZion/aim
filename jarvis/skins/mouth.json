@@ -1,0 +1,45 @@
+{
+ "order": 11,
+ "name": "Mouth",
+ "tagline": "חדש · השפתיים של Jarvis: פה אמיתי על שחור, שנפתח ונסגר, מתרחב ומתכווץ עם כל מילה שהוא אומר.",
+ "reactor": {
+  "renderer": "mouth",
+  "lag": 0.11
+ },
+ "core": "255,225,220",
+ "light": false,
+ "fonts_css": "family=Syne:wght@500;700;800&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700",
+ "tokens": {
+  "--bg": "#000000",
+  "--bg-a": "#000000",
+  "--bg-b": "#000000",
+  "--panel": "rgba(0,0,0,.72)",
+  "--edge": "rgba(214,120,110,.2)",
+  "--c": "214,120,110",
+  "--c-hi": "#f3c4bb",
+  "--c-deep": "#9a4a44",
+  "--a": "232,172,92",
+  "--a-hi": "#ffe0b0",
+  "--g": "150,210,160",
+  "--g-hi": "#cfeccf",
+  "--r": "255,90,90",
+  "--r-hi": "#ffc4c4",
+  "--v": "190,140,200",
+  "--p": "240,140,170",
+  "--text": "#ecd5d0",
+  "--text2": "#d9bdb8",
+  "--hi": "#fff1ee",
+  "--muted": "#a07f7a",
+  "--faint": "#6e4f4b",
+  "--well": "0,0,0",
+  "--ink": "255,235,230",
+  "--scan": "0",
+  "--grid": "0",
+  "--disp": "\"Syne\",\"Manrope\",sans-serif",
+  "--ui": "\"Manrope\",\"Segoe UI\",sans-serif",
+  "--mono": "\"Space Mono\",ui-monospace,monospace"
+ },
+ "voice": {
+  "name": "en-GB-RyanNeural"
+ }
+}

@@ -37,6 +37,47 @@ button{cursor:pointer;touch-action:manipulation}
 svg{display:block}
 .app{height:100%;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);padding-top:var(--top)}
 
+/* switches, sheets, the builder picker, the live build view, the ear */
+.sw{flex:none;width:51px;height:31px;border-radius:16px;background:rgba(var(--ink),.16);position:relative;transition:background .25s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;
+  box-shadow:0 3px 8px rgba(0,0,0,.3);transition:transform .3s cubic-bezier(.3,1.4,.5,1)}
+.sw.on{background:var(--green)} .sw.on::after{transform:translateX(20px)}
+.row.tog{cursor:pointer} .row.tog .tx small{white-space:normal;line-height:1.35}
+.sheet{position:fixed;inset:0;z-index:7;display:none;align-items:flex-end;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.sheet.on{display:flex;animation:fade .2s}
+.sheet .box{width:100%;max-height:82dvh;overflow:auto;padding:10px 18px calc(22px + var(--bot));border-radius:28px 28px 0 0;
+  background:var(--bg);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 -10px 40px rgba(0,0,0,.4);animation:up .35s cubic-bezier(.2,1.2,.4,1)}
+.sheet .grab{width:38px;height:5px;border-radius:3px;background:rgba(var(--ink),.25);margin:0 auto 14px}
+.sheet h2{font:600 22px/1.2 var(--disp);color:var(--hi);margin:0 4px 4px} .sheet p.sub{color:var(--muted);font-size:14px;margin:0 4px 14px}
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.skin{position:relative;height:118px;border-radius:20px;overflow:hidden;text-align:left;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.skin b{font:600 16px/1.1 var(--disp);color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.45)} .skin small{font-size:12px;color:rgba(255,255,255,.8)}
+.skin i{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%}
+.skin.cur{box-shadow:inset 0 0 0 2.5px var(--hi)} .skin.lt b,.skin.lt small{color:#14202c;text-shadow:none}
+.skin small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@keyframes up{from{transform:translateY(40px);opacity:.4}} @keyframes fade{from{opacity:0}}
+.pick{flex:none;display:flex;align-items:center;gap:4px;height:36px;padding:0 10px 0 12px;margin-left:4px;border-radius:18px;
+  background:rgba(var(--c),.16);color:var(--accent);font:600 13px/1 var(--ui)}
+.pick svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2}
+.menu{position:absolute;left:0;right:0;bottom:calc(100% + 8px);padding:6px;border-radius:20px;background:rgba(14,20,32,.86);background:color-mix(in srgb,var(--bg) 84%,transparent);
+  -webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 16px 40px rgba(0,0,0,.45);z-index:3}
+.menu button{display:block;width:100%;text-align:left;padding:11px 14px;border-radius:14px;color:var(--hi);font-size:16px}
+.menu button small{display:block;color:var(--muted);font-size:13px;margin-top:2px} .menu button.on{background:rgba(var(--c),.18)}
+.bform{position:relative}
+.live{margin-top:14px;padding:12px} .live[hidden]{display:none}
+.live .lhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:14px;color:var(--muted)}
+.live .lhead b{color:var(--hi);font-weight:600;display:flex;align-items:center;gap:8px}
+.live .lhead b::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1.2s infinite}
+.live img{display:block;width:100%;border-radius:14px;background:rgba(0,0,0,.3);margin-bottom:10px}
+.live pre{max-height:220px;overflow:hidden;margin:0;padding:12px;border-radius:14px;background:rgba(0,0,0,.35);color:var(--c-hi);
+  font:12px/1.45 var(--mono);white-space:pre-wrap;word-break:break-all;-webkit-mask-image:linear-gradient(180deg,transparent,#000 30%)}
+.live pre::after{content:"▋";color:var(--accent);animation:blink 1s infinite}
+.ear{display:inline-flex;align-items:center;gap:6px;margin-left:10px;padding:0 9px;height:24px;border-radius:12px;font:500 11px/1 var(--ui);
+  color:var(--muted);background:rgba(var(--ink),.06)} .ear[hidden]{display:none}
+.ear i{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 2.4s infinite}
+.ear.tap{color:var(--amber)} .ear.tap i{background:var(--amber)}
+
 /* top bar */
 .top{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 6px;min-height:48px}
 .mark{font:700 15px/1 var(--disp);letter-spacing:.34em;color:var(--hi);padding-left:2px}
@@ -167,11 +208,31 @@ body.light .rb.big{color:#fff}
   background:linear-gradient(135deg,var(--accent),rgb(var(--a)))}
 .namein{flex:1;min-width:0;height:56px;color:var(--hi);font-size:16px;text-align:right}
 
-/* nav */
+/* nav: Liquid Glass — a clear floating pill; the selected tab sits in a glass lens that slides, stretches and can be dragged */
 nav{position:fixed;left:12px;right:12px;bottom:calc(var(--bot) + 10px);height:var(--nav);z-index:4;display:grid;grid-template-columns:repeat(5,1fr);
   border-radius:31px;background:rgba(var(--ink),.07);box-shadow:inset 0 0 0 1px var(--line),0 12px 34px rgba(0,0,0,.35);
   backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4)}
 body:not(.light) nav{background:rgba(10,14,22,.62)}
+nav{background:linear-gradient(180deg,rgba(var(--ink),.13),rgba(var(--ink),.04) 55%,rgba(var(--ink),.07))!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.9) brightness(1.06);backdrop-filter:blur(14px) saturate(1.9) brightness(1.06);
+  border-radius:calc(var(--nav) / 2);overflow:visible;isolation:isolate;touch-action:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.07),inset 1px 0 0 rgba(255,255,255,.08),
+    inset -1px 0 0 rgba(255,255,255,.08),0 12px 34px rgba(0,0,0,.38),0 2px 6px rgba(0,0,0,.2)}
+nav::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:radial-gradient(120% 90% at 50% -30%,rgba(255,255,255,.22),transparent 55%),
+    linear-gradient(90deg,rgba(255,255,255,.07),transparent 18%,transparent 82%,rgba(255,255,255,.07))}
+nav button{position:relative;z-index:2}
+.lens{position:absolute;top:4px;left:0;height:calc(100% - 8px);border-radius:calc(var(--nav) / 2 - 4px);z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.07));
+  -webkit-backdrop-filter:blur(3px) saturate(2.2) brightness(1.18) contrast(1.05);backdrop-filter:blur(3px) saturate(2.2) brightness(1.18) contrast(1.05);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 1px rgba(255,255,255,.12),inset 0 0 0 .5px rgba(255,255,255,.22),
+    0 6px 18px rgba(0,0,0,.25),0 0 0 .5px rgba(0,0,0,.25);
+  transition:transform .55s cubic-bezier(.3,1.45,.5,1),width .45s cubic-bezier(.3,1.3,.5,1),scale .35s cubic-bezier(.3,1.6,.5,1);will-change:transform}
+.lens::after{content:"";position:absolute;inset:1px 10% auto;height:42%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.32),transparent)}
+.lens.go{scale:1.14 .9}
+.lens.drag{scale:1.22 1.12;transition:width .3s,scale .3s cubic-bezier(.3,1.6,.5,1);
+  background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.03))}
+@media (prefers-reduced-motion:reduce){.lens{transition:none}}
 nav button{display:grid;justify-items:center;align-content:center;gap:4px;color:var(--faint);font:500 10.5px/1 var(--ui);transition:color .2s}
 nav button svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 nav button.on{color:var(--hi)} nav button.on svg{stroke:var(--accent)}
@@ -195,7 +256,7 @@ nav button.on{color:var(--hi)} nav button.on svg{stroke:var(--accent)}
 </head>
 <body>
 <div class="app">
-  <header class="top"><span class="mark">JARVIS</span><span class="pill" id="pc"><i></i><span id="pc-t">Computer offline</span></span></header>
+  <header class="top"><span class="mark">JARVIS<span class="ear" id="ear" hidden><i></i><span id="ear-t">Say “Hey Jarvis”</span></span></span><span class="pill" id="pc"><i></i><span id="pc-t">Computer offline</span></span></header>
   <main>
     <section class="scr on" id="talk">
       <div class="stage">
@@ -226,7 +287,10 @@ nav button.on{color:var(--hi)} nav button.on svg{stroke:var(--accent)}
       <h1 class="title">Build</h1>
       <div class="card" id="b-card"><div class="empty"><svg viewBox="0 0 24 24"><path d="M4 20h16M7 16l5-11 5 11M9 12h6"/></svg>
         <p class="muted">Nothing is building right now.<br>Describe something and I'll make it.</p></div></div>
-      <form class="bform" id="b-form"><div class="bar">
+      <div class="card live" id="b-live" hidden><div class="lhead"><b>Live</b><span id="b-live-t"></span></div>
+        <img id="b-live-img" alt="The build, as the computer shows it" hidden><pre id="b-live-code"></pre></div>
+      <form class="bform" id="b-form"><div class="menu" id="b-menu" hidden></div><div class="bar">
+        <button type="button" class="pick" id="b-pick" aria-label="Who builds it"><span id="b-pick-t">Auto</span><svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>
         <input id="b-text" placeholder="What should I build?" autocomplete="off" enterkeyhint="go">
         <button class="ib go" aria-label="Build"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button></div></form>
       <div class="lbl">Mission log</div>
@@ -278,6 +342,19 @@ nav button.on{color:var(--hi)} nav button.on svg{stroke:var(--accent)}
       <div class="modes" id="modes" role="radiogroup" aria-label="Who does the work">
         <button data-mode="auto" role="radio">Auto</button><button data-mode="phone" role="radio">Phone only</button><button data-mode="pc" role="radio">Computer</button></div>
       <p class="note" id="mode-t"></p>
+      <div class="lbl">Voice &amp; listening</div>
+      <div class="list" id="prefs">
+        <div class="row tog" data-pref="wake"><span class="ic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+          <span class="tx">Answer to “Hey Jarvis”<small>While the app is open and on screen · the same ears as the computer</small></span><span class="sw"></span></div>
+        <div class="row tog" data-pref="convo"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v10H9l-5 4z"/></svg></span>
+          <span class="tx">Continuous conversation<small>I keep listening after I answer; “thanks” ends it</small></span><span class="sw"></span></div>
+        <div class="row tog" data-pref="alan"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg></span>
+          <span class="tx">My own voice<small id="alan-t">The voice from the computer, also when it's off</small></span><span class="sw"></span></div>
+        <div class="row tog" data-pref="live"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M10 9l5 3-5 3z"/></svg></span>
+          <span class="tx">Watch builds live<small>See the build as the computer shows it</small></span><span class="sw"></span></div>
+        <div class="row tog" data-pref="push"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0"/></svg></span>
+          <span class="tx">Notifications<small id="push-t">When a site is ready, even with the app closed</small></span><span class="sw"></span></div>
+      </div>
       <div class="lbl">Outside the app</div>
       <div class="list"><a class="row" href="siri.html"><span class="ic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
         <span class="tx">“Hey Siri, Jarvis”<small>Shortcuts, pairing, Back Tap</small></span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a></div>
@@ -288,7 +365,7 @@ nav button.on{color:var(--hi)} nav button.on svg{stroke:var(--accent)}
       <div class="list"><button class="row danger" id="signout"><span class="ic red"><svg viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg></span><span class="tx">Sign out on this phone</span></button></div>
     </section>
   </main>
-  <nav id="nav">
+  <nav id="nav"><span class="lens" id="lens"></span>
     <button class="on" data-tab="talk"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.2"/></svg>Talk</button>
     <button data-tab="build"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>Build</button>
     <button data-tab="pcs"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>Computer</button>
@@ -306,6 +383,8 @@ nav button.on{color:var(--hi)} nav button.on svg{stroke:var(--accent)}
     <button class="btn full">Sign in</button><div class="err" id="l-err"></div></form>
 </div></div>
 <div class="toast" id="toast"></div>
+<div class="sheet" id="skins"><div class="box"><div class="grab"></div><h2>Wardrobe</h2><p class="sub">The computer changes too.</p>
+  <div class="sgrid" id="sgrid"></div></div></div>
 <audio id="voice" playsinline></audio>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
@@ -363,9 +442,15 @@ async function start(){
     if (row.id === "jarvis_state") setState(row.data);
     else if (row.id === "jarvis_projects") renderSites(row.data);
     else if (row.id === "jarvis_mode") setMode((row.data || {}).mode);
+    else if (row.id === "jarvis_live") renderLive("pc", row.data);
+    else if (row.id === "jarvis_cloudbuild") { cloudCard(row.data); renderLive("cloud", row.data); }
+    else if (row.id === "jarvis_skin" && row.data && row.data.id !== S.skinId && !pcFresh()) pickSkin(row.data.id, "", false);
     else if (row.id.startsWith("jrep-")) onReply(row.id.slice(5), row.data);
   }).subscribe();
   refresh(); setInterval(() => renderOnline(), 5000);
+  if (P.get("live", false)) syncPrefs();
+  if (P.get("wake", false)) wakeOn();
+  if (P.get("push", false)) pushOn(true).catch(() => {});
 }
 async function refresh(){
   const { data } = await sb.from("control").select("id,data").in("id", ["jarvis_state", "jarvis_projects", "jarvis_mode"]);
@@ -398,8 +483,40 @@ try { applySkin(JSON.parse(localStorage.getItem("pj-skin") || "null")); } catch 
 function show(tab){
   document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x.dataset.tab === tab));
   document.querySelectorAll(".scr").forEach(t => t.classList.toggle("on", t.id === tab)); S.tab = tab;
+  lensTo(tab);
 }
-$("#nav").onclick = e => { const b = e.target.closest("button"); if (b) show(b.dataset.tab); };
+// the glass lens: slides (and stretches) to the chosen tab; a finger can drag it across the bar like iOS
+const nav = $("#nav"), lens = $("#lens");
+function tabRect(tab){ const b = nav.querySelector(`button[data-tab="${tab}"]`), n = nav.getBoundingClientRect(), r = b.getBoundingClientRect();
+  return {x: r.left - n.left + 4, w: r.width - 8}; }
+function lensTo(tab, now){
+  const r = tabRect(tab); lens.style.width = r.w + "px";
+  if (now) { lens.style.transition = "none"; lens.style.transform = `translateX(${r.x}px)`; lens.offsetWidth; lens.style.transition = ""; return; }
+  lens.classList.add("go"); lens.style.transform = `translateX(${r.x}px)`; clearTimeout(lens._t); lens._t = setTimeout(() => lens.classList.remove("go"), 220);
+}
+let drag = null;
+nav.addEventListener("pointerdown", e => { drag = {x0: e.clientX, moved: false}; nav.setPointerCapture(e.pointerId); });
+nav.addEventListener("pointermove", e => {
+  if (!drag) return;
+  if (Math.abs(e.clientX - drag.x0) > 6) drag.moved = true;
+  if (!drag.moved) return;
+  const n = nav.getBoundingClientRect(), w = parseFloat(lens.style.width) || 60;
+  const x = Math.max(4, Math.min(n.width - w - 4, e.clientX - n.left - w / 2));
+  lens.classList.add("drag"); lens.style.transition = "width .3s, scale .3s"; lens.style.transform = `translateX(${x}px)`;
+});
+const endDrag = e => {
+  if (!drag) return;
+  const n = nav.getBoundingClientRect(), bs = [...nav.querySelectorAll("button")];
+  const x = e.clientX - n.left;
+  const b = bs.reduce((a, c) => { const r = c.getBoundingClientRect(), m = (r.left + r.right) / 2 - n.left; return Math.abs(m - x) < Math.abs(a.m - x) ? {c, m} : a; }, {c: bs[0], m: 1e9}).c;
+  lens.classList.remove("drag"); lens.style.transition = "";
+  drag = null;
+  if (b) { if (navigator.vibrate) navigator.vibrate(6); show(b.dataset.tab); }
+};
+nav.addEventListener("pointerup", endDrag);
+nav.addEventListener("pointercancel", e => { drag = null; lens.classList.remove("drag"); lens.style.transition = ""; lensTo(S.tab); });
+addEventListener("resize", () => lensTo(S.tab, true));
+requestAnimationFrame(() => lensTo(S.tab || "talk", true));
 
 // ---------- talking ----------
 const convo = $("#convo");
@@ -411,7 +528,7 @@ async function send(cmd, youText){
   const id = rid();
   const you = youText !== null ? bubble("you", youText || "…") : null;
   const j = bubble("j wait");
-  waiting[id] = {you, j, t: Date.now()};
+  waiting[id] = {you, j, t: Date.now(), kind: cmd.type};
   S.waiting++; setLabel("Thinking");
   const { error } = await sb.from("control").insert({id: "jcmd-" + id, data: Object.assign({device: DEVICE, ts: Date.now() / 1000}, cmd)});
   if (error) { j.classList.remove("wait"); j.textContent = "I couldn't send that: " + error.message; done(id); return; }
@@ -444,7 +561,7 @@ $("#modes").onclick = async e => {
 };
 function pcFresh(){ return S.state.ts && S.state.online !== false && Date.now() / 1000 - S.state.ts < 45; }
 function route(cmd, youText){   // the computer when it's awake and allowed (its voice, screenshots); otherwise the cloud brain
-  if (cmd.type === "confirm" || (S.mode !== "phone" && pcFresh())) return send(cmd, youText);
+  if (cmd.type === "confirm" || (S.mode !== "phone" && pcFresh() && cmd.builder !== "cloud")) return send(cmd, youText);
   return cloud(cmd, youText);
 }
 async function cloud(cmd, youText){
@@ -452,7 +569,7 @@ async function cloud(cmd, youText){
   S.waiting++; setLabel("Thinking");
   const body = {via: "app", device: DEVICE, tz: Intl.DateTimeFormat().resolvedOptions().timeZone, text: cmd.text || youText || ""};
   if (cmd.audio) Object.assign(body, {audio: cmd.audio, mime: cmd.mime, text: ""});
-  if (cmd.type === "build") body.kind = "build";
+  if (cmd.type === "build") Object.assign(body, {kind: "build", builder: cmd.builder || "auto"});
   if (cmd.type === "action") body.action = cmd.name;
   let d;
   try {
@@ -466,8 +583,12 @@ async function cloud(cmd, youText){
   if (cmd.audio) you.textContent = d.heard || "…";
   j.classList.remove("wait"); j.textContent = d.say || "";
   if ((d.do || []).length) j.appendChild(hands(d.do));
+  if (d.url) { const a = document.createElement("a"); a.className = "btn full"; a.href = d.url; a.target = "_blank"; a.rel = "noopener";
+    a.textContent = "The site (live in about two minutes)"; a.style.marginTop = "10px"; j.appendChild(a); }
   convo.scrollTop = convo.scrollHeight;
-  if (d.say) speak(d.say);
+  if (d.ui === "skins") openSkins();
+  S.lastTalk = cmd.type === "talk";
+  if (d.say) say(d.say, null, d.listen === false || cmd.type !== "talk");
 }
 // The phone's hands: a web page can't set a timer or send a WhatsApp, so each action is a button that hands it to the
 // "Jarvis Do" shortcut on iPhone (POCKET_PLAN P3); web links simply open.
@@ -507,8 +628,9 @@ function onReply(id, d){
     w.j.appendChild(row);
   }
   convo.scrollTop = convo.scrollHeight;
-  if (d.audio) play(d.audio);
-  else if (d.text) speak(d.text);   // the computer's voice service is down: this phone's own British voice reads it
+  if (d.ui === "skins") openSkins();
+  S.lastTalk = w.kind === "talk" && !d.build;
+  if (d.text || d.audio) say(d.text, d.audio, d.end || d.build || d.ui);
   sb.from("control").delete().eq("id", "jrep-" + id);
 }
 
@@ -536,20 +658,62 @@ function speak(text){
   u.voice = vs.find(v => /en-GB/i.test(v.lang) && /Daniel|Arthur|Oliver|Male|Ryan/i.test(v.name)) || vs.find(v => /en-GB/i.test(v.lang)) || null;
   u.lang = "en-GB"; u.rate = 1.02; u.pitch = .92;
   u.onstart = () => { S.playing = true; setLabel("Speaking"); };
-  u.onend = u.onerror = () => { S.playing = false; if (!S.waiting) setLabel(idle()); };
+  u.onend = u.onerror = () => afterSpeech();
   speechSynthesis.cancel(); speechSynthesis.speak(u);
 }
 document.addEventListener("pointerdown", unlock, {once: false, capture: true});
 function play(b64){
   voice.src = "data:audio/mpeg;base64," + b64;
   S.playing = true; setLabel("Speaking");
-  voice.play().catch(() => { S.playing = false; toast("Tap anywhere, then I can speak"); });
+  voice.play().catch(() => { afterSpeech(true); toast("Tap anywhere, then I can speak"); });
 }
-voice.onended = voice.onpause = () => { S.playing = false; if (!S.waiting) setLabel(idle()); };
+voice.onended = () => { if (!S.chain) afterSpeech(); };
+voice.onpause = () => { if (!S.chain && S.playing && !voice.ended) afterSpeech(true); };
+
+// Jarvis's voice: the computer's mp3 when it sent one; else Alan (Piper, the same voice, in this app); else the
+// phone's own British voice while Alan downloads (once, ~63 MB).
+const P = {get(k, d){ try { const v = localStorage.getItem("pj-" + k); return v === null ? d : v === "1"; } catch (_) { return d; } },
+           set(k, v){ try { localStorage.setItem("pj-" + k, v ? "1" : "0"); } catch (_) {} }};
+const PREF_DEFAULT = {wake: false, convo: true, alan: true, live: false, push: false};
+let VM = null;
+const voiceMod = () => VM || (VM = import("./voice.js").catch(e => { VM = null; throw e; }));
+function blobPlay(blob){ return new Promise(res => { voice.src = URL.createObjectURL(blob); voice.onended = voice.onerror = () => res();
+  voice.play().catch(() => res()); }).finally(() => { voice.onended = () => { if (!S.chain) afterSpeech(); }; voice.onerror = null; }); }
+async function say(text, b64, end){
+  S.endTurn = !!end;
+  if (b64) return play(b64);
+  if (!text) return;
+  if (P.get("alan", true)) {
+    try {
+      const m = await voiceMod();
+      if (m.alanReady()) {
+        S.playing = true; S.chain = true; setLabel("Speaking");
+        for await (const wav of m.alanSpeak(text)) { if (!S.chain) break; await blobPlay(wav); }
+        S.chain = false; return afterSpeech();
+      }
+      loadAlan();
+    } catch (_) { S.chain = false; }
+  }
+  speak(text);
+}
+function loadAlan(){
+  if (S.alanLoading || !P.get("alan", true)) return;
+  S.alanLoading = true; const t = $("#alan-t");
+  voiceMod().then(m => m.alan(p => { if (p && p.total) t.textContent = "Downloading my voice · " + Math.round(p.loaded * 100 / p.total) + "%"; }))
+    .then(() => { t.textContent = "Ready · the same voice as the computer"; })
+    .catch(() => { t.textContent = "Couldn't download it now · I'll use the phone's voice"; S.alanLoading = false; });
+}
+function afterSpeech(failed){
+  S.playing = false; S.chain = false;
+  if (!S.waiting) setLabel(idle());
+  if (!failed && P.get("convo", true) && S.lastTalk && !S.endTurn && !S.recording && document.visibilityState === "visible") {
+    S.autoListen = true; setTimeout(() => { if (!S.playing && !S.recording && !S.waiting) startRec(); }, 300);
+  }
+}
 
 const bar = $("#bar"), sayT = $("#say-t");
 sayT.oninput = () => bar.classList.toggle("typed", !!sayT.value.trim());
-$("#say").onsubmit = e => { e.preventDefault(); const t = sayT.value.trim(); if (!t) return; sayT.value = ""; bar.classList.remove("typed"); sayT.blur(); route({type: "talk", text: t}, t); };
+$("#say").onsubmit = e => { e.preventDefault(); const t = sayT.value.trim(); if (!t) return; sayT.value = ""; bar.classList.remove("typed"); sayT.blur(); if (C3PO.test(t)) return openSkins(); route({type: "talk", text: t}, t); };
 document.querySelectorAll("[data-say]").forEach(b => b.onclick = () => route({type: "talk", text: b.dataset.say}, b.dataset.say));
 document.querySelectorAll("[data-chip]").forEach(b => b.onclick = () => route({type: "action", name: b.dataset.chip}, b.textContent.trim()));
 
@@ -560,8 +724,10 @@ function mime(){ return ["audio/webm;codecs=opus", "audio/mp4", "audio/webm", "a
 async function startRec(){
   unlock(); wantStop = false; heard = false;
   if (!navigator.mediaDevices || !window.MediaRecorder) return toast("This browser can't record. Type instead.");
-  try { stream = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true}}); }
+  try { stream = wake && wake.running && wake.stream ? new MediaStream(wake.stream.getAudioTracks().map(t => t.clone()))
+                 : await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true}}); }
   catch (_) { return toast("Microphone permission is needed"); }
+  S.chain = false;
   if (wantStop) { stream.getTracks().forEach(t => t.stop()); return; }
   if (S.playing) { voice.pause(); if (window.speechSynthesis) speechSynthesis.cancel(); }
   const ac = new (window.AudioContext || window.webkitAudioContext)();
@@ -585,18 +751,19 @@ function stopRec(){ wantStop = true; clearInterval(recTimer); if (rec && rec.sta
 async function finishRec(){
   stream.getTracks().forEach(t => t.stop()); if (analyser) analyser._ac.close(); analyser = null;
   S.recording = false; bar.classList.remove("rec");
-  if (!heard || Date.now() - recStart < 450) { setLabel(idle()); return toast("I didn't catch that"); }
+  const auto = S.autoListen; S.autoListen = false;
+  if (!heard || Date.now() - recStart < 450) { setLabel(idle()); if (!auto) toast("I didn't catch that"); return; }
   const blob = new Blob(chunks, {type: rec.mimeType || "audio/webm"});
   const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(",")[1]); fr.readAsDataURL(blob); });
   route({type: "talk", audio: b64, mime: blob.type}, "");
 }
-function toggleRec(){ if (S.recording) { heard = heard || Date.now() - recStart > 600; stopRec(); } else startRec(); }
+function toggleRec(){ S.autoListen = false; if (S.recording) { heard = heard || Date.now() - recStart > 600; stopRec(); } else startRec(); }
 $("#mic").onclick = toggleRec;
 $("#core").onclick = toggleRec;
 
 // ---------- build ----------
 $("#b-form").onsubmit = e => { e.preventDefault(); const t = $("#b-text").value.trim(); if (!t) return; $("#b-text").value = ""; $("#b-text").blur();
-  show("talk"); route({type: "build", text: t}, t); };
+  show("talk"); route({type: "build", text: t, builder: BUILDER()}, t); };
 function renderBuild(){
   const st = S.state, p = st.project, card = $("#b-card");
   if (p && p.title) {
@@ -690,6 +857,137 @@ function demo(){
   if (/[?&]demo=chat\b/.test(location.search)) { bubble("you", "Build a website for a pizzeria."); bubble("j", "On it, sir. Wood-fired, I presume."); }
   const tab = (location.search.match(/[?&]tab=(\w+)/) || [])[1]; if (tab) show(tab);
 }
+
+// ---------- "Jarvis" while the app is open (voice.js: the PC's own wake-word models, in the browser) ----------
+let wake = null;
+function chime(){ try { const ac = new (window.AudioContext || window.webkitAudioContext)(), o = ac.createOscillator(), g = ac.createGain();
+  o.frequency.setValueAtTime(880, ac.currentTime); o.frequency.exponentialRampToValueAtTime(1320, ac.currentTime + .09);
+  g.gain.setValueAtTime(.0001, ac.currentTime); g.gain.exponentialRampToValueAtTime(.18, ac.currentTime + .02); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime + .22);
+  o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + .25); setTimeout(() => ac.close(), 400); } catch (_) {} }
+async function wakeOn(){
+  if (!P.get("wake", false) || (wake && wake.running)) return;
+  const ear = $("#ear");
+  try {
+    const m = await voiceMod();
+    wake = wake || new m.Wake({base: "wake/", threshold: .5, onWake: () => {
+      if (S.recording || S.playing || S.waiting || document.hidden) return;
+      chime(); show("talk"); startRec();
+    }});
+    await wake.start();
+    ear.hidden = false; ear.classList.toggle("tap", wake.ac && wake.ac.state !== "running"); $("#ear-t").textContent = "Say “Hey Jarvis”";
+  } catch (e) { ear.hidden = false; ear.classList.add("tap"); $("#ear-t").textContent = "Tap to listen"; }
+}
+function wakeOff(){ if (wake) wake.stop(); $("#ear").hidden = true; }
+$("#ear").onclick = () => { if (wake) wake.stop(); wakeOn(); };
+document.addEventListener("pointerdown", () => { if (P.get("wake", false) && !(wake && wake.running && wake.ac && wake.ac.state === "running")) wakeOn(); }, {capture: true});
+document.addEventListener("visibilitychange", () => { if (document.hidden) wakeOff(); else if (P.get("wake", false)) wakeOn(); });
+
+// ---------- C3PO on the phone: the wardrobe (and the computer follows) ----------
+const C3PO = /\b(c|see|sea)[\s.\-]*(3|three)[\s.\-]*p(ee|ea)?[\s.\-]*(o|0|oh|l|e)\b|\b(3|three)[\s.\-]*p[\s.\-]*(o|0|oh)\b|\bthreepio\b|סי\s*-?\s*3\s*פי\s*או/i;
+async function openSkins(){
+  const sheet = $("#skins"), grid = $("#sgrid");
+  sheet.classList.add("on");
+  if (!grid.children.length) {
+    try {
+      const list = await (await fetch("skins/index.json", {cache: "no-cache"})).json();
+      for (const k of list) {
+        const b = document.createElement("button"); b.className = "skin"; b.dataset.id = k.id;
+        b.style.background = `radial-gradient(120% 90% at 30% 10%, ${k.a || "#1652b8"}, ${k.b || "#03102a"} 60%, ${k.bg || "#01050d"})`;
+        b.innerHTML = "<i></i><b></b><small></small>";
+        b.querySelector("i").style.background = `radial-gradient(circle, ${k.hi || "#fff"}, rgb(${k.c || "63,208,255"}) 45%, transparent 72%)`;
+        b.querySelector("b").textContent = k.name; b.querySelector("small").textContent = k.tagline || ""; b.querySelector("small").dir = "auto";
+        if (k.light) b.classList.add("lt");
+        b.onclick = () => pickSkin(k.id, k.name);
+        grid.appendChild(b);
+      }
+    } catch (_) { grid.innerHTML = '<p class="muted">I can\'t reach the wardrobe right now.</p>'; }
+  }
+  grid.querySelectorAll(".skin").forEach(b => b.classList.toggle("cur", b.dataset.id === S.skinId));
+}
+$("#skins").onclick = e => { if (e.target.id === "skins") $("#skins").classList.remove("on"); };
+async function pickSkin(id, name, write = true){
+  try {
+    const skin = await (await fetch(`skins/${id}.json`, {cache: "no-cache"})).json(); skin.id = id;
+    S.skinId = null; applySkin(skin);
+    $("#skins").classList.remove("on");
+    if (!write) return;
+    toast(name);
+    await sb.from("control").upsert({id: "jarvis_skin", data: {id, ts: Date.now() / 1000}});
+  } catch (_) { toast("Couldn't change it"); }
+}
+
+// ---------- who builds it (the Build bar) ----------
+const BUILDERS = [["auto", "Auto", "The best that's available"], ["claude", "Claude", "Directs the build · the finest work"],
+  ["gemini", "Gemini", "Builds alone · no Claude tokens"], ["quick", "Quick", "A fast draft in about a minute"],
+  ["cloud", "Cloud", "Without the computer · about two minutes"]];
+const BUILDER = () => { try { return localStorage.getItem("pj-builder") || "auto"; } catch (_) { return "auto"; } };
+function renderPick(){ const v = BUILDER(); $("#b-pick-t").textContent = (BUILDERS.find(b => b[0] === v) || BUILDERS[0])[1];
+  $("#b-menu").innerHTML = BUILDERS.map(([k, t, d]) => `<button type="button" data-b="${k}" class="${k === v ? "on" : ""}">${t}<small>${d}</small></button>`).join(""); }
+$("#b-pick").onclick = () => { renderPick(); $("#b-menu").hidden = !$("#b-menu").hidden; };
+$("#b-menu").onclick = e => { const b = e.target.closest("[data-b]"); if (!b) return; try { localStorage.setItem("pj-builder", b.dataset.b); } catch (_) {}
+  $("#b-menu").hidden = true; renderPick(); };
+document.addEventListener("pointerdown", e => { if (!e.target.closest("#b-menu,#b-pick")) $("#b-menu").hidden = true; });
+renderPick();
+
+// ---------- the build, live (only when "Watch builds live" is on): the computer's build bay, or the cloud builder ----------
+function renderLive(kind, d){
+  const box = $("#b-live");
+  if (!d || !P.get("live", false)) { box.hidden = true; return; }
+  const fresh = Date.now() / 1000 - (d.ts || 0) < 30;
+  if (d.done || !fresh) { if (S.liveKind === kind) box.hidden = true; return; }
+  S.liveKind = kind; box.hidden = false;
+  $("#b-live-t").textContent = [d.title, d.phase ? d.phase[0].toUpperCase() + d.phase.slice(1) : "", kind === "cloud" ? "Cloud" : d.file || ""].filter(Boolean).join(" · ");
+  const img = $("#b-live-img"); img.hidden = !d.img; if (d.img) img.src = "data:image/jpeg;base64," + d.img;
+  const code = (d.code || "").split("\n").slice(-26).join("\n"); $("#b-live-code").textContent = code;
+}
+function cloudCard(d){
+  if (!d || (S.state.building && pcFresh())) return;
+  const card = $("#b-card"), live = !d.done;
+  card.innerHTML = `<div class="bhead"><b class="ptitle"></b><span class="tag ${live ? "live" : d.error ? "" : "done"}">${live ? "Building · cloud" : d.error ? "Stopped" : "Live"}</span></div>
+    <div class="meta"><span>${d.error ? "" : live ? (d.phase || "") : (d.seconds ? d.seconds + " s" : "")}</span></div>
+    ${!live && !d.error ? `<a class="btn full" href="${d.url}" target="_blank" rel="noopener">Open the site</a>` : ""}`;
+  card.querySelector(".ptitle").textContent = d.title || d.request || "A new site";
+}
+async function syncPrefs(){ await sb.from("control").upsert({id: "jarvis_prefs", data: {live: P.get("live", false), ts: Date.now() / 1000}}); }
+
+// ---------- notifications outside the app ----------
+const VAPID = "BImaI1EXl0q-k2JRbtlqptYy2GSHneQS96ToM6qqa5R5j86K6-d19a8rR5yq8TemH_TFRab2er8X0GnICgWhHVc";
+function vapidKey(){ const b = atob((VAPID + "=".repeat((4 - VAPID.length % 4) % 4)).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(b, c => c.charCodeAt(0)); }
+async function pushRow(){ const { data } = await sb.from("control").select("data").eq("id", "jarvis_push").maybeSingle(); return (data && data.data && data.data.subs) || []; }
+async function pushOn(on){
+  const t = $("#push-t");
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+    t.textContent = IOS ? "First add me to the Home Screen: Share → Add to Home Screen, then open me from there" : "This browser can't get notifications";
+    return false;
+  }
+  const reg = await navigator.serviceWorker.register("sw.js");
+  if (!on) {
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) { const ep = sub.endpoint; await sub.unsubscribe();
+      await sb.from("control").upsert({id: "jarvis_push", data: {subs: (await pushRow()).filter(x => x.endpoint !== ep)}}); }
+    t.textContent = "Off"; return true;
+  }
+  if ((await Notification.requestPermission()) !== "granted") { t.textContent = "Allowed in Settings → Notifications → Jarvis"; return false; }
+  const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: vapidKey()});
+  const j = sub.toJSON(), subs = (await pushRow()).filter(x => x.endpoint !== j.endpoint);
+  const { error } = await sb.from("control").upsert({id: "jarvis_push", data: {subs: [...subs, j]}});
+  t.textContent = error ? "Couldn't save it: " + error.message : "On · a finished site arrives even when I'm closed";
+  return !error;
+}
+if ("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message", e => { const d = (e.data || {}).d; if (d && d.body) toast(d.body.slice(0, 60)); });
+
+// ---------- the settings' switches ----------
+function renderPrefs(){ document.querySelectorAll("[data-pref]").forEach(r => r.querySelector(".sw").classList.toggle("on", P.get(r.dataset.pref, PREF_DEFAULT[r.dataset.pref]))); }
+document.querySelectorAll("[data-pref]").forEach(r => r.onclick = async () => {
+  const k = r.dataset.pref, on = !P.get(k, PREF_DEFAULT[k]);
+  P.set(k, on); renderPrefs();
+  if (k === "wake") on ? wakeOn() : wakeOff();
+  if (k === "alan" && on) loadAlan();
+  if (k === "live") { syncPrefs(); if (!on) $("#b-live").hidden = true; }
+  if (k === "push" && !(await pushOn(on))) { P.set(k, false); renderPrefs(); }
+});
+renderPrefs();
+if (P.get("alan", true) && navigator.connection && navigator.connection.type === "wifi") loadAlan();   // on Wi-Fi, get the voice ready
 
 boot();
 </script>

@@ -1,0 +1,44 @@
+{
+ "order": 9,
+ "name": "Neon '84",
+ "tagline": "חדש · סינתווייב: שמש שקיעה מפוספסת מעל רשת ניאון שרצה אליך.",
+ "reactor": {
+  "renderer": "grid"
+ },
+ "core": "255,214,92",
+ "light": false,
+ "fonts_css": "family=Audiowide&family=Chakra+Petch:wght@400;500;600;700&family=Share+Tech+Mono",
+ "tokens": {
+  "--bg": "#0b0217",
+  "--bg-a": "#3b0a5a",
+  "--bg-b": "#18062e",
+  "--panel": "rgba(40,8,70,.5)",
+  "--edge": "rgba(255,43,214,.3)",
+  "--c": "255,43,214",
+  "--c-hi": "#ffb8f1",
+  "--c-deep": "#b3129a",
+  "--a": "34,228,255",
+  "--a-hi": "#b8f6ff",
+  "--g": "60,255,170",
+  "--g-hi": "#bfffe2",
+  "--r": "255,70,90",
+  "--r-hi": "#ffc0c8",
+  "--v": "170,110,255",
+  "--p": "255,43,214",
+  "--text": "#f7dcff",
+  "--text2": "#e2bff2",
+  "--hi": "#fff1ff",
+  "--muted": "#b07cd0",
+  "--faint": "#74489a",
+  "--well": "10,2,22",
+  "--ink": "255,255,255",
+  "--scan": ".3",
+  "--grid": ".045",
+  "--disp": "\"Audiowide\",\"Chakra Petch\",sans-serif",
+  "--ui": "\"Chakra Petch\",\"Segoe UI\",sans-serif",
+  "--mono": "\"Share Tech Mono\",ui-monospace,monospace"
+ },
+ "voice": {
+  "name": "en-GB-RyanNeural"
+ }
+}

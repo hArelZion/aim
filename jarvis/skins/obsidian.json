@@ -1,0 +1,44 @@
+{
+ "order": 4,
+ "name": "Obsidian",
+ "tagline": "זכוכית שחורה ונקודת אור לבנה אחת. שקט, מינימלי, והכי קל למחשב.",
+ "reactor": {
+  "renderer": "orb"
+ },
+ "core": "255,255,255",
+ "light": false,
+ "fonts_css": "family=Inter+Tight:wght@400;500;600;700&family=Space+Mono:wght@400;700",
+ "tokens": {
+  "--bg": "#050505",
+  "--bg-a": "#141517",
+  "--bg-b": "#0a0a0b",
+  "--panel": "rgba(255,255,255,.035)",
+  "--edge": "rgba(255,255,255,.12)",
+  "--c": "235,238,242",
+  "--c-hi": "#ffffff",
+  "--c-deep": "#8a9099",
+  "--a": "138,144,153",
+  "--a-hi": "#d5d9df",
+  "--g": "160,230,200",
+  "--g-hi": "#cdeee0",
+  "--r": "255,110,110",
+  "--r-hi": "#ffc4c4",
+  "--v": "200,200,210",
+  "--p": "220,220,230",
+  "--text": "#d7dade",
+  "--text2": "#b9bdc4",
+  "--hi": "#ffffff",
+  "--muted": "#8a9099",
+  "--faint": "#5a5f66",
+  "--well": "8,8,9",
+  "--ink": "255,255,255",
+  "--scan": "0",
+  "--grid": "0",
+  "--disp": "\"Inter Tight\",\"Segoe UI\",sans-serif",
+  "--ui": "\"Inter Tight\",\"Segoe UI\",sans-serif",
+  "--mono": "\"Space Mono\",ui-monospace,monospace"
+ },
+ "voice": {
+  "name": "en-GB-RyanNeural"
+ }
+}
