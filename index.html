@@ -133,7 +133,7 @@ header { flex: none; background: var(--bg); border-bottom: 1px solid var(--line)
 .icon-btn:hover, .icon-btn[aria-expanded="true"] { background: var(--bubble); color: var(--ink); }
 .icon-btn svg { width: 21px; height: 21px; }
 .sheet { border-top: 1px solid var(--line); background: var(--surface); max-height: 75vh; overflow-y: auto; }
-.sheet-in { display: grid; gap: 14px; justify-items: center; padding-block: 16px; text-align: center; }
+.sheet-in { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; justify-items: center; padding-block: 16px; text-align: center; }
 .meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; font-size: .82rem; color: var(--muted); }
 .meta b { color: var(--ink); font-weight: 500; }
 .lang-label { font-size: .78rem; color: var(--muted); }
@@ -231,6 +231,67 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 .screenview .skbd { display: flex; gap: 6px; padding: 8px 10px; background: #111; }
 .screenview .skbd input { flex: 1; min-width: 0; border: 1px solid #333; background: #000; color: #fff; border-radius: 10px; padding: 8px 10px; font: inherit; }
 .screenview .skbd button { border: 0; background: #fff; color: #000; border-radius: 10px; padding: 0 14px; font: inherit; font-weight: 600; }
+/* quick actions above the composer */
+.quick { display: flex; gap: 6px; align-items: center; padding-top: 8px; overflow-x: auto; scrollbar-width: none; }
+.quick::-webkit-scrollbar { display: none; }
+.quick button { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 5px 12px; font-size: .84rem; white-space: nowrap; }
+.quick button:active { background: var(--bubble); }
+.quick .qedit { width: 32px; height: 32px; padding: 0; display: grid; place-items: center; color: var(--muted); }
+.quick .qedit svg { width: 16px; height: 16px; }
+.qeditor { display: grid; gap: 8px; padding-top: 8px; }
+.qeditor textarea { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 10px; min-height: 120px; max-height: 30vh; }
+.qeditor .lang-label { text-align: start; }
+.qeditor .row-btns { justify-content: flex-start; }
+/* mic */
+.mic { flex: none; width: 38px; height: 38px; border-radius: 12px; border: 0; display: grid; place-items: center; background: transparent; color: var(--muted); }
+.mic svg { width: 21px; height: 21px; }
+.mic[aria-pressed="true"] { color: #fff; background: var(--warn); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .65; } }
+/* actions under a reply */
+.afoot { display: flex; align-items: center; gap: 2px; }
+.afoot .act { width: 28px; height: 28px; border: 0; background: transparent; color: var(--muted); border-radius: 8px; display: grid; place-items: center; padding: 0; }
+.afoot .act:hover { background: var(--bubble); color: var(--ink); }
+.afoot .act svg { width: 15px; height: 15px; }
+.afoot .act[aria-pressed="true"] { color: var(--accent); }
+.afoot .ts { margin-inline-end: 4px; }
+/* files */
+.file { display: inline-flex !important; align-items: center; gap: 8px; width: auto !important; min-height: 0 !important; max-width: 100%; padding: 8px 12px; border: 1px solid var(--line); background: var(--surface) !important; color: var(--ink); text-decoration: none; font-size: .86rem; }
+.file svg { width: 18px; height: 18px; flex: none; color: var(--muted); }
+.file span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.thumb .fname { position: absolute; inset: 0; display: grid; place-items: center; padding: 4px; font-size: .62rem; text-align: center; overflow-wrap: anywhere; color: var(--muted); }
+/* nudge bar (notifications) */
+.nudge { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 8px 12px; border-radius: 12px; background: var(--bubble); font-size: .85rem; }
+.nudge span { flex: 1; }
+.nudge .go { border: 0; background: var(--accent); color: var(--accent-ink); border-radius: 9px; padding: 6px 12px; font-weight: 600; font-size: .82rem; }
+.nudge .x { border: 0; background: transparent; color: var(--muted); font-size: 18px; line-height: 1; padding: 2px 4px; }
+/* computer panel in the settings sheet */
+.pc { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; width: 100%; max-width: 480px; }
+.pc .tile { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: 8px 10px; text-align: start; display: grid; gap: 2px; }
+.pc .tile small { font-size: .72rem; color: var(--muted); }
+.pc .tile b { font-size: 1rem; font-weight: 600; }
+.pc .bar2 { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.pc .bar2 i { display: block; height: 100%; background: var(--accent); }
+.pc .tile.wide { grid-column: 1 / -1; }
+.pc .lines { display: grid; gap: 4px; font-size: .82rem; }
+.pc .lines div { display: flex; align-items: center; gap: 6px; }
+.pc .lines .logo { width: 14px; height: 14px; }
+.pc .lines .st { margin-inline-start: auto; color: var(--muted); font-size: .76rem; text-align: end; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 55%; }
+.pc .lines .proj { color: var(--muted); font-size: .74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.toggle { display: flex; align-items: center; gap: 10px; font-size: .88rem; cursor: pointer; }
+.toggle input { width: 18px; height: 18px; accent-color: var(--accent); }
+/* conversation search, pins, rename, share */
+.csearch { width: 100%; max-width: 480px; }
+.csearch .field { direction: inherit; text-align: start; }
+.hit { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); width: 100%; text-align: start; }
+.hit b { font-size: .8rem; color: var(--muted); font-weight: 600; }
+.hit span { font-size: .88rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.hit mark { background: color-mix(in srgb, var(--accent) 30%, transparent); color: inherit; border-radius: 3px; }
+.convbtn { flex: none; width: 36px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.convbtn svg { width: 17px; height: 17px; }
+.convbtn[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+.conv .pin { color: var(--accent); }
+.nohits { font-size: .85rem; color: var(--muted); padding: 8px; }
+.toast { position: fixed; inset-inline: 0; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); margin-inline: auto; width: fit-content; max-width: 90vw; z-index: 70; padding: 8px 14px; border-radius: 12px; background: var(--ink); color: var(--bg); font-size: .85rem; box-shadow: 0 4px 16px rgb(0 0 0 / .2); }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .shimmer { color: var(--muted); background: none; } }
 </style>
 </head>
@@ -274,16 +335,19 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
       </button>
     </div>
   </div>
-  <div class="wrap"><div class="alert" id="alert" hidden></div></div>
+  <div class="wrap"><div class="alert" id="alert" hidden></div><div class="nudge" id="nudge" hidden><span id="nudgeTxt"></span><button class="go" type="button" id="nudgeGo"></button><button class="x" type="button" id="nudgeX">&times;</button></div></div>
   <div class="sheet" id="convSheet" hidden>
     <div class="wrap sheet-in">
       <h2 data-t="convsTitle"></h2>
+      <div class="csearch"><input class="field" id="convSearch" type="search" autocomplete="off" enterkeyhint="search"></div>
       <div class="convs" id="convList"></div>
     </div>
   </div>
   <div class="sheet" id="sheet" hidden>
     <div class="wrap sheet-in">
       <div class="meta" id="meta"></div>
+      <div class="pc" id="pc"></div>
+      <label class="toggle"><input type="checkbox" id="autoRead"><span data-t="autoRead"></span></label>
       <span class="lang-label" data-t="language"></span>
       <div class="seg" role="group" id="langSeg">
         <button type="button" id="lang-he" lang="he">עברית</button>
@@ -334,13 +398,22 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
   <div class="wrap">
     <div class="oldbar" id="oldbar" hidden><span data-t="oldConv"></span><button type="button" id="backCurrent" data-t="backCurrent"></button></div>
     <div class="target" id="target" hidden></div>
+    <div class="quick" id="quick"></div>
+    <div class="qeditor" id="qeditor" hidden>
+      <span class="lang-label" data-t="quickHint"></span>
+      <textarea id="qtext" rows="5"></textarea>
+      <div class="row-btns"><button class="btn-plain" type="button" id="qsave" data-t="save"></button><button class="btn-plain" type="button" id="qcancel" data-t="cancel"></button><button class="btn-link" type="button" id="qreset" data-t="reset"></button></div>
+    </div>
     <div class="previews" id="previews" hidden></div>
     <form class="box" id="form">
       <button class="attach" id="attach" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="m21 16-5-5-9 9"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.1-8.5 8.5a5.5 5.5 0 0 1-7.8-7.8l8.5-8.5a3.7 3.7 0 0 1 5.2 5.2l-8.5 8.5a1.8 1.8 0 0 1-2.6-2.6l7.8-7.8"/></svg>
       </button>
-      <input type="file" id="filePick" accept="image/*" multiple hidden>
+      <input type="file" id="filePick" multiple hidden>
       <textarea id="composer" rows="1"></textarea>
+      <button class="mic" id="mic" type="button" aria-pressed="false" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      </button>
       <button class="send" id="send" type="submit" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
       </button>
@@ -454,6 +527,14 @@ const I18N = {
     password: "סיסמה (8 תווים לפחות)",
     convsTitle: "השיחות שלך", conversations: "שיחות", currentTag: "נוכחית",
     oldConv: "זו שיחה קודמת. אפשר לקרוא, לא לשלוח.", backCurrent: "לשיחה הנוכחית", untitled: "שיחה בלי שם",
+    quickHint: "כפתור בכל שורה. לחיצה על כפתור שולחת את הטקסט שלו מיד.", save: "שמירה", cancel: "ביטול", reset: "ברירת מחדל", editQuick: "עריכת הכפתורים",
+    quickDefault: ["המשך", "מה המצב?", "עצור", "תסכם בקצרה", "פרסם", "תבדוק שוב ותתקן"],
+    autoRead: "הקראה אוטומטית של תשובות", mic: "הקלטה קולית", micErr: "המיקרופון לא זמין. אשר גישה בהגדרות הדפדפן.",
+    copy: "העתקה", copied: "הועתק", speak: "הקראה", stopSpeak: "עצור הקראה",
+    searchConvs: "חיפוש בכל השיחות…", noHits: "לא נמצא כלום.", pin: "הצמדה", unpin: "ביטול הצמדה", rename: "שינוי שם", renameAsk: "שם חדש לשיחה:", share: "ייצוא ושיתוף", exported: "השיחה נשמרה כקובץ",
+    queued: "ממתין לרשת", queuedNote: "אין רשת. ההודעה תישלח לבד כשהחיבור יחזור.", fileErr: "הקובץ גדול מדי (עד 20MB).",
+    nudgeTxt: "הפעל התראות כדי לקבל רטט כשמשהו מסתיים, גם כשהאפליקציה סגורה.", nudgeGo: "הפעל",
+    pcTitle: "מצב המחשב", battery: "סוללה", charging: "בטעינה", cpu: "מעבד", ram: "זיכרון", use5h: "ניצול 5 שעות", useWeek: "ניצול שבועי", resetsIn: "מתאפס ", lines: "מי מחובר", lineOn: "מחובר", lineWork: "עובד", lineOff: "לא מחובר", linePaused: "מושהה", pcOld: "עודכן ",
   },
   en: {
     locale: "en-GB", yesterday: "Yesterday",
@@ -490,6 +571,14 @@ const I18N = {
     password: "Password (8+ characters)",
     convsTitle: "Your conversations", conversations: "Conversations", currentTag: "current",
     oldConv: "This is an earlier conversation. You can read it, not send to it.", backCurrent: "Current conversation", untitled: "Untitled conversation",
+    quickHint: "One button per line. Tapping a button sends its text right away.", save: "Save", cancel: "Cancel", reset: "Defaults", editQuick: "Edit buttons",
+    quickDefault: ["Continue", "What's the status?", "Stop", "Summarize briefly", "Publish", "Check again and fix"],
+    autoRead: "Read replies aloud automatically", mic: "Voice input", micErr: "The microphone isn't available. Allow it in the browser settings.",
+    copy: "Copy", copied: "Copied", speak: "Read aloud", stopSpeak: "Stop reading",
+    searchConvs: "Search all conversations…", noHits: "Nothing found.", pin: "Pin", unpin: "Unpin", rename: "Rename", renameAsk: "New name for the conversation:", share: "Export and share", exported: "Conversation saved as a file",
+    queued: "Waiting for network", queuedNote: "No network. The message sends by itself when you're back online.", fileErr: "The file is too big (20MB max).",
+    nudgeTxt: "Turn on notifications to get a buzz when something finishes, even with the app closed.", nudgeGo: "Turn on",
+    pcTitle: "Computer", battery: "Battery", charging: "charging", cpu: "CPU", ram: "Memory", use5h: "5-hour usage", useWeek: "Weekly usage", resetsIn: "resets ", lines: "Who is connected", lineOn: "online", lineWork: "working", lineOff: "offline", linePaused: "paused", pcOld: "updated ",
   },
 };
 let lang = "he";
@@ -522,7 +611,7 @@ function applyLang() {
   $("attach").setAttribute("aria-label", t("attach")); $("convBtn").setAttribute("aria-label", t("conversations")); $("newBtn").setAttribute("aria-label", t("newChat"));
   $("lang-he").setAttribute("aria-pressed", String(lang === "he"));
   $("lang-en").setAttribute("aria-pressed", String(lang === "en"));
-  paintThemeBtn(); paintModel(); paintTarget(); renderHeader(); if (!firstLoad) renderThread(); renderTail();
+  paintThemeBtn(); paintModel(); paintTarget(); renderHeader(); if (typeof renderQuick === "function" && $("quick")) renderQuick(); $("mic").setAttribute("aria-label", t("mic")); if (!firstLoad) renderThread(); renderTail();
 }
 async function setLang(l, save) {
   if (l !== "he" && l !== "en") return;
@@ -642,7 +731,53 @@ function renderHeader() {
   if (curS().project) { const s = el("span", null, t("project")); s.append(el("b", null, curS().project)); meta.append(s); }
   if (curW().at) meta.append(el("span", null, t("lastSeen", ago(Date.now() - toMs(curW().at)))));
   $("pauseBtn").textContent = isOff() ? t("resume") : t("pause");
-  paintNotif();
+  paintNotif(); paintNudge(); renderPc();
+}
+function paintNudge() {
+  let hide = true;
+  try { hide = !notifSupported() || notifOn() || Notification.permission === "denied" || localStorage.getItem("aim-nudge") === "0"; } catch (e) {}
+  $("nudge").hidden = hide || !signedIn;
+  $("nudgeTxt").textContent = t("nudgeTxt"); $("nudgeGo").textContent = t("nudgeGo");
+}
+$("nudgeGo").onclick = () => $("notifBtn").click();
+$("nudgeX").onclick = () => { try { localStorage.setItem("aim-nudge", "0"); } catch (e) {} paintNudge(); };
+let pc = {};   // control row "pc": written by the computer (pcstat.py every minute; usage by Claude)
+const pct = (v) => (v == null || v === "" || isNaN(+v) ? null : Math.max(0, Math.min(100, Math.round(+v))));
+function tile(label, value, bar, note, wide) {
+  const d = el("div", "tile" + (wide ? " wide" : ""));
+  d.append(el("small", null, label), el("b", null, value));
+  if (bar != null) { const b = el("div", "bar2"); const i = document.createElement("i"); i.style.width = bar + "%"; b.append(i); d.append(b); }
+  if (note) d.append(el("small", null, note));
+  return d;
+}
+function lineState(k) {
+  const st = statuses[k] || {}, w = k === "claude" ? curWFor("claude") : watchers[k] || {};
+  const mk = { gpt: "mode_gpt", gemini: "mode_gemini" }[k] || "mode";
+  if (settings[mk] === "off") return "linePaused";
+  const now = Date.now(), wAt = toMs(w.at), sAt = toMs(st.updatedAt);
+  if (st.state === "working" && sAt && now - sAt < 3600000) return "lineWork";
+  return wAt && now - wAt < 75000 ? "lineOn" : "lineOff";
+}
+const curWFor = (k) => { const a = watchers.claude || {}, b = watchers.team || {}; return toMs(b.at) > toMs(a.at) ? b : a; };
+function renderPc() {
+  const box = $("pc"); if (!box) return; box.replaceChildren();
+  const fresh = pc.at && Date.now() - toMs(pc.at) < 5 * 60000;
+  if (pc.use5h != null) box.append(tile(t("use5h"), pct(pc.use5h) + "%", pct(pc.use5h), pc.reset5h ? t("resetsIn") + stamp(toMs(pc.reset5h)) : ""));
+  if (pc.useWeek != null) box.append(tile(t("useWeek"), pct(pc.useWeek) + "%", pct(pc.useWeek), pc.resetWeek ? t("resetsIn") + stamp(toMs(pc.resetWeek)) : ""));
+  if (pc.battery != null && fresh) box.append(tile(t("battery"), pct(pc.battery) + "%" + (pc.plugged ? " ⚡" : ""), pct(pc.battery), pc.plugged ? t("charging") : ""));
+  if (pc.cpu != null && fresh) box.append(tile(t("cpu") + " / " + t("ram"), pct(pc.cpu) + "% · " + pct(pc.ram) + "%", pct(pc.ram)));
+  const ln = el("div", "tile wide"); ln.append(el("small", null, t("lines")));
+  const list = el("div", "lines");
+  ["claude", "gpt", "gemini"].forEach((k) => {
+    const r = el("div"); r.append(logoEl(k), document.createTextNode(AUTHORS[k].name));
+    const st = statuses[k] || {};
+    if (st.project) r.append(el("span", "proj", "· " + st.project));
+    r.append(el("span", "st", t(lineState(k)) + (st.state === "working" && st.activity ? " · " + st.activity : "")));
+    list.append(r);
+  });
+  ln.append(list);
+  if (pc.at) ln.append(el("small", null, t("pcOld") + ago(Date.now() - toMs(pc.at))));
+  box.append(ln);
 }
 
 /* ---------- photos ---------- */
@@ -654,12 +789,20 @@ async function signedUrls(paths) {
   }
   return paths.map((p) => urlCache.get(p));
 }
+const IMG_EXT = /\.(jpe?g|png|gif|webp|heic|heif|avif|bmp)$/i;
+const ICON_FILE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>';
+const fileName = (p) => decodeURIComponent(String(p).split("/").pop()).replace(/^\d+-/, "");
 function picsEl(paths) {
   const g = el("div", "pics");
-  paths.forEach(() => { const a = document.createElement("a"); a.target = "_blank"; a.rel = "noopener"; g.append(a); });
+  paths.forEach((p) => {
+    const a = document.createElement("a"); a.target = "_blank"; a.rel = "noopener";
+    if (!IMG_EXT.test(p)) { a.className = "file"; a.innerHTML = ICON_FILE; a.append(el("span", null, fileName(p))); a.download = fileName(p); }
+    g.append(a);
+  });
   signedUrls(paths).then((urls) => urls.forEach((u, i) => {
     if (!u) return;
     const a = g.children[i]; a.href = u;
+    if (a.className === "file") return;
     const im = document.createElement("img"); im.src = u; im.alt = ""; im.loading = "lazy"; a.append(im);
   }));
   return g;
@@ -689,7 +832,7 @@ function renderThread() {
       if (toA) { const chip = el("div", "tochip"); if (toA !== "all") chip.append(logoEl(toA)); chip.append(document.createTextNode("\u2192 " + (toA === "all" ? t("allFree") : AUTHORS[toA].name))); row.append(chip); }
       if (body) row.append(el("div", "ububble", body));
       const f = el("div", "ufoot", stamp(m.ts) + " · ");
-      f.append(m.pending ? el("span", null, t("sending")) : m.seen ? el("span", "read", t("read")) : el("span", null, t("sent")));
+      f.append(m.queued ? el("span", null, t("queued")) : m.pending ? el("span", null, t("sending")) : m.seen ? el("span", "read", t("read")) : el("span", null, t("sent")));
       row.append(f); thread.append(row); prevAi = false; continue;
     }
     const au = authorOf(m), team = model === "team";
@@ -700,7 +843,7 @@ function renderThread() {
     if (team && !(prevAi && prevAu === au)) body.append(el("div", "who", AUTHORS[au].name));
     body.insertAdjacentHTML("beforeend", md(m.text)); row.append(body);
     if (imgs.length) row.append(picsEl(imgs));
-    row.append(el("div", "afoot", stamp(m.ts)));
+    row.append(replyFoot(m));
     thread.append(row); prevAi = true; prevAu = au;
     if (!firstLoad && !known.has(m.id)) animate.push(body);
   }
@@ -708,6 +851,34 @@ function renderThread() {
   firstLoad = false;
   if (stick) toBottom();
   animate.forEach((b) => typeOut(b, stick));
+}
+const ICON_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>';
+const ICON_SPEAK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+let speakingId = null;
+function replyFoot(m) {
+  const f = el("div", "afoot");
+  f.append(el("span", "ts", stamp(m.ts)));
+  if (m.text) {
+    const c = document.createElement("button"); c.type = "button"; c.className = "act"; c.innerHTML = ICON_COPY; c.setAttribute("aria-label", t("copy")); c.title = t("copy");
+    c.onclick = () => copyText(m.text);
+    const sp = document.createElement("button"); sp.type = "button"; sp.className = "act"; sp.innerHTML = ICON_SPEAK;
+    const on = speakingId === m.id; sp.setAttribute("aria-pressed", String(on)); sp.setAttribute("aria-label", on ? t("stopSpeak") : t("speak")); sp.title = sp.getAttribute("aria-label");
+    sp.onclick = () => { if (speakingId === m.id) { stopSpeak(); } else speakText(m.text, m.id); };
+    if (window.speechSynthesis) f.append(c, sp); else f.append(c);
+  }
+  return f;
+}
+async function copyText(s) {
+  try { await navigator.clipboard.writeText(s); }
+  catch (e) { const ta2 = document.createElement("textarea"); ta2.value = s; document.body.append(ta2); ta2.select(); try { document.execCommand("copy"); } catch (e2) {} ta2.remove(); }
+  toast(t("copied"));
+}
+let toastTimer = null;
+function toast(s) {
+  let n = $("toast");
+  if (!n) { n = el("div", "toast"); n.id = "toast"; n.setAttribute("role", "status"); document.body.append(n); }
+  n.textContent = s; n.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { n.hidden = true; }, 1800);
 }
 function agentEl(m, au) {
   let text = m.text || "", to = "";
@@ -781,6 +952,9 @@ function applyControl(row) {
     if (typeof renderScreen === "function" && scrOpen && (was !== scr.state || scr.state === "on" || scr.state === "denied")) renderScreen();
   }
   if (row.id === "models") { registerModels((row.data || {}).list); if (ready) { paintModel(); paintTarget(); renderMembers(); renderThread(); renderTail(); } }
+  if (row.id === "pc") { pc = row.data || {}; }
+  if (row.id === "quick") { quickList = Array.isArray((row.data || {}).list) ? row.data.list : null; if (typeof renderQuick === "function") renderQuick(); }
+  if (row.id === "pins") { pins = Array.isArray((row.data || {}).ids) ? row.data.ids : []; if (ready) renderConvs(); }
   if (row.id === "team") { teamCfg = row.data || {}; if (typeof paintModel === "function" && ready) { paintModel(); paintTarget(); renderMembers(); } }
   if (row.id === "current") {
     const d = row.data || {};
@@ -804,7 +978,10 @@ async function loadMessages() {
   let q = sb.from("messages").select("*").order("ts", { ascending: false }).limit(300);
   if (viewConv) q = q.eq("conv", viewConv);
   const { data, error } = await q;
-  if (!error) { msgs = (data || []).reverse(); firstLoad = true; }
+  if (!error) {
+    msgs = (data || []).reverse(); firstLoad = true;
+    readOutbox().filter((r) => (r.conv || null) === (viewConv || null) && !msgs.some((m) => m.id === r.id)).forEach((r) => upsertMsg(Object.assign({ pending: true, queued: true }, r)));
+  }
   renderAll(); renderOldBar();
 }
 async function loadAll() {
@@ -816,19 +993,93 @@ async function loadAll() {
   if (!viewConv) viewConv = currentConv;
   await Promise.all([loadConvs(), loadMessages()]);
 }
+let pins = [];   // control row "pins": pinned conversations, shown first
+const ICON_PIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 6 4 4H6l4-4zM12 14v7"/></svg>';
+const ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg>';
+const ICON_SHARE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';
+const ICON_DEL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>';
+function iconBtn(cls, svg, label, fn, pressed) {
+  const b = document.createElement("button"); b.type = "button"; b.className = cls; b.innerHTML = svg; b.setAttribute("aria-label", label); b.title = label;
+  if (pressed != null) b.setAttribute("aria-pressed", String(pressed));
+  b.onclick = (e) => { e.stopPropagation(); fn(); };
+  return b;
+}
+const openConv = (id) => { viewConv = id; $("convSheet").hidden = true; $("convBtn").setAttribute("aria-expanded", "false"); $("convSearch").value = ""; loadMessages(); renderConvs(); };
 function renderConvs() {
   const list = $("convList"); list.replaceChildren();
-  convs.filter((cv) => convKind(cv.id) === model).forEach((cv) => {
+  $("convSearch").placeholder = t("searchConvs");
+  if ($("convSearch").value.trim().length >= 2) { renderHits(); return; }
+  const mine = convs.filter((cv) => convKind(cv.id) === model);
+  mine.sort((a, b) => (pins.includes(b.id) ? 1 : 0) - (pins.includes(a.id) ? 1 : 0));   // stable: pinned first, then newest
+  mine.forEach((cv) => {
+    const pinned = pins.includes(cv.id);
     const b = document.createElement("button"); b.type = "button"; b.className = "conv";
     b.setAttribute("aria-current", String(cv.id === viewConv));
     const when = new Date(cv.created_at).toLocaleDateString(t("locale"), { day: "numeric", month: "numeric", year: "2-digit" });
-    b.append(el("b", null, cv.title || t("untitled")), el("span", null, [when, cv.project, cv.id === currentConv ? t("currentTag") : ""].filter(Boolean).join(" · ")));
-    b.onclick = () => { viewConv = cv.id; $("convSheet").hidden = true; $("convBtn").setAttribute("aria-expanded", "false"); loadMessages(); renderConvs(); };
-    const d = document.createElement("button"); d.type = "button"; d.className = "convdel"; d.setAttribute("aria-label", t("deleteConv"));
-    d.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>';
-    d.onclick = (e) => { e.stopPropagation(); deleteConv(cv); };
-    const row = el("div", "convrow"); row.append(b, d);
+    b.append(el("b", null, (pinned ? "📌 " : "") + (cv.title || t("untitled"))), el("span", null, [when, cv.project, cv.id === currentConv ? t("currentTag") : ""].filter(Boolean).join(" · ")));
+    b.onclick = () => openConv(cv.id);
+    const row = el("div", "convrow");
+    row.append(b,
+      iconBtn("convbtn", ICON_PIN, pinned ? t("unpin") : t("pin"), () => togglePin(cv.id), pinned),
+      iconBtn("convbtn", ICON_EDIT, t("rename"), () => renameConv(cv)),
+      iconBtn("convbtn", ICON_SHARE, t("share"), () => shareConv(cv)),
+      iconBtn("convdel", ICON_DEL, t("deleteConv"), () => deleteConv(cv)));
     list.append(row);
+  });
+}
+async function togglePin(id) {
+  pins = pins.includes(id) ? pins.filter((x) => x !== id) : [id].concat(pins);
+  renderConvs();
+  const { error } = await putCtl("pins", { ids: pins });
+  if (error) showErr(t("sendErr"));
+}
+async function renameConv(cv) {
+  const v = window.prompt(t("renameAsk"), cv.title || "");
+  if (v === null || !v.trim()) return;
+  const { error } = await sb.from("conversations").update({ title: v.trim() }).eq("id", cv.id);
+  if (error) { showErr(t("sendErr")); return; }
+  cv.title = v.trim(); renderConvs();
+}
+async function shareConv(cv) {
+  const { data, error } = await sb.from("messages").select("id,sender,kind,text,ts").eq("conv", cv.id).order("ts", { ascending: true }).limit(2000);
+  if (error) { showErr(t("sendErr")); return; }
+  const lines = ["# " + (cv.title || t("untitled")), ""];
+  (data || []).forEach((m) => {
+    if (m.kind === "system" || !m.text) return;
+    const who = m.sender === "me" ? (lang === "he" ? "אני" : "Me") : AUTHORS[authorOf(m)].name;
+    const body = m.sender === "me" ? m.text.replace(/^@[a-z0-9]+\n/, "") : m.text;
+    lines.push("**" + who + "** · " + stamp(m.ts), "", body, "");
+  });
+  const text = lines.join("\n"), name = (cv.title || "aim").replace(/[\\/:*?"<>|]+/g, "_").slice(0, 60) + ".md";
+  try {
+    const file = new File([text], name, { type: "text/markdown" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: cv.title || "AIM" }); return; }
+    if (navigator.share) { await navigator.share({ title: cv.title || "AIM", text }); return; }
+  } catch (e) { if (e && e.name === "AbortError") return; }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/markdown" })); a.download = name;
+  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast(t("exported"));
+}
+let searchTimer = null, searchSeq = 0;
+$("convSearch").addEventListener("input", () => { clearTimeout(searchTimer); searchTimer = setTimeout(renderConvs, 300); });
+async function renderHits() {
+  const q = $("convSearch").value.trim(), my = ++searchSeq;
+  const prefix = { claude: "c", gpt: "g", gemini: "m", team: "t" }[model];
+  const { data, error } = await sb.from("messages").select("id,conv,text,ts").ilike("text", "%" + q.replace(/[%_\\]/g, (c) => "\\" + c) + "%").like("conv", prefix + "%").neq("kind", "system").order("ts", { ascending: false }).limit(40);
+  if (my !== searchSeq) return;
+  const list = $("convList"); list.replaceChildren();
+  if (error || !data || !data.length) { list.append(el("div", "nohits", t("noHits"))); return; }
+  const titles = new Map(convs.map((c) => [c.id, c.title || t("untitled")]));
+  data.forEach((m) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "hit";
+    b.append(el("b", null, (titles.get(m.conv) || t("untitled")) + " · " + stamp(m.ts)));
+    const txt = String(m.text).replace(/^@[a-z0-9]+\n/, ""), at = Math.max(0, txt.toLowerCase().indexOf(q.toLowerCase()));
+    const from = Math.max(0, at - 60), snip = (from ? "…" : "") + txt.slice(from, at + q.length + 140);
+    const sp = document.createElement("span"), k = snip.toLowerCase().indexOf(q.toLowerCase());
+    if (k >= 0) { const mk = document.createElement("mark"); mk.textContent = snip.slice(k, k + q.length); sp.append(snip.slice(0, k), mk, snip.slice(k + q.length)); } else sp.textContent = snip;
+    b.append(sp);
+    b.onclick = () => openConv(m.conv);
+    list.append(b);
   });
 }
 async function deleteConv(cv) {
@@ -1030,7 +1281,7 @@ async function saveMembers(next, cb) {
 }
 function renderOldBar() {
   const old = !!(viewConv && currentConv && viewConv !== currentConv);
-  $("oldbar").hidden = !old; $("form").hidden = old;
+  $("oldbar").hidden = !old; $("form").hidden = old; $("quick").hidden = old || !$("qeditor").hidden;
 }
 $("backCurrent").onclick = () => { viewConv = currentConv; loadMessages(); renderConvs(); };
 /* ---------- notifications (vibrate + banner when something arrives and the app is in the background) ---------- */
@@ -1104,6 +1355,7 @@ function subscribe() {
       if (p.eventType === "DELETE") msgs = msgs.filter((m) => m.id !== p.old.id);
       else if (viewConv ? (p.new.conv === viewConv || (!p.new.conv && model === "claude")) : model === "claude") {
         upsertMsg(p.new);
+        if (!speakNext && autoRead() && !document.hidden && p.eventType === "INSERT" && p.new.sender !== "me" && ["reply", "question"].includes(p.new.kind) && p.new.text) speakText(p.new.text, p.new.id);
         if (speakNext && p.eventType === "INSERT" && p.new.sender === "claude" && !["system", "agent", "escalate"].includes(p.new.kind) && p.new.text) { speakNext = false; speakText(p.new.text); }
       }
       renderThread(); renderTail();
@@ -1123,6 +1375,10 @@ async function saveSettings(patch) {
 }
 
 /* ---------- settings sheet ---------- */
+const autoRead = () => { try { return localStorage.getItem("aim-autoread") === "1"; } catch (e) { return false; } };
+$("autoRead").checked = autoRead();
+$("autoRead").hidden = $("autoRead").parentNode.hidden = !window.speechSynthesis;
+$("autoRead").onchange = () => { try { localStorage.setItem("aim-autoread", $("autoRead").checked ? "1" : "0"); } catch (e) {} if (!$("autoRead").checked) stopSpeak(); };
 $("gear").onclick = () => { const open = $("sheet").hidden; if (open) renderMembers(); $("sheet").hidden = !open; $("gear").setAttribute("aria-expanded", String(open)); $("convSheet").hidden = true; $("convBtn").setAttribute("aria-expanded", "false"); };
 $("convBtn").onclick = () => { const open = $("convSheet").hidden; $("convSheet").hidden = !open; $("convBtn").setAttribute("aria-expanded", String(open)); $("sheet").hidden = true; $("gear").setAttribute("aria-expanded", "false"); if (open) loadConvs(); };
 $("pauseBtn").onclick = () => saveSettings({ [modeKey()]: isOff() ? "on" : "off" });
@@ -1153,19 +1409,99 @@ function shrink(file) {
 function renderPicked() {
   const box = $("previews"); box.replaceChildren(); box.hidden = !picked.length;
   picked.forEach((p, i) => {
-    const w = el("div", "thumb"); const im = document.createElement("img"); im.src = p.preview; im.alt = "";
+    const w = el("div", "thumb");
+    if (p.preview) { const im = document.createElement("img"); im.src = p.preview; im.alt = ""; w.append(im); }
+    else w.append(el("span", "fname", p.name));
     const x = el("button", "thumb-x", "×"); x.type = "button"; x.setAttribute("aria-label", t("removePic"));
-    x.onclick = () => { URL.revokeObjectURL(p.preview); picked.splice(i, 1); renderPicked(); syncSend(); };
-    w.append(im, x); box.append(w);
+    x.onclick = () => { if (p.preview) URL.revokeObjectURL(p.preview); picked.splice(i, 1); renderPicked(); syncSend(); };
+    w.append(x); box.append(w);
   });
 }
 $("attach").onclick = () => $("filePick").click();
+const MAX_FILE = 20 * 1024 * 1024;
+const safeName = (n) => (String(n || "file").normalize("NFC").replace(/[^\w.\-֐-׿]+/g, "_").replace(/^_+|_+$/g, "") || "file").slice(-80);
 $("filePick").addEventListener("change", async (e) => {
   const files = [...e.target.files].slice(0, MAX_PICS - picked.length);
   e.target.value = "";
-  for (const f of files) { const blob = await shrink(f); picked.push({ blob, preview: URL.createObjectURL(blob) }); }
+  for (const f of files) {
+    if (/^image\/(jpeg|png|webp|heic|heif|gif|bmp|avif)$/i.test(f.type) && !/gif$/i.test(f.type)) { const blob = await shrink(f); picked.push({ blob, preview: URL.createObjectURL(blob), name: "photo.jpg" }); }
+    else if (f.size > MAX_FILE) showErr(t("fileErr"));
+    else picked.push({ blob: f, preview: /^image\//.test(f.type) ? URL.createObjectURL(f) : null, name: safeName(f.name) });
+  }
   renderPicked(); syncSend();
 });
+
+/* ---------- voice input (Web Speech API, where the browser has it) ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, recBase = "";
+if (SR) $("mic").hidden = false;
+function stopMic() { if (rec) { try { rec.stop(); } catch (e) {} } }
+$("mic").onclick = () => {
+  if (rec) { stopMic(); return; }
+  try {
+    rec = new SR(); rec.lang = lang === "he" ? "he-IL" : "en-US"; rec.interimResults = true; rec.continuous = true;
+    recBase = ta.value ? ta.value.replace(/\s*$/, " ") : "";
+    rec.onresult = (ev) => {
+      let fin = "", tmp = "";
+      for (let i = 0; i < ev.results.length; i++) { const r = ev.results[i]; if (r.isFinal) fin += r[0].transcript; else tmp += r[0].transcript; }
+      ta.value = recBase + fin + tmp; fit(); syncSend();
+      try { localStorage.setItem("aim-draft", ta.value); } catch (e) {}
+    };
+    rec.onerror = (ev) => { if (ev.error === "not-allowed" || ev.error === "service-not-allowed") showErr(t("micErr")); };
+    rec.onend = () => { rec = null; $("mic").setAttribute("aria-pressed", "false"); };
+    rec.start(); $("mic").setAttribute("aria-pressed", "true"); showErr("");
+  } catch (e) { rec = null; showErr(t("micErr")); }
+};
+
+/* ---------- quick actions: one tap sends a ready text; ✎ edits the list (synced in control row "quick") ---------- */
+let quickList = null;
+const quickItems = () => (quickList && quickList.length ? quickList : t("quickDefault"));
+function renderQuick() {
+  const box = $("quick"); box.replaceChildren();
+  quickItems().forEach((q) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = q;
+    b.onclick = () => sendText(q);
+    box.append(b);
+  });
+  box.append(iconBtn("qedit", ICON_EDIT, t("editQuick"), openQuickEditor));
+}
+function openQuickEditor() {
+  $("qtext").value = quickItems().join("\n");
+  $("qeditor").hidden = false; $("quick").hidden = true; $("qtext").focus();
+}
+function closeQuickEditor() { $("qeditor").hidden = true; $("quick").hidden = false; }
+$("qcancel").onclick = closeQuickEditor;
+$("qreset").onclick = () => { $("qtext").value = t("quickDefault").join("\n"); };
+$("qsave").onclick = async () => {
+  const list = $("qtext").value.split("\n").map((x) => x.trim()).filter(Boolean).slice(0, 16);
+  const isDefault = list.join("\n") === t("quickDefault").join("\n");
+  quickList = isDefault ? null : list; renderQuick(); closeQuickEditor();
+  const { error } = await putCtl("quick", { list: quickList || [] });
+  if (error) showErr(t("sendErr"));
+};
+function sendText(s) { if (!sending) sendMsg(s, [], false); }   // a quick action leaves a half-written draft alone
+
+/* ---------- outbox: messages written with no network wait in this browser and go out when it's back ---------- */
+const OUTBOX = "aim-outbox";
+const readOutbox = () => { try { return JSON.parse(localStorage.getItem(OUTBOX) || "[]"); } catch (e) { return []; } };
+const writeOutbox = (l) => { try { localStorage.setItem(OUTBOX, JSON.stringify(l)); } catch (e) {} };
+let flushing = false;
+async function flushOutbox() {
+  if (flushing || !signedIn || !navigator.onLine) return;
+  const box = readOutbox(); if (!box.length) return;
+  flushing = true;
+  const left = [];
+  for (const row of box) {
+    const { error } = await sb.from("messages").insert(row);
+    if (error && !/duplicate|23505/.test(error.message + error.code)) left.push(row);
+  }
+  writeOutbox(left); flushing = false;
+  msgs = msgs.filter((m) => !m.queued || left.some((r) => r.id === m.id));
+  renderThread(); renderTail();
+}
+window.addEventListener("online", flushOutbox);
+setInterval(flushOutbox, 15000);
+const isNetErr = (err) => !navigator.onLine || (err && (err.name === "TypeError" || /fetch|network|load failed/i.test(String(err.message || err))));
 try { ta.value = localStorage.getItem("aim-draft") || ""; } catch (e) {}
 ta.addEventListener("input", () => { fit(); syncSend(); try { localStorage.setItem("aim-draft", ta.value); } catch (e) {} });
 ta.addEventListener("keydown", (e) => {
@@ -1174,13 +1510,14 @@ ta.addEventListener("keydown", (e) => {
 // Tapping the conversation (not the composer) closes the phone keyboard.
 $("scroller").addEventListener("pointerdown", () => { if (document.activeElement === ta) ta.blur(); });
 
-$("form").addEventListener("submit", async (e) => {
+$("form").addEventListener("submit", (e) => {
   e.preventDefault();
-  const text = ta.value.trim(), pics = picked.slice();
+  stopMic();
+  sendMsg(ta.value.trim(), picked.slice(), true);
+});
+async function sendMsg(text, pics, fromComposer) {
   if ((!text && !pics.length) || sending) return;
-  if (model === "gpt" && !currentConv) { showErr(t("noGptConv")); return; }
-  if (model === "gemini" && !currentConv) { showErr(t("noGeminiConv")); return; }
-  if (model === "team" && !currentConv && !(await makeConv(t("teamDefault")))) return;
+  if (model !== "claude" && !currentConv && !(await makeConv(model === "team" ? t("teamDefault") : (text || "").slice(0, 40) || t("newChat")))) return;   // every model starts its own chat on the first message
   sending = true; syncSend(); showErr("");
   const ts = Date.now();
   const id = "m" + ts.toString(36) + Math.random().toString(36).slice(2, 6);
@@ -1188,12 +1525,20 @@ $("form").addEventListener("submit", async (e) => {
   if (currentConv) row.conv = currentConv;
   const lastAi = [...msgs].reverse().find((m) => m.sender !== "me" && m.kind !== "system");
   if (lastAi && lastAi.kind === "question" && !msgs.slice(msgs.indexOf(lastAi) + 1).some((m) => m.sender === "me")) { row.kind = "answer"; row.reply_to = lastAi.id; }
+  const done = () => {
+    if (!fromComposer) return;
+    ta.value = ""; fit(); toBottom();
+    pics.forEach((p) => { if (p.preview) URL.revokeObjectURL(p.preview); }); picked = []; renderPicked();
+    try { localStorage.removeItem("aim-draft"); } catch (e2) {}
+  };
   try {
     if (pics.length) {
+      if (!navigator.onLine) throw { pic: true };
       row.images = [];
       for (let i = 0; i < pics.length; i++) {
-        const path = "me/" + id + "/" + i + ".jpg";
-        const { error } = await sb.storage.from(BUCKET).upload(path, pics[i].blob, { contentType: pics[i].blob.type || "image/jpeg" });
+        const nm = pics[i].preview && pics[i].name === "photo.jpg" ? i + ".jpg" : i + "-" + (pics[i].name || "file");
+        const path = "me/" + id + "/" + nm;
+        const { error } = await sb.storage.from(BUCKET).upload(path, pics[i].blob, { contentType: pics[i].blob.type || "application/octet-stream" });
         if (error) throw { pic: true };
         row.images.push(path);
       }
@@ -1202,15 +1547,19 @@ $("form").addEventListener("submit", async (e) => {
     const { error } = await sb.from("messages").insert(row);
     if (error) throw error;
     upsertMsg(row);
-    ta.value = ""; fit(); toBottom();
-    pics.forEach((p) => URL.revokeObjectURL(p.preview)); picked = []; renderPicked();
-    try { localStorage.removeItem("aim-draft"); } catch (e2) {}
+    done();
   } catch (err) {
-    msgs = msgs.filter((m) => !(m.id === id && m.pending));
-    showErr(err && err.pic ? t("picErr") : t("sendErr"));
+    if (!(err && err.pic) && isNetErr(err)) {   // no network: keep it and send later
+      writeOutbox(readOutbox().concat([row]));
+      upsertMsg(Object.assign({ pending: true, queued: true }, row));
+      done(); showErr(t("queuedNote"));
+    } else {
+      msgs = msgs.filter((m) => !(m.id === id && m.pending));
+      showErr(err && err.pic ? t("picErr") : t("sendErr"));
+    }
   }
   sending = false; syncSend(); renderThread(); renderTail();
-});
+}
 
 /* ---------- light / dark ---------- */
 const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
@@ -1248,14 +1597,24 @@ const DEEP = (() => {
   } catch (e) { return null; }
 })();
 let speakNext = false;
-function speakText(text) {
+function speakText(text, id) {   // reads a reply aloud; long replies are read in sentence-sized pieces (iOS cuts long utterances)
   try {
-    const plain = String(text || "").replace(/[*_`#>\[\]]/g, "").replace(/\s+/g, " ").trim().slice(0, 900);
-    if (!plain || !window.speechSynthesis) return;
-    const u = new SpeechSynthesisUtterance(plain); u.lang = /[֐-׿]/.test(plain) ? "he-IL" : "en-US";
-    window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
+    if (!window.speechSynthesis) return;
+    const plain = String(text || "").replace(/```[\s\S]*?```/g, " ").replace(/https?:\/\/\S+/g, " ").replace(/[*_`#>\[\]]/g, "").replace(/\s+/g, " ").trim().slice(0, 4000);
+    if (!plain) return;
+    window.speechSynthesis.cancel();
+    const he = /[֐-׿]/.test(plain);
+    const parts = plain.match(/[^.!?\n]{1,220}([.!?]+|$)/g) || [plain];
+    speakingId = id || null;
+    parts.forEach((part, i) => {
+      const u = new SpeechSynthesisUtterance(part.trim()); u.lang = he ? "he-IL" : "en-US";
+      if (i === parts.length - 1) u.onend = u.onerror = () => { if (speakingId === (id || null)) { speakingId = null; renderThread(); } };
+      window.speechSynthesis.speak(u);
+    });
+    if (id) renderThread();
   } catch (e) {}
 }
+function stopSpeak() { try { window.speechSynthesis.cancel(); } catch (e) {} speakingId = null; renderThread(); }
 async function runDeepLink() {
   const d = DEEP; if (!d) return;
   try { history.replaceState(null, "", location.pathname); } catch (e) {}
@@ -1273,12 +1632,12 @@ async function runDeepLink() {
 let deepDone = false;
 function showApp(on) {
   $("login").hidden = on; $("app").hidden = !on;
-  if (on && !signedIn) { signedIn = true; loadAll().then(() => { if (!deepDone) { deepDone = true; runDeepLink(); } }); subscribe(); }
+  if (on && !signedIn) { signedIn = true; loadAll().then(() => { flushOutbox(); paintNudge(); if (!deepDone) { deepDone = true; runDeepLink(); } }); subscribe(); }
 }
 sb.auth.onAuthStateChange((_ev, session) => showApp(!!session));
 
 /* ---------- boot ---------- */
-applyLang(); fit(); syncSend();
+applyLang(); renderQuick(); fit(); syncSend();
 sb.auth.getSession().then(({ data }) => showApp(!!(data && data.session)));
 setInterval(() => { renderHeader(); renderTail(); }, 30000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden && signedIn) loadAll(); });
