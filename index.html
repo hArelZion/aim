@@ -231,6 +231,15 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 .screenview .skbd { display: flex; gap: 6px; padding: 8px 10px; background: #111; }
 .screenview .skbd input { flex: 1; min-width: 0; border: 1px solid #333; background: #000; color: #fff; border-radius: 10px; padding: 8px 10px; font: inherit; }
 .screenview .skbd button { border: 0; background: #fff; color: #000; border-radius: 10px; padding: 0 14px; font: inherit; font-weight: 600; }
+/* editing my own message */
+.ufoot { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+.uedit { width: 26px; height: 26px; border: 0; background: transparent; color: var(--muted); border-radius: 8px; display: grid; place-items: center; padding: 0; margin-inline-start: 2px; }
+.uedit:hover { background: var(--bubble); color: var(--ink); }
+.uedit svg { width: 14px; height: 14px; }
+.uedit-box { width: min(100%, 520px); display: grid; gap: 8px; }
+.uedit-box textarea { border: 1px solid var(--accent); border-radius: 14px; background: var(--surface); padding: 10px 12px; max-height: 40vh; }
+.uedit-box .row-btns { justify-content: flex-start; }
+.uedit-box .btn-main { width: auto; height: 36px; padding-inline: 14px; }
 /* quick actions above the composer */
 .quick { display: flex; gap: 6px; align-items: center; padding-top: 8px; overflow-x: auto; scrollbar-width: none; }
 .quick::-webkit-scrollbar { display: none; }
@@ -527,6 +536,7 @@ const I18N = {
     password: "סיסמה (8 תווים לפחות)",
     convsTitle: "השיחות שלך", conversations: "שיחות", currentTag: "נוכחית",
     oldConv: "זו שיחה קודמת. אפשר לקרוא, לא לשלוח.", backCurrent: "לשיחה הנוכחית", untitled: "שיחה בלי שם",
+    edited: "נערכה", editMsg: "עריכת ההודעה", saveEdit: "שמירה ושליחה מחדש",
     quickHint: "כפתור בכל שורה. לחיצה על כפתור שולחת את הטקסט שלו מיד.", save: "שמירה", cancel: "ביטול", reset: "ברירת מחדל", editQuick: "עריכת הכפתורים",
     quickDefault: ["המשך", "מה המצב?", "עצור", "תסכם בקצרה", "פרסם", "תבדוק שוב ותתקן"],
     autoRead: "הקראה אוטומטית של תשובות", mic: "הקלטה קולית", micErr: "המיקרופון לא זמין. אשר גישה בהגדרות הדפדפן.",
@@ -571,6 +581,7 @@ const I18N = {
     password: "Password (8+ characters)",
     convsTitle: "Your conversations", conversations: "Conversations", currentTag: "current",
     oldConv: "This is an earlier conversation. You can read it, not send to it.", backCurrent: "Current conversation", untitled: "Untitled conversation",
+    edited: "edited", editMsg: "Edit message", saveEdit: "Save and resend",
     quickHint: "One button per line. Tapping a button sends its text right away.", save: "Save", cancel: "Cancel", reset: "Defaults", editQuick: "Edit buttons",
     quickDefault: ["Continue", "What's the status?", "Stop", "Summarize briefly", "Publish", "Check again and fix"],
     autoRead: "Read replies aloud automatically", mic: "Voice input", micErr: "The microphone isn't available. Allow it in the browser settings.",
@@ -830,9 +841,14 @@ function renderThread() {
       const mt = /^@([a-z0-9]+)\n/.exec(body || "");
       if (mt && (AUTHORS[mt[1]] || mt[1] === "all")) { toA = mt[1]; body = body.slice(mt[0].length); }
       if (toA) { const chip = el("div", "tochip"); if (toA !== "all") chip.append(logoEl(toA)); chip.append(document.createTextNode("\u2192 " + (toA === "all" ? t("allFree") : AUTHORS[toA].name))); row.append(chip); }
+      if (editingId === m.id) { row.append(editBox(m, toA, body)); thread.append(row); prevAi = false; continue; }
       if (body) row.append(el("div", "ububble", body));
       const f = el("div", "ufoot", stamp(m.ts) + " · ");
       f.append(m.queued ? el("span", null, t("queued")) : m.pending ? el("span", null, t("sending")) : m.seen ? el("span", "read", t("read")) : el("span", null, t("sent")));
+      if (edits.includes(m.id)) f.append(document.createTextNode(" · " + t("edited")));
+      if (body && !m.pending && (!viewConv || viewConv === currentConv)) {
+        f.append(iconBtn("uedit", ICON_EDIT, t("editMsg"), () => { editingId = m.id; editDraft = null; renderThread(); const x = document.querySelector(".uedit-box textarea"); if (x) { x.focus(); x.setSelectionRange(x.value.length, x.value.length); } }));
+      }
       row.append(f); thread.append(row); prevAi = false; continue;
     }
     const au = authorOf(m), team = model === "team";
@@ -852,7 +868,33 @@ function renderThread() {
   if (stick) toBottom();
   animate.forEach((b) => typeOut(b, stick));
 }
-const ICON_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>';
+/* editing a message I sent: the text is corrected in place and, if it was already read, marked unread again so the model reads the corrected version */
+let editingId = null, editDraft = null, edits = [];   // control row "edits": {ids} of edited messages (shows "edited")
+function editBox(m, toA, body) {
+  const box = el("div", "uedit-box");
+  const x = document.createElement("textarea"); x.value = editDraft != null ? editDraft : body || "";
+  x.addEventListener("input", () => { editDraft = x.value; }); x.rows = Math.min(8, Math.max(2, (body || "").split("\n").length + 1));
+  const btns = el("div", "row-btns");
+  const save = el("button", "btn-main", t("saveEdit")); save.type = "button";
+  const cancel = el("button", "btn-plain", t("cancel")); cancel.type = "button";
+  cancel.onclick = () => { editingId = null; editDraft = null; renderThread(); };
+  save.onclick = async () => {
+    const v = x.value.trim();
+    if (!v || v === (body || "").trim()) { editingId = null; renderThread(); return; }
+    save.disabled = true;
+    const text = (toA ? "@" + toA + "\n" : "") + v;
+    const { error } = await sb.from("messages").update({ text, seen: false, seen_at: null }).eq("id", m.id);
+    if (error) { save.disabled = false; showErr(t("sendErr")); return; }
+    m.text = text; m.seen = false; editingId = null; editDraft = null; showErr("");
+    if (!edits.includes(m.id)) { edits = edits.concat([m.id]).slice(-300); putCtl("edits", { ids: edits }); }
+    renderThread(); renderTail();
+  };
+  x.addEventListener("keydown", (e) => { if (e.key === "Escape") cancel.onclick(); });
+  btns.append(save, cancel); box.append(x, btns);
+  if (editDraft != null) setTimeout(() => x.focus(), 0);   // re-rendered while typing (a new message arrived): keep typing
+  return box;
+}
+const ICON_COPY ='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>';
 const ICON_SPEAK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
 let speakingId = null;
 function replyFoot(m) {
@@ -953,6 +995,7 @@ function applyControl(row) {
   }
   if (row.id === "models") { registerModels((row.data || {}).list); if (ready) { paintModel(); paintTarget(); renderMembers(); renderThread(); renderTail(); } }
   if (row.id === "pc") { pc = row.data || {}; }
+  if (row.id === "edits") { edits = Array.isArray((row.data || {}).ids) ? row.data.ids : []; }
   if (row.id === "quick") { quickList = Array.isArray((row.data || {}).list) ? row.data.list : null; if (typeof renderQuick === "function") renderQuick(); }
   if (row.id === "pins") { pins = Array.isArray((row.data || {}).ids) ? row.data.ids : []; if (ready) renderConvs(); }
   if (row.id === "team") { teamCfg = row.data || {}; if (typeof paintModel === "function" && ready) { paintModel(); paintTarget(); renderMembers(); } }
