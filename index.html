@@ -535,6 +535,7 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
 .pcsess .s-needs .sdot, .pcsess .s-waiting .sdot { background: #e5b33b; opacity: 1; }
 .pcsess .sname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pcsess .sst { flex: none; font-size: .76rem; color: var(--muted); }
+.mpick .mdesc { padding: 0 12px 6px; font-size: .82rem; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -753,7 +754,7 @@ const I18N = {
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
     deleteConv: "מחיקת שיחה", deleteAsk: "למחוק את \"%s\" לצמיתות, כולל כל ההודעות שלה?",
-    newChat: "שיחה חדשה", pcSessions: "השיחות של Claude Code במחשב", pinnedS: "מוצמדות", thisS: "מחובר לטלפון", st_Running: "עובדת", "st_Unread response": "תשובה חדשה", "st_Needs input": "מחכה לך", st_Waiting: "מחכה", st_Idle: "", st_Error: "שגיאה", permTitle: "Claude מבקש אישור", permAllow: "אשר", permDeny: "דחה", perm_sending: "שולח למחשב…", perm_allow: "אושר", perm_deny: "נדחה", perm_timeout: "לא נענה בזמן. הבקשה מחכה במחשב.", closeX: "סגור", mModel: "מודל", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
+    newChat: "שיחה חדשה", mMode: "מצב עבודה", md_Auto: "Claude מחליט לבד מה מותר. לא תקבל בקשות אישור.", md_Manual: "Claude שואל לפני כל שינוי. הבקשות יגיעו אליך לכאן.", "md_Accept edits": "עריכת קבצים מאושרת לבד, פקודות אחרות דורשות אישור.", md_Plan: "Claude רק מתכנן ומציג תוכנית, בלי לשנות קבצים.", "md_Bypass permissions": "כל ההגנות כבויות. אפשר לשנות את זה רק במחשב.", pcSessions: "השיחות של Claude Code במחשב", pinnedS: "מוצמדות", thisS: "מחובר לטלפון", st_Running: "עובדת", "st_Unread response": "תשובה חדשה", "st_Needs input": "מחכה לך", st_Waiting: "מחכה", st_Idle: "", st_Error: "שגיאה", permTitle: "Claude מבקש אישור", permAllow: "אשר", permDeny: "דחה", perm_sending: "שולח למחשב…", perm_allow: "אושר", perm_deny: "נדחה", perm_timeout: "לא נענה בזמן. הבקשה מחכה במחשב.", closeX: "סגור", mModel: "מודל", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
     noGptConv: "ChatGPT עדיין לא חובר. הקלד $phone ב-Codex במחשב.", offlineGpt: "ChatGPT לא מחובר. הקלד $phone ב-Codex במחשב.", switchTo: "מעבר ל-",
     language: "שפת האפליקציה", pause: "השהיית הקו", resume: "המשך הקו", signOut: "התנתקות",
     placeholder: "כתוב ל-Claude…", msgAria: "הודעה ל-Claude", send: "שליחה", settings: "הגדרות",
@@ -800,7 +801,7 @@ const I18N = {
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
     deleteConv: "Delete conversation", deleteAsk: "Permanently delete \"%s\" and all its messages?",
-    newChat: "New chat", pcSessions: "Claude Code sessions on the computer", pinnedS: "Pinned", thisS: "on the phone", st_Running: "working", "st_Unread response": "new reply", "st_Needs input": "needs you", st_Waiting: "waiting", st_Idle: "", st_Error: "error", permTitle: "Claude asks for permission", permAllow: "Allow", permDeny: "Deny", perm_sending: "Sending to the computer…", perm_allow: "Allowed", perm_deny: "Denied", perm_timeout: "Not answered in time. The request waits on the computer.", closeX: "Close", mModel: "Model", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
+    newChat: "New chat", mMode: "Work mode", md_Auto: "Claude decides what is allowed. No permission requests.", md_Manual: "Claude asks before every change. Requests come here.", "md_Accept edits": "File edits are allowed, other commands ask.", md_Plan: "Claude only plans and shows a plan, no file changes.", "md_Bypass permissions": "All checks are off. Only the computer can change this.", pcSessions: "Claude Code sessions on the computer", pinnedS: "Pinned", thisS: "on the phone", st_Running: "working", "st_Unread response": "new reply", "st_Needs input": "needs you", st_Waiting: "waiting", st_Idle: "", st_Error: "error", permTitle: "Claude asks for permission", permAllow: "Allow", permDeny: "Deny", perm_sending: "Sending to the computer…", perm_allow: "Allowed", perm_deny: "Denied", perm_timeout: "Not answered in time. The request waits on the computer.", closeX: "Close", mModel: "Model", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
     noGptConv: "ChatGPT is not connected yet. Type $phone in Codex on the computer.", offlineGpt: "ChatGPT is not connected. Type $phone in Codex on the computer.", switchTo: "Switch to ",
     language: "App language", pause: "Pause the line", resume: "Resume the line", signOut: "Sign out",
     placeholder: "Message Claude…", msgAria: "Message to Claude", send: "Send", settings: "Settings",
@@ -2091,6 +2092,7 @@ const isNetErr = (err) => !navigator.onLine || (err && (err.name === "TypeError"
 try { ta.value = localStorage.getItem("aim-draft") || ""; } catch (e) {}
 /* model picker: the computer presses the real Model / Effort buttons of the Claude app (aim_model.py via the watcher) */
 const mErr = (e) => ({ "other-session": t("mOther"), window: t("mNoWin") }[e] || t("mFail"));
+/* work modes: the user approved this button on the computer on 2026-10-14; "Bypass permissions" is never offered */
 function paintModelChip() {
   const c = $("mchip"), on = model === "claude" && !!mstate.model;
   c.hidden = !on;
@@ -2132,6 +2134,19 @@ function renderModelPick() {
       seg.append(b);
     }
     box.append(seg);
+  }
+  const modes = Array.isArray(mstate.modes) ? mstate.modes : [];
+  if (modes.length && mstate.mode) {
+    box.append(el("div", "mhead", t("mMode")));
+    const atm = mpend && mpend.mode ? mpend.mode : mstate.mode;
+    const seg = el("div", "mseg");
+    modes.forEach((md) => {
+      const b = el("button", null, md); b.type = "button"; b.setAttribute("aria-pressed", String(md === atm));
+      b.onclick = () => { if (md !== mstate.mode && !mpend) askModel({ mode: md }); };
+      seg.append(b);
+    });
+    box.append(seg);
+    const d = t("md_" + atm); if (d && d !== "md_" + atm) box.append(el("div", "mdesc", d));
   }
   if (mpend) box.append(el("div", "mstat", t("mSwitching")));
   else if (mmsg && mmsg[0] === "ask") {
