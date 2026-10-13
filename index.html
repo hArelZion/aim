@@ -505,6 +505,25 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
 .pcref svg { width: 16px; height: 16px; }
 .pcref.spin svg { animation: spin .9s linear infinite; }
 .pcref:disabled { opacity: .7; }
+.qopts { display: grid; gap: 8px; margin-top: 10px; grid-column: 1 / -1; }
+.qopt { display: grid; gap: 2px; width: 100%; padding: 11px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); text-align: start; font: inherit; }
+.qopt .ql { font-weight: 600; font-size: .98rem; }
+.qopt .qs { font-size: .84rem; color: var(--muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.qopt:active, .qopt.picked { border-color: var(--spark); background: var(--bubble); }
+.qopt:disabled:not(.picked) { opacity: .5; }
+.perm { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--spark); border-radius: 16px; background: var(--surface); margin-block: 6px; }
+.cbox pre, .cbox .chead { direction: ltr; text-align: left; unicode-bidi: isolate; }
+.perm .ph { font-size: .8rem; font-weight: 600; color: var(--spark); }
+.perm .pt { font-weight: 600; overflow-wrap: anywhere; }
+.perm .cbox pre { max-height: 200px; overflow: auto; margin: 0; padding: 8px 0; white-space: pre-wrap; overflow-wrap: anywhere; font: .74rem/1.45 var(--font-mono); }
+.perm .cbox pre.cmd { padding: 10px 12px; }
+.perm .cbox .dl { display: block; padding: 0 12px; }
+.perm .cbox .dl.add { background: rgb(46 160 67 / .16); color: #5fd17a; } .perm .cbox .dl.del { background: rgb(229 83 75 / .16); color: #ff8b84; }
+.pbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pb { height: 44px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--ink); font-weight: 600; font-size: .98rem; }
+.pb.allow { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.pst { font-size: .86rem; color: var(--muted); }
+.pst.allow { color: var(--live); } .pst.deny { color: var(--warn); }
 </style>
 </head>
 <body>
@@ -721,7 +740,7 @@ const I18N = {
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
     deleteConv: "מחיקת שיחה", deleteAsk: "למחוק את \"%s\" לצמיתות, כולל כל ההודעות שלה?",
-    newChat: "שיחה חדשה", closeX: "סגור", mModel: "מודל", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
+    newChat: "שיחה חדשה", permTitle: "Claude מבקש אישור", permAllow: "אשר", permDeny: "דחה", perm_sending: "שולח למחשב…", perm_allow: "אושר", perm_deny: "נדחה", perm_timeout: "לא נענה בזמן. הבקשה מחכה במחשב.", closeX: "סגור", mModel: "מודל", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
     noGptConv: "ChatGPT עדיין לא חובר. הקלד $phone ב-Codex במחשב.", offlineGpt: "ChatGPT לא מחובר. הקלד $phone ב-Codex במחשב.", switchTo: "מעבר ל-",
     language: "שפת האפליקציה", pause: "השהיית הקו", resume: "המשך הקו", signOut: "התנתקות",
     placeholder: "כתוב ל-Claude…", msgAria: "הודעה ל-Claude", send: "שליחה", settings: "הגדרות",
@@ -768,7 +787,7 @@ const I18N = {
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
     deleteConv: "Delete conversation", deleteAsk: "Permanently delete \"%s\" and all its messages?",
-    newChat: "New chat", closeX: "Close", mModel: "Model", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
+    newChat: "New chat", permTitle: "Claude asks for permission", permAllow: "Allow", permDeny: "Deny", perm_sending: "Sending to the computer…", perm_allow: "Allowed", perm_deny: "Denied", perm_timeout: "Not answered in time. The request waits on the computer.", closeX: "Close", mModel: "Model", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
     noGptConv: "ChatGPT is not connected yet. Type $phone in Codex on the computer.", offlineGpt: "ChatGPT is not connected. Type $phone in Codex on the computer.", switchTo: "Switch to ",
     language: "App language", pause: "Pause the line", resume: "Resume the line", signOut: "Sign out",
     placeholder: "Message Claude…", msgAria: "Message to Claude", send: "Send", settings: "Settings",
@@ -1140,6 +1159,7 @@ function renderThread() {
       continue;
     }
     grp = null;
+    if (m.kind === "perm") { thread.append(permEl(m)); prevAi = false; continue; }
     if (m.sender === "me" && lastAiRow) { lastAiRow.classList.add("last"); lastAiRow = null; }
     const row = el("div", "row ai" + (team ? (prevAi && prevAu === au ? " cont" : "") : " solo"));
     if (team) row.append(logoEl(au));
@@ -1148,6 +1168,7 @@ function renderThread() {
     if (team && !(prevAi && prevAu === au)) body.append(el("div", "who", AUTHORS[au].name));
     body.insertAdjacentHTML("beforeend", md(m.text)); body.querySelectorAll("p, li, h4").forEach((n) => { n.dir = "auto"; }); row.append(body);
     if (imgs.length) row.append(picsEl(imgs));
+    if (m.kind === "question" && !msgs.some((x) => x.sender === "me" && x.ts > m.ts)) { const qo = questionOptions(m); if (qo) row.append(qo); }
     row.append(replyFoot(m));
     thread.append(row); prevAi = true; prevAu = au;
     if (!firstLoad && !known.has(m.id)) animate.push(body);
@@ -1211,6 +1232,52 @@ function toast(s) {
   if (!n) { n = el("div", "toast"); n.id = "toast"; n.setAttribute("role", "status"); document.body.append(n); }
   n.textContent = s; n.hidden = false;
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { n.hidden = true; }, 1800);
+}
+/* a permission request from the computer (PermissionRequest hook): Allow / Deny from the phone */
+const permSent = {};
+function permEl(m) {
+  let c = {}; try { c = JSON.parse(m.text); } catch (e) {}
+  const box = el("div", "perm");
+  box.append(el("div", "ph", t("permTitle")));
+  const tl = el("div", "pt"), bi = document.createElement("bdi"); bi.textContent = c.title || c.t || ""; tl.append(bi); box.append(tl);
+  if (c.in) box.append(codeBox(c));
+  const st = c.state === "ask" && permSent[c.pid] ? "sending" : c.state;
+  if (st === "ask") {
+    const row = el("div", "pbtns");
+    [["allow", t("permAllow")], ["deny", t("permDeny")]].forEach(([b, label]) => {
+      const x = el("button", "pb " + b, label); x.type = "button";
+      x.onclick = () => { permSent[c.pid] = b; putCtl("perm-ans", { pid: c.pid, behavior: b, at: Date.now() }); renderThread(); };
+      row.append(x);
+    });
+    box.append(row);
+  } else box.append(el("div", "pst " + st, t("perm_" + st)));
+  return box;
+}
+/* a question of mine with a numbered list: every item becomes a button that answers with that item */
+function questionOptions(m) {
+  const items = [];
+  (m.text || "").split("\n").forEach((l) => {
+    const mm = /^\s*(\d+)[.)]\s+(.+)$/.exec(l);
+    if (mm) items.push(mm[2].trim());
+  });
+  if (items.length < 2 || items.length > 8) return null;
+  const box = el("div", "qopts");
+  items.forEach((it) => {
+    const bold = /^\*\*(.+?)\*\*/.exec(it);
+    const label = (bold ? bold[1] : it).replace(/\*\*/g, "").replace(/`/g, "").replace(/[:：]\s*$/, "").trim();
+    const sub = bold ? it.slice(bold[0].length).replace(/^[\s:：-]+/, "").replace(/\*\*/g, "").replace(/`/g, "") : "";
+    const b = el("button", "qopt"); b.type = "button";
+    const lb = el("span", "ql", label); lb.dir = "auto"; b.append(lb);
+    if (sub) { const sb = el("span", "qs", sub); sb.dir = "auto"; b.append(sb); }
+    b.onclick = () => {
+      if (sending) return;
+      box.querySelectorAll("button").forEach((x) => { x.disabled = true; });
+      b.classList.add("picked");
+      ta.value = label; fit(); syncSend(); $("form").requestSubmit();
+    };
+    box.append(b);
+  });
+  return box;
 }
 function codeBox(c) {
   const wrap = el("div", "cbox");
