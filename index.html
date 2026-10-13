@@ -387,7 +387,7 @@ header { position: relative; border-bottom: 0; }
 .box .send.stop { border-radius: 12px; background: transparent; color: var(--ink); border: 1.5px solid var(--muted); }
 footer.slashing .quick { display: none; }
 .box { grid-template-columns: auto auto minmax(0, 1fr) auto auto; grid-template-areas: "ta ta ta ta ta" "at mdl . mic send"; }
-.mchip { grid-area: mdl; display: inline-flex; gap: 5px; align-items: baseline; max-width: 100%; height: 40px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-size: .92rem; white-space: nowrap; overflow: hidden; }
+.mchip { grid-area: mdl; display: inline-flex; gap: 5px; align-items: center; max-width: 100%; height: 40px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-size: .92rem; white-space: nowrap; overflow: hidden; }
 .mchip { direction: ltr; }
 .mchip span { color: var(--muted); }
 footer.mpicking .quick { display: none; }
@@ -445,6 +445,9 @@ main { overflow-x: hidden; touch-action: pan-y; overscroll-behavior-x: none; }
 .runrow > summary::-webkit-details-marker { display: none; }
 .runrow .shimmer { flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; font-weight: 500; background: linear-gradient(100deg, var(--muted) 0%, var(--muted) 35%, var(--ink) 50%, var(--muted) 65%, var(--muted) 100%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine2 2s linear infinite; }
 @keyframes shine2 { from { background-position: 100% 0; } to { background-position: -150% 0; } }
+.runrow .shimmer.full { white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+.runrow .shimmer { cursor: pointer; }
+.runrow > summary:has(.shimmer.full), .runrow > .rr:has(.shimmer.full) { align-items: flex-start; }
 .runrow .st-time { flex: none; margin-inline-start: 8px; }
 .runrow .chev { flex: none; margin-inline-start: 6px; transition: transform .15s; }
 .runrow.live[open] .chev { transform: rotate(90deg); }
@@ -479,6 +482,18 @@ main { overflow-x: hidden; touch-action: pan-y; overscroll-behavior-x: none; }
 .mpick .mseg button { min-height: 40px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-size: .95rem; }
 .mpick .mseg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
 .mpick .mstat { padding: 8px 12px 6px; border-top: 1px solid var(--line); margin-top: 6px; }
+
+/* compact composer + soft edge where the conversation scrolls under it */
+footer { position: relative; }
+footer::before { content: ""; position: absolute; inset-inline: 0; bottom: 100%; height: 22px; background: linear-gradient(to bottom, transparent, var(--bg)); pointer-events: none; }
+.quick { padding-top: 4px; gap: 5px; }
+.quick button { padding: 3px 10px; font-size: .78rem; }
+.quick .qedit { width: 26px; height: 26px; }
+footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
+.box { margin-block: 4px 6px; padding: 5px 8px 6px; gap: 2px 6px; border-radius: 22px; box-shadow: none; }
+.box textarea { min-height: 34px; padding: 5px 6px; }
+.box .attach, .box .send, .mchip { width: 36px; height: 36px; }
+.mchip { width: auto; padding: 0 12px; font-size: .86rem; }
 </style>
 </head>
 <body>
@@ -670,7 +685,7 @@ const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").match
 let liveTools = [], liveOpen = false, lastWorking = false;
 const openSet = new Set();   // ids of step cards / groups the user opened: they stay open when the thread is redrawn
 const isLive = () => model === "claude" && conn() === "working" && showSteps();
-let step = {}, tasks = {}, cmds = [], tasksOpen = false, mstate = {}, mpend = null, mmsg = null, mTimer = null;   // control row "step": the tool Claude is running right now {text, at, conv}
+let liveFull = false, step = {}, tasks = {}, cmds = [], tasksOpen = false, mstate = {}, mpend = null, mmsg = null, mTimer = null;   // control row "step": the tool Claude is running right now {text, at, conv}
 let msgs = [], settings = {}, statuses = {}, watchers = {}, sending = false, firstLoad = true, ready = false, signedIn = false;
 let convs = [], currentConv = null, viewConv = null;
 const curByModel = { claude: null, gpt: null, gemini: null, team: null }, viewByModel = { claude: null, gpt: null, gemini: null, team: null };
@@ -1302,7 +1317,8 @@ function renderTail() {
       const rr = document.createElement(hasSteps ? "details" : "div"); rr.className = "runrow" + (hasSteps ? " live" : "");
       const hd = hasSteps ? document.createElement("summary") : el("div", "rr");
       const dots = el("span", "tdots"); dots.append(el("i"), el("i"), el("i")); hd.append(dots);
-      const sh = el("span", "shimmer", live ? step.text : curS().activity || t("thinking")); sh.dir = "auto"; hd.append(sh);
+      const sh = el("span", "shimmer", live ? step.text : curS().activity || t("thinking")); sh.dir = "auto"; if (liveFull) sh.classList.add("full");
+      sh.addEventListener("click", (ev) => { ev.preventDefault(); ev.stopPropagation(); liveFull = sh.classList.toggle("full"); }); hd.append(sh);
       if (live) { const tm = el("span", "st-time", elapsed(Date.now() - step.at)); tm.dataset.at = step.at; hd.append(tm); }
       if (hasSteps) {
         hd.append(el("span", "chev", "\u203a")); rr.append(hd);
