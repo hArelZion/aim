@@ -386,6 +386,29 @@ header { position: relative; border-bottom: 0; }
 .box .send { grid-area: send; width: 40px; height: 40px; border-radius: 50%; }
 .box .send.stop { border-radius: 12px; background: transparent; color: var(--ink); border: 1.5px solid var(--muted); }
 footer.slashing .quick { display: none; }
+.box { grid-template-columns: auto auto minmax(0, 1fr) auto auto; grid-template-areas: "ta ta ta ta ta" "at mdl . mic send"; }
+.mchip { grid-area: mdl; display: inline-flex; gap: 5px; align-items: baseline; max-width: 100%; height: 40px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-size: .92rem; white-space: nowrap; overflow: hidden; }
+.mchip { direction: ltr; }
+.mchip span { color: var(--muted); }
+footer.mpicking .quick { display: none; }
+.mchip[aria-expanded="true"] { background: var(--bubble); }
+.mpick { margin-top: 6px; padding: 6px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: 0 10px 30px rgb(0 0 0 / .18); display: grid; }
+.mpick .mrow { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; padding: 0 14px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font-size: 1.02rem; text-align: start; }
+.mpick .mrow:hover, .mpick .mrow:focus-visible { background: var(--bubble); }
+.mpick .mrow .nm { flex: 1; min-width: 0; }
+.mpick .mrow .note { font-size: .74rem; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; }
+.mpick .mrow .ck { width: 18px; color: var(--link); flex: none; text-align: center; }
+.mpick .mrow .key { color: var(--muted); font-size: .85rem; width: 12px; text-align: center; flex: none; }
+.mpick hr { border: 0; border-top: 1px solid var(--line); margin: 6px 8px; }
+.mpick .eff { padding: 6px 14px 10px; display: grid; gap: 6px; }
+.mpick .eff-h { font-size: .95rem; color: var(--muted); } .mpick .eff-h b { color: var(--ink); font-weight: 600; }
+.mpick .eff-ends { display: flex; justify-content: space-between; font-size: .82rem; color: var(--muted); direction: ltr; }
+.mpick input[type=range] { width: 100%; direction: ltr; accent-color: var(--ink); height: 28px; }
+.mpick .ticks { display: flex; justify-content: space-between; padding-inline: 8px; margin-top: -10px; direction: ltr; }
+.mpick .ticks i { width: 4px; height: 4px; border-radius: 50%; background: var(--muted); opacity: .6; }
+.mpick .mstat { padding: 4px 14px 8px; font-size: .84rem; color: var(--muted); }
+.mpick .mstat.err { color: var(--warn); }
+.slash { display: grid;
 .slash { display: grid; max-height: 42vh; overflow-y: auto; margin-top: 6px; padding: 6px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
 .slash button { display: grid; gap: 1px; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent; color: var(--ink); text-align: start; }
 .slash button:hover, .slash button[aria-selected="true"] { background: var(--bubble); }
@@ -502,6 +525,7 @@ footer.slashing .quick { display: none; }
       <div class="row-btns"><button class="btn-plain" type="button" id="qsave" data-t="save"></button><button class="btn-plain" type="button" id="qcancel" data-t="cancel"></button><button class="btn-link" type="button" id="qreset" data-t="reset"></button></div>
     </div>
     <div class="previews" id="previews" hidden></div>
+    <div class="mpick" id="mpick" hidden></div>
     <div class="slash" id="slash" role="listbox" hidden></div>
     <form class="box" id="form">
       <button class="attach" id="attach" type="button">
@@ -509,6 +533,7 @@ footer.slashing .quick { display: none; }
       </button>
       <input type="file" id="filePick" multiple hidden>
       <textarea id="composer" rows="1"></textarea>
+      <button class="mchip" id="mchip" type="button" aria-expanded="false" aria-controls="mpick" hidden></button>
       <button class="mic" id="mic" type="button" aria-pressed="false" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
       </button>
@@ -575,7 +600,7 @@ document.querySelectorAll("[data-logo]").forEach((n) => { n.innerHTML = LOGO; })
 
 const $ = (id) => document.getElementById(id);
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-let step = {}, tasks = {}, cmds = [], tasksOpen = false;   // control row "step": the tool Claude is running right now {text, at, conv}
+let step = {}, tasks = {}, cmds = [], tasksOpen = false, mstate = {}, mpend = null, mmsg = null, mTimer = null;   // control row "step": the tool Claude is running right now {text, at, conv}
 let msgs = [], settings = {}, statuses = {}, watchers = {}, sending = false, firstLoad = true, ready = false, signedIn = false;
 let convs = [], currentConv = null, viewConv = null;
 const curByModel = { claude: null, gpt: null, gemini: null, team: null }, viewByModel = { claude: null, gpt: null, gemini: null, team: null };
@@ -600,7 +625,7 @@ const I18N = {
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
     deleteConv: "מחיקת שיחה", deleteAsk: "למחוק את \"%s\" לצמיתות, כולל כל ההודעות שלה?",
-    newChat: "שיחה חדשה", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "הרצה: ", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
+    newChat: "שיחה חדשה", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "הרצה: ", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
     noGptConv: "ChatGPT עדיין לא חובר. הקלד $phone ב-Codex במחשב.", offlineGpt: "ChatGPT לא מחובר. הקלד $phone ב-Codex במחשב.", switchTo: "מעבר ל-",
     language: "שפת האפליקציה", pause: "השהיית הקו", resume: "המשך הקו", signOut: "התנתקות",
     placeholder: "כתוב ל-Claude…", msgAria: "הודעה ל-Claude", send: "שליחה", settings: "הגדרות",
@@ -647,7 +672,7 @@ const I18N = {
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
     deleteConv: "Delete conversation", deleteAsk: "Permanently delete \"%s\" and all its messages?",
-    newChat: "New chat", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
+    newChat: "New chat", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
     noGptConv: "ChatGPT is not connected yet. Type $phone in Codex on the computer.", offlineGpt: "ChatGPT is not connected. Type $phone in Codex on the computer.", switchTo: "Switch to ",
     language: "App language", pause: "Pause the line", resume: "Resume the line", signOut: "Sign out",
     placeholder: "Message Claude…", msgAria: "Message to Claude", send: "Send", settings: "Settings",
@@ -775,6 +800,7 @@ function paintModel() {
   const r = document.documentElement;
   if (model === "gpt" || model === "gemini") r.dataset.model = model; else delete r.dataset.model;
   $("modelBtn").innerHTML = modelLogo();
+  if (typeof paintModelChip === "function") paintModelChip();
   const nextM = MODELS[(MODELS.indexOf(model) + 1) % MODELS.length];
   $("modelBtn").setAttribute("aria-label", t("switchTo") + (nextM === "team" ? t("teamDefault") : AUTHORS[nextM].name));
   $("modelName").textContent = mname();
@@ -792,7 +818,7 @@ function switchModel() {
   paintModel(); applyLang(); paintTarget(); renderConvs(); loadMessages();
 }
 $("modelBtn").onclick = switchModel;
-const saveCurrent = () => sb.from("control").upsert({ id: "current", data: { conv: curByModel.claude, gpt: curByModel.gpt, gemini: curByModel.gemini, team: curByModel.team }, updated_at: new Date().toISOString() });
+const saveCurrent = () => sb.from("control").upsert({ id: "current", data: { conv: curByModel.claude, gpt: curByModel.gpt, gemini: curByModel.gemini, team: curByModel.team, changed: model, at: Date.now() }, updated_at: new Date().toISOString() });
 async function makeConv(title) {
   const id = { claude: "c", gpt: "g", gemini: "m", team: "t" }[model] + Date.now();
   const ins = await sb.from("conversations").insert({ id, title, project: curS().project || null });
@@ -1214,6 +1240,7 @@ function applyControl(row) {
   if (row.id === "step") step = row.data || {};
   if (row.id === "tasks") tasks = row.data || {};
   if (row.id === "commands") cmds = Array.isArray((row.data || {}).list) ? row.data.list : [];
+  if (row.id === "model") { mstate = row.data || {}; if (mpend && mstate.req === mpend.at) { mpend = null; clearTimeout(mTimer); mmsg = mstate.ok ? ["", t("mDone")] : mstate.error === "confirm" && mstate.ask ? ["ask", mstate.ask] : ["err", mErr(mstate.error)]; } if (typeof paintModelChip === "function") paintModelChip(); }
   if (row.id === "status") statuses.claude = row.data || {};
   if (row.id === "status-gpt") statuses.gpt = row.data || {};
   if (row.id === "watcher") watchers.claude = row.data || {};
@@ -1375,7 +1402,8 @@ async function deleteConv(cv) {
 /* ---------- computer screen on the phone ---------- */
 let scr = {}, scrOpen = false, scrWaiting = false, scrFetching = false, scrLastSeq = 0, scrUrl = null, scrTimer = null;
 const nowIso = () => new Date().toISOString();
-const putCtl = (id, data) => sb.from("control").upsert({ id, data, updated_at: nowIso() });
+// .then() runs the request at once: a supabase query that nobody awaits is never sent
+const putCtl = (id, data) => sb.from("control").upsert({ id, data, updated_at: nowIso() }).then((r) => r, (e) => ({ error: e }));
 function screenBody() { return $("sview"); }
 function renderScreen() {
   const sv = screenBody(), bar = $("sbar");
@@ -1812,6 +1840,68 @@ window.addEventListener("online", flushOutbox);
 setInterval(flushOutbox, 15000);
 const isNetErr = (err) => !navigator.onLine || (err && (err.name === "TypeError" || /fetch|network|load failed/i.test(String(err.message || err))));
 try { ta.value = localStorage.getItem("aim-draft") || ""; } catch (e) {}
+/* model picker: the computer presses the real Model / Effort buttons of the Claude app (aim_model.py via the watcher) */
+const mErr = (e) => ({ "other-session": t("mOther"), window: t("mNoWin") }[e] || t("mFail"));
+function paintModelChip() {
+  const c = $("mchip"), on = model === "claude" && !!mstate.model;
+  c.hidden = !on;
+  if (!on) { $("mpick").hidden = true; return; }
+  c.replaceChildren(document.createTextNode(mstate.model + " "));
+  if (mstate.effort) c.append(el("span", null, mstate.effort));
+  if (!$("mpick").hidden) renderModelPick();
+}
+function askModel(req) {
+  mpend = Object.assign({ at: Date.now() }, req); mmsg = null;
+  putCtl("model-req", mpend);
+  clearTimeout(mTimer); mTimer = setTimeout(() => { if (mpend) { mpend = null; mmsg = ["err", t("mNoAnswer")]; renderModelPick(); } }, 25000);
+  renderModelPick();
+}
+function renderModelPick() {
+  const box = $("mpick"); box.replaceChildren();
+  const list = Array.isArray(mstate.models) && mstate.models.length ? mstate.models : [{ name: mstate.model }];
+  list.forEach((m, k) => {
+    const b = el("button", "mrow"); b.type = "button";
+    b.append(el("span", "nm", m.name));
+    if (m.note === "credits") b.append(el("span", "note", t("mCredits")));
+    const cur = (mpend && mpend.model ? mpend.model : mstate.model) === m.name;
+    b.append(el("span", "ck", cur ? "\u2713" : ""), el("span", "key", String(k + 1)));
+    b.setAttribute("aria-pressed", String(cur));
+    b.onclick = () => { if (m.name !== mstate.model) askModel({ model: m.name }); };
+    box.append(b);
+  });
+  const n = mstate.levels || 0;
+  if (n > 1) {
+    box.append(el("hr"));
+    const eff = el("div", "eff");
+    const h = el("div", "eff-h", t("mEffort") + " "); h.append(el("b", null, mpend && mpend.level != null ? "\u2026" : mstate.effort || "")); eff.append(h);
+    const ends = el("div", "eff-ends"); ends.append(el("span", null, t("mFaster")), el("span", null, t("mSmarter"))); eff.append(ends);
+    const r = document.createElement("input"); r.type = "range"; r.min = "0"; r.max = String(n - 1); r.step = "1";
+    r.value = String(mpend && mpend.level != null ? mpend.level : mstate.level || 0); r.setAttribute("aria-label", t("mEffort"));
+    r.onchange = () => askModel({ level: +r.value });
+    eff.append(r);
+    const ticks = el("div", "ticks"); for (let i = 0; i < n; i++) ticks.append(el("i")); eff.append(ticks);
+    box.append(eff);
+  }
+  if (mpend) box.append(el("div", "mstat", t("mSwitching")));
+  else if (mmsg && mmsg[0] === "ask") {
+    const a = mmsg[1], q = el("div", "mstat");
+    q.append(el("b", null, t("mAsk") + " " + (a.title || "")), document.createElement("br")); const qt = el("span", null, a.text || ""); qt.dir = "auto"; q.append(qt);
+    const row = el("div", "row-btns"); row.style.justifyContent = "flex-start"; row.style.marginTop = "8px";
+    const yes = el("button", "btn-plain", t("mYes")); yes.type = "button"; yes.onclick = () => askModel({ model: a.model, confirm: true });
+    const no = el("button", "btn-plain", t("mNo")); no.type = "button"; no.onclick = () => { mmsg = null; renderModelPick(); };
+    row.append(yes, no); q.append(row); box.append(q);
+  }
+  else if (mmsg) box.append(el("div", "mstat" + (mmsg[0] ? " err" : ""), mmsg[1]));
+  else if (mstate.same === false) box.append(el("div", "mstat err", t("mOtherNow")));
+  else box.append(el("div", "mstat", t("mCost")));
+}
+$("mchip").onclick = (e) => {
+  e.stopPropagation();
+  const open = $("mpick").hidden; $("mpick").hidden = !open; $("mchip").setAttribute("aria-expanded", String(open));
+  document.querySelector("footer").classList.toggle("mpicking", open);
+  if (open) { mmsg = null; renderModelPick(); }
+};
+document.addEventListener("click", (e) => { if (!$("mpick").hidden && e.target.isConnected && !e.target.closest("#mpick") && !e.target.closest("#mchip")) { $("mpick").hidden = true; $("mchip").setAttribute("aria-expanded", "false"); document.querySelector("footer").classList.remove("mpicking"); } });
 let slashSel = 0;
 function slashItems() {
   const v = ta.value;
