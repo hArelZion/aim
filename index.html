@@ -408,12 +408,77 @@ footer.mpicking .quick { display: none; }
 .mpick .ticks i { width: 4px; height: 4px; border-radius: 50%; background: var(--muted); opacity: .6; }
 .mpick .mstat { padding: 4px 14px 8px; font-size: .84rem; color: var(--muted); }
 .mpick .mstat.err { color: var(--warn); }
-.slash { display: grid;
 .slash { display: grid; max-height: 42vh; overflow-y: auto; margin-top: 6px; padding: 6px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
 .slash button { display: grid; gap: 1px; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent; color: var(--ink); text-align: start; }
 .slash button:hover, .slash button[aria-selected="true"] { background: var(--bubble); }
 .slash b { font: 600 .92rem var(--font-mono); direction: ltr; unicode-bidi: isolate; justify-self: start; }
 .slash span { font-size: .8rem; color: var(--muted); }
+/* ---- round 3: the Claude remote app's colours, stable layout, full-screen sheets, live steps, calm picker ---- */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #151515; --surface: #202020; --line: #313131; --bubble: #262626; --ink: #ececec; --muted: #8f8f8f; --code: #1b1b1b; } }
+:root[data-theme="dark"] { --bg: #151515; --surface: #202020; --line: #313131; --bubble: #262626; --ink: #ececec; --muted: #8f8f8f; --code: #1b1b1b; }
+html, body { overflow-x: hidden; max-width: 100%; }
+main { overflow-x: hidden; touch-action: pan-y; overscroll-behavior-x: none; }
+.thread > *, .tail > * { min-width: 0; max-width: 100%; }
+.tool, .toolgrp, .runrow { min-width: 0; max-width: 100%; }
+.tool > summary, .toolgrp > summary, .runrow > summary { max-width: 100%; min-width: 0; }
+.tool > summary span, .toolgrp > summary span { max-width: 100%; }
+.reply, .ububble, .reply * { overflow-wrap: anywhere; }
+.reply pre, .reply table { max-width: 100%; overflow-x: auto; }
+/* sheets: a full-screen page with a close button */
+.sheet { position: fixed; inset: 0; z-index: 60; max-height: none; border: 0; background: var(--bg); overflow-y: auto; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.sheet h2 { display: none; }
+.sbar2 { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg); border-bottom: 1px solid var(--line); }
+.sbar2 b { font-size: 1.08rem; font-weight: 600; }
+.sbar2 .icon-btn svg { width: 22px; height: 22px; }
+/* stop button like the Claude app: a quiet outlined rounded square with a small square inside */
+.send.stop::after { content: none; }
+.box .send.stop { width: 44px; height: 44px; border-radius: 14px; background: transparent; color: var(--ink); border: 1.5px solid #4b4b4b; }
+.box .send.stop svg { width: 26px; height: 26px; animation: none; }
+.box .send.stopping, .box .send.stopping:disabled { opacity: .5; }
+/* thinking: three orange dots that breathe + a light that runs across the words */
+.tdots { display: inline-flex; gap: 3px; align-items: center; margin-inline-end: 8px; flex: none; }
+.tdots i { width: 5px; height: 5px; border-radius: 50%; background: var(--spark); animation: tdot 1.15s ease-in-out infinite; }
+.tdots i:nth-child(2) { animation-delay: .16s; } .tdots i:nth-child(3) { animation-delay: .32s; }
+@keyframes tdot { 0%, 100% { transform: scale(.55); opacity: .4; } 50% { transform: scale(1.2); opacity: 1; } }
+.runrow { display: block; font-size: 1rem; }
+.runrow > summary, .runrow > .rr { display: flex; gap: 0; align-items: center; min-width: 0; cursor: pointer; list-style: none; padding-block: 4px; }
+.runrow > summary::-webkit-details-marker { display: none; }
+.runrow .shimmer { flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; font-weight: 500; background: linear-gradient(100deg, var(--muted) 0%, var(--muted) 35%, var(--ink) 50%, var(--muted) 65%, var(--muted) 100%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine2 2s linear infinite; }
+@keyframes shine2 { from { background-position: 100% 0; } to { background-position: -150% 0; } }
+.runrow .st-time { flex: none; margin-inline-start: 8px; }
+.runrow .chev { flex: none; margin-inline-start: 6px; transition: transform .15s; }
+.runrow.live[open] .chev { transform: rotate(90deg); }
+:root[dir="rtl"] .runrow.live[open] .chev { transform: rotate(90deg); }
+.runrow .live-body { display: grid; gap: 2px; padding-inline-start: 4px; margin-top: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .runrow .shimmer { animation: shine2 3.6s linear infinite !important; color: transparent !important; background: linear-gradient(100deg, var(--muted) 0%, var(--muted) 35%, var(--ink) 50%, var(--muted) 65%, var(--muted) 100%) !important; background-size: 250% 100% !important; -webkit-background-clip: text !important; background-clip: text !important; }
+  .tdots i { animation: tdot 2.4s ease-in-out infinite !important; }
+}
+/* code panels in step details */
+.tool .tbox { padding: 0; border: 0; background: transparent; margin-top: 6px; }
+.tool .tname { display: none; }
+.cbox { border: 1px solid var(--line); border-radius: 12px; background: var(--code); overflow: hidden; }
+.cbox .chead { padding: 7px 12px; font: .74rem var(--font-mono); color: var(--muted); border-bottom: 1px solid var(--line); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: ltr; text-align: left; }
+.tool .cbox pre { border: 0; border-radius: 0; background: none; max-height: 360px; padding: 8px 0; }
+.tool .cbox .dl { padding: 0 12px; position: relative; }
+.tool .cbox .dl::before { content: attr(data-g); display: inline-block; min-width: 2.2em; margin-inline-end: 8px; color: var(--muted); opacity: .7; text-align: end; }
+.tool .cbox .dl.add { background: rgb(46 160 67 / .16); color: #5fd17a; }
+.tool .cbox .dl.del { background: rgb(229 83 75 / .16); color: #ff8b84; }
+:root[data-theme="light"] .tool .cbox .dl.add { color: #1a7f37; } :root[data-theme="light"] .tool .cbox .dl.del { color: #b3261e; }
+.tool .cbox pre.cmd { color: var(--ink); padding: 10px 12px; }
+.tool pre.out { padding: 8px 12px; border-top: 1px solid var(--line); max-height: 260px; }
+/* model picker: two calm cards */
+.mpick { padding: 8px; border-radius: 20px; gap: 2px; }
+.mpick .mhead { padding: 10px 12px 4px; font-size: .78rem; font-weight: 600; letter-spacing: .02em; color: var(--muted); }
+.mpick .mrow { min-height: 52px; border-radius: 14px; }
+.mpick .mrow .nm bdi { font-weight: 500; }
+.mpick .mrow[aria-pressed="true"] { background: var(--bubble); }
+.mpick .mrow .ck { width: 22px; height: 22px; display: grid; place-items: center; color: var(--link); }
+.mpick .mrow .ck svg { width: 18px; height: 18px; }
+.mpick .mseg { direction: ltr; display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 12px 10px; }
+.mpick .mseg button { min-height: 40px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-size: .95rem; }
+.mpick .mseg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
+.mpick .mstat { padding: 8px 12px 6px; border-top: 1px solid var(--line); margin-top: 6px; }
 </style>
 </head>
 <body>
@@ -456,6 +521,7 @@ footer.mpicking .quick { display: none; }
   </div>
   <div class="wrap"><div class="alert" id="alert" hidden></div><div class="nudge" id="nudge" hidden><span id="nudgeTxt"></span><button class="go" type="button" id="nudgeGo"></button><button class="x" type="button" id="nudgeX">&times;</button></div></div>
   <div class="sheet" id="convSheet" hidden>
+    <div class="sbar2"><button type="button" class="icon-btn sclose" data-t-aria="closeX"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button><b data-t="convsTitle"></b></div>
     <div class="wrap sheet-in">
       <h2 data-t="convsTitle"></h2>
       <div class="csearch"><input class="field" id="convSearch" type="search" autocomplete="off" enterkeyhint="search"></div>
@@ -463,6 +529,7 @@ footer.mpicking .quick { display: none; }
     </div>
   </div>
   <div class="sheet" id="sheet" hidden>
+    <div class="sbar2"><button type="button" class="icon-btn sclose" data-t-aria="closeX"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button><b data-t="settings"></b></div>
     <div class="wrap sheet-in">
       <div class="meta" id="meta"></div>
       <div class="pc" id="pc"></div>
@@ -600,6 +667,9 @@ document.querySelectorAll("[data-logo]").forEach((n) => { n.innerHTML = LOGO; })
 
 const $ = (id) => document.getElementById(id);
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let liveTools = [], liveOpen = false, lastWorking = false;
+const openSet = new Set();   // ids of step cards / groups the user opened: they stay open when the thread is redrawn
+const isLive = () => model === "claude" && conn() === "working" && showSteps();
 let step = {}, tasks = {}, cmds = [], tasksOpen = false, mstate = {}, mpend = null, mmsg = null, mTimer = null;   // control row "step": the tool Claude is running right now {text, at, conv}
 let msgs = [], settings = {}, statuses = {}, watchers = {}, sending = false, firstLoad = true, ready = false, signedIn = false;
 let convs = [], currentConv = null, viewConv = null;
@@ -625,7 +695,7 @@ const I18N = {
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
     deleteConv: "מחיקת שיחה", deleteAsk: "למחוק את \"%s\" לצמיתות, כולל כל ההודעות שלה?",
-    newChat: "שיחה חדשה", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "הרצה: ", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
+    newChat: "שיחה חדשה", closeX: "סגור", mModel: "מודל", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
     noGptConv: "ChatGPT עדיין לא חובר. הקלד $phone ב-Codex במחשב.", offlineGpt: "ChatGPT לא מחובר. הקלד $phone ב-Codex במחשב.", switchTo: "מעבר ל-",
     language: "שפת האפליקציה", pause: "השהיית הקו", resume: "המשך הקו", signOut: "התנתקות",
     placeholder: "כתוב ל-Claude…", msgAria: "הודעה ל-Claude", send: "שליחה", settings: "הגדרות",
@@ -672,7 +742,7 @@ const I18N = {
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
     deleteConv: "Delete conversation", deleteAsk: "Permanently delete \"%s\" and all its messages?",
-    newChat: "New chat", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
+    newChat: "New chat", closeX: "Close", mModel: "Model", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
     noGptConv: "ChatGPT is not connected yet. Type $phone in Codex on the computer.", offlineGpt: "ChatGPT is not connected. Type $phone in Codex on the computer.", switchTo: "Switch to ",
     language: "App language", pause: "Pause the line", resume: "Resume the line", signOut: "Sign out",
     placeholder: "Message Claude…", msgAria: "Message to Claude", send: "Send", settings: "Settings",
@@ -736,6 +806,7 @@ function applyLang() {
   document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
   document.querySelectorAll("[data-t]").forEach((n) => fillText(n, t(n.dataset.t)));
   $("password").placeholder = t("password");
+  document.querySelectorAll("[data-t-aria]").forEach((n) => n.setAttribute("aria-label", t(n.dataset.tAria)));
   $("composer").placeholder = model === "claude" ? t("phSlash") : t("placeholder").replace("Claude", mname()); $("composer").setAttribute("aria-label", t("msgAria").replace("Claude", mname()));
   $("send").setAttribute("aria-label", t("send")); $("gear").setAttribute("aria-label", t("settings"));
   $("attach").setAttribute("aria-label", t("attach")); $("convBtn").setAttribute("aria-label", t("conversations")); $("newBtn").setAttribute("aria-label", t("newChat"));
@@ -839,6 +910,9 @@ async function newChat() {
   await makeConv(asked.trim() || stamp);
 }
 $("newBtn").onclick = newChat;
+function closeSheets() { $("sheet").hidden = true; $("convSheet").hidden = true; $("gear").setAttribute("aria-expanded", "false"); $("convBtn").setAttribute("aria-expanded", "false"); }
+document.querySelectorAll(".sclose").forEach((b) => { b.onclick = closeSheets; });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheets(); });
 $("moreBtn").onclick = (e) => { e.stopPropagation(); const open = $("menu").hidden; $("menu").hidden = !open; $("moreBtn").setAttribute("aria-expanded", String(open)); };
 const closeMenu = () => { $("menu").hidden = true; $("moreBtn").setAttribute("aria-expanded", "false"); };
 $("menu").addEventListener("click", closeMenu);
@@ -970,7 +1044,11 @@ function picsEl(paths) {
 
 /* ---------- thread ---------- */
 function renderThread() {
-  const stick = near() || firstLoad;
+  const stick = near() || firstLoad, keepTop = $("scroller").scrollTop;
+  lastWorking = isLive();
+  let liveFrom = msgs.length;
+  if (lastWorking) while (liveFrom > 0 && msgs[liveFrom - 1].kind === "tool") liveFrom--;
+  liveTools = msgs.slice(liveFrom).filter((m) => m.kind === "tool");
   const thread = $("thread"); thread.replaceChildren();
   if (!msgs.some((m) => m.kind !== "system" && m.kind !== "tool")) {   // only connect/pause notes so far: still show the welcome
     const e = el("div", "empty"); e.append(logoEl());
@@ -980,7 +1058,9 @@ function renderThread() {
     thread.append(e);
   }
   let prevAi = false, prevAu = "", grp = null, lastAiRow = null; const animate = [];
-  for (const m of msgs) {
+  for (let mi = 0; mi < msgs.length; mi++) {
+    const m = msgs[mi];
+    if (mi >= liveFrom && m.kind === "tool") continue;   // the steps of the current run live under "running", like the desktop app
     if (m.kind === "system") { thread.append(el("div", "sys", m.text)); prevAi = false; continue; }
     if (m.kind === "stop") { thread.append(el("div", "sys", "⏹ " + t("stopSent"))); prevAi = false; continue; }
     const imgs = Array.isArray(m.images) ? m.images : [];
@@ -1008,7 +1088,9 @@ function renderThread() {
       const card = toolEl(m); prevAi = false;
       if (!grp) { grp = { first: card, list: [m] }; thread.append(card); continue; }
       if (!grp.wrap) {
-        grp.wrap = document.createElement("details"); grp.wrap.className = "toolgrp";
+        const w = grp.wrap = document.createElement("details"); w.className = "toolgrp";
+        const gk = "g:" + grp.list[0].id; if (openSet.has(gk)) w.open = true;
+        w.addEventListener("toggle", () => { if (w.open) openSet.add(gk); else openSet.delete(gk); });
         grp.wrap.append(document.createElement("summary"));
         grp.first.replaceWith(grp.wrap); grp.wrap.append(grp.first);
       }
@@ -1034,7 +1116,7 @@ function renderThread() {
   if (lastAiRow) lastAiRow.classList.add("last");
   msgs.forEach((m) => known.add(m.id));
   firstLoad = false;
-  if (stick) toBottom();
+  if (stick) toBottom(); else $("scroller").scrollTop = keepTop;
   animate.forEach((b) => typeOut(b, stick));
 }
 /* editing a message I sent: the text is corrected in place and, if it was already read, marked unread again so the model reads the corrected version */
@@ -1091,6 +1173,25 @@ function toast(s) {
   n.textContent = s; n.hidden = false;
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { n.hidden = true; }, 1800);
 }
+function codeBox(c) {
+  const wrap = el("div", "cbox");
+  const lines = (c.in || "").split("\n");
+  if (c.diff || c.t === "Write") {
+    const path = lines.shift(); lines.shift();
+    const head = el("div", "chead", path); wrap.append(head);
+    const pre = el("pre"); let n = 0;
+    lines.forEach((l) => {
+      const add = c.t === "Write" || l.startsWith("+ "), del = c.diff && l.startsWith("- ");
+      const sp = el("span", "dl" + (add ? " add" : del ? " del" : ""), (c.diff ? l.slice(2) : l) || "\u00a0");
+      sp.dataset.g = c.t === "Write" ? String(++n) : add ? "+" : del ? "-" : "";
+      pre.append(sp);
+    });
+    wrap.append(pre);
+  } else {
+    wrap.append(el("pre", "cmd", c.in));
+  }
+  return wrap;
+}
 function toolEl(m) {
   let c; try { c = JSON.parse(m.text); } catch (e) { c = { t: "", title: m.text, in: "", out: "" }; }
   const d = document.createElement("details"); d.className = "tool";
@@ -1099,17 +1200,14 @@ function toolEl(m) {
   const bd = badgesEl(diffCount(c)); if (bd) sm.append(bd);
   d.append(sm);
   d.addEventListener("toggle", () => {
+    if (d.open) openSet.add(m.id); else openSet.delete(m.id);
     if (!d.open || d.querySelector(".tbox")) return;
-    const box = el("div", "tbox"); box.append(el("div", "tname", c.t || ""));
-    if (c.in) {
-      const pre = el("pre");
-      if (c.diff) c.in.split("\n").forEach((l) => pre.append(el("span", "dl" + (l.startsWith("+ ") ? " add" : l.startsWith("- ") ? " del" : ""), l || "\u00a0")));
-      else pre.textContent = c.in;
-      box.append(pre);
-    }
-    if (c.out) box.append(el("pre", "out", c.out));
+    const box = el("div", "tbox");
+    if (c.in) box.append(codeBox(c));
+    if (c.out) { const out = el("pre", "out", c.out); if (c.in) box.firstChild.append(out); else box.append(out); }
     d.append(box);
   });
+  if (openSet.has(m.id)) d.open = true;
   return d;
 }
 function diffCount(c) {
@@ -1183,6 +1281,7 @@ function typeOut(node, stick) {
   requestAnimationFrame(step);
 }
 function renderTail() {
+  if (isLive() !== lastWorking) { renderThread(); }
   const stick = near();
   const tail = $("tail"); tail.replaceChildren();
   const c = conn();
@@ -1199,10 +1298,18 @@ function renderTail() {
       tx.append(el("span", "shimmer", AUTHORS[who].name + " \u00b7 " + t("thinking")));
       if (curS().activity) tx.append(el("span", "activity", curS().activity));
     } else {
-      const rr = el("div", "runrow");
-      const sh = el("span", "shimmer", live ? step.text : curS().activity || t("thinking")); sh.dir = "auto"; rr.append(sh);
-      if (live) { const tm = el("span", "st-time", elapsed(Date.now() - step.at)); tm.dataset.at = step.at; rr.append(tm); }
-      rr.append(el("span", "chev", "\u203a"));
+      const hasSteps = liveTools.length > 0;
+      const rr = document.createElement(hasSteps ? "details" : "div"); rr.className = "runrow" + (hasSteps ? " live" : "");
+      const hd = hasSteps ? document.createElement("summary") : el("div", "rr");
+      const dots = el("span", "tdots"); dots.append(el("i"), el("i"), el("i")); hd.append(dots);
+      const sh = el("span", "shimmer", live ? step.text : curS().activity || t("thinking")); sh.dir = "auto"; hd.append(sh);
+      if (live) { const tm = el("span", "st-time", elapsed(Date.now() - step.at)); tm.dataset.at = step.at; hd.append(tm); }
+      if (hasSteps) {
+        hd.append(el("span", "chev", "\u203a")); rr.append(hd);
+        if (liveOpen) rr.open = true;
+        const body = el("div", "live-body"); liveTools.forEach((m) => body.append(toolEl(m))); rr.append(body);
+        rr.addEventListener("toggle", () => { liveOpen = rr.open; });
+      } else rr.append(hd);
       tx.append(rr);
       if (live && curS().activity) tx.append(el("span", "activity", curS().activity));
     }
@@ -1856,31 +1963,33 @@ function askModel(req) {
   clearTimeout(mTimer); mTimer = setTimeout(() => { if (mpend) { mpend = null; mmsg = ["err", t("mNoAnswer")]; renderModelPick(); } }, 25000);
   renderModelPick();
 }
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 function renderModelPick() {
   const box = $("mpick"); box.replaceChildren();
+  const cur = mpend && mpend.model ? mpend.model : mstate.model;
+  box.append(el("div", "mhead", t("mModel")));
   const list = Array.isArray(mstate.models) && mstate.models.length ? mstate.models : [{ name: mstate.model }];
-  list.forEach((m, k) => {
+  list.forEach((m) => {
     const b = el("button", "mrow"); b.type = "button";
-    b.append(el("span", "nm", m.name));
+    const nm = el("span", "nm"), bi = document.createElement("bdi"); bi.textContent = m.name; nm.append(bi); b.append(nm);
     if (m.note === "credits") b.append(el("span", "note", t("mCredits")));
-    const cur = (mpend && mpend.model ? mpend.model : mstate.model) === m.name;
-    b.append(el("span", "ck", cur ? "\u2713" : ""), el("span", "key", String(k + 1)));
-    b.setAttribute("aria-pressed", String(cur));
-    b.onclick = () => { if (m.name !== mstate.model) askModel({ model: m.name }); };
+    const ck = el("span", "ck"); if (m.name === cur) ck.innerHTML = CHECK; b.append(ck);
+    b.setAttribute("aria-pressed", String(m.name === cur));
+    b.onclick = () => { if (m.name !== mstate.model && !mpend) askModel({ model: m.name }); };
     box.append(b);
   });
   const n = mstate.levels || 0;
   if (n > 1) {
-    box.append(el("hr"));
-    const eff = el("div", "eff");
-    const h = el("div", "eff-h", t("mEffort") + " "); h.append(el("b", null, mpend && mpend.level != null ? "\u2026" : mstate.effort || "")); eff.append(h);
-    const ends = el("div", "eff-ends"); ends.append(el("span", null, t("mFaster")), el("span", null, t("mSmarter"))); eff.append(ends);
-    const r = document.createElement("input"); r.type = "range"; r.min = "0"; r.max = String(n - 1); r.step = "1";
-    r.value = String(mpend && mpend.level != null ? mpend.level : mstate.level || 0); r.setAttribute("aria-label", t("mEffort"));
-    r.onchange = () => askModel({ level: +r.value });
-    eff.append(r);
-    const ticks = el("div", "ticks"); for (let i = 0; i < n; i++) ticks.append(el("i")); eff.append(ticks);
-    box.append(eff);
+    box.append(el("div", "mhead", t("mEffort")));
+    const names = Array.isArray(mstate.efforts) && mstate.efforts.length === n ? mstate.efforts : null;
+    const at = mpend && mpend.level != null ? mpend.level : mstate.level;
+    const seg = el("div", "mseg");
+    for (let k = 0; k < n; k++) {
+      const b = el("button", null, names ? names[k] : String(k + 1)); b.type = "button"; b.setAttribute("aria-pressed", String(k === at));
+      b.onclick = () => { if (k !== mstate.level && !mpend) askModel({ level: k }); };
+      seg.append(b);
+    }
+    box.append(seg);
   }
   if (mpend) box.append(el("div", "mstat", t("mSwitching")));
   else if (mmsg && mmsg[0] === "ask") {
