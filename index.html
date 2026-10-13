@@ -499,6 +499,12 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
 .box textarea { min-height: 34px; padding: 5px 6px; }
 .box .attach, .box .send, .mchip { width: 36px; height: 36px; }
 .mchip { width: auto; padding: 0 12px; font-size: .86rem; }
+.pcbar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pcbar small { color: var(--muted); font-size: .78rem; }
+.pcref { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-size: .88rem; flex: none; }
+.pcref svg { width: 16px; height: 16px; }
+.pcref.spin svg { animation: spin .9s linear infinite; }
+.pcref:disabled { opacity: .7; }
 </style>
 </head>
 <body>
@@ -751,7 +757,7 @@ const I18N = {
     searchConvs: "חיפוש בכל השיחות…", noHits: "לא נמצא כלום.", pin: "הצמדה", unpin: "ביטול הצמדה", rename: "שינוי שם", renameAsk: "שם חדש לשיחה:", share: "ייצוא ושיתוף", exported: "השיחה נשמרה כקובץ",
     queued: "ממתין לרשת", queuedNote: "אין רשת. ההודעה תישלח לבד כשהחיבור יחזור.", fileErr: "הקובץ גדול מדי (עד 20MB).",
     nudgeTxt: "הפעל התראות כדי לקבל רטט כשמשהו מסתיים, גם כשהאפליקציה סגורה.", nudgeGo: "הפעל",
-    pcTitle: "מצב המחשב", battery: "סוללה", charging: "בטעינה", cpu: "מעבד", ram: "זיכרון", use5h: "ניצול 5 שעות", useWeek: "ניצול שבועי", resetsIn: "מתאפס ", lines: "מי מחובר", lineOn: "מחובר", lineWork: "עובד", lineOff: "לא מחובר", linePaused: "מושהה", pcOld: "עודכן ",
+    pcTitle: "מצב המחשב", pcRefresh: "רענון", pcRefreshing: "מרענן…", pcNoAnswer: "המחשב לא ענה. האם הקו מחובר?", pcTokNote: "את ניצול הטוקנים רק Claude יכול לקרוא, והוא מתעדכן כש-Claude עובד.", battery: "סוללה", charging: "בטעינה", cpu: "מעבד", ram: "זיכרון", use5h: "ניצול 5 שעות", useWeek: "ניצול שבועי", resetsIn: "מתאפס ", lines: "מי מחובר", lineOn: "מחובר", lineWork: "עובד", lineOff: "לא מחובר", linePaused: "מושהה", pcOld: "עודכן ",
   },
   en: {
     locale: "en-GB", yesterday: "Yesterday",
@@ -798,7 +804,7 @@ const I18N = {
     searchConvs: "Search all conversations…", noHits: "Nothing found.", pin: "Pin", unpin: "Unpin", rename: "Rename", renameAsk: "New name for the conversation:", share: "Export and share", exported: "Conversation saved as a file",
     queued: "Waiting for network", queuedNote: "No network. The message sends by itself when you're back online.", fileErr: "The file is too big (20MB max).",
     nudgeTxt: "Turn on notifications to get a buzz when something finishes, even with the app closed.", nudgeGo: "Turn on",
-    pcTitle: "Computer", battery: "Battery", charging: "charging", cpu: "CPU", ram: "Memory", use5h: "5-hour usage", useWeek: "Weekly usage", resetsIn: "resets ", lines: "Who is connected", lineOn: "online", lineWork: "working", lineOff: "offline", linePaused: "paused", pcOld: "updated ",
+    pcTitle: "Computer", pcRefresh: "Refresh", pcRefreshing: "Refreshing…", pcNoAnswer: "The computer didn't answer. Is the line on?", pcTokNote: "Only Claude can read token usage; it updates while Claude works.", battery: "Battery", charging: "charging", cpu: "CPU", ram: "Memory", use5h: "5-hour usage", useWeek: "Weekly usage", resetsIn: "resets ", lines: "Who is connected", lineOn: "online", lineWork: "working", lineOff: "offline", linePaused: "paused", pcOld: "updated ",
   },
 };
 let lang = "he";
@@ -1013,13 +1019,26 @@ function usageTiles(k, head) {
   }
   return out;
 }
+let pcAsk = 0, pcErr = false, pcTimer = null;
+function refreshPc() {
+  pcAsk = Date.now(); pcErr = false; putCtl("pc-req", { at: pcAsk }); renderPc();
+  clearTimeout(pcTimer); pcTimer = setTimeout(() => { if (pcAsk) { pcAsk = 0; pcErr = true; renderPc(); } }, 20000);
+}
 function renderPc() {
   const box = $("pc"); if (!box) return; box.replaceChildren();
+  if (pcAsk && +pc.req === pcAsk) { pcAsk = 0; clearTimeout(pcTimer); }
+  const bar = el("div", "pcbar");
+  bar.append(el("small", null, pcErr ? t("pcNoAnswer") : pc.at ? t("pcOld") + ago(Date.now() - toMs(pc.at)) : ""));
+  const rb = el("button", "pcref" + (pcAsk ? " spin" : "")); rb.type = "button"; rb.disabled = !!pcAsk;
+  rb.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg>';
+  rb.append(el("span", null, pcAsk ? t("pcRefreshing") : t("pcRefresh")));
+  rb.onclick = refreshPc; bar.append(rb); box.append(bar);
   const fresh = pc.at && Date.now() - toMs(pc.at) < 5 * 60000;
   const who = model === "team" ? ["claude", "gpt", "gemini"] : [src()];   // each model shows its own limits; the team page shows everyone's
   who.forEach((k) => usageTiles(k, model === "team").forEach((x) => box.append(x)));
   if (pc.battery != null && fresh) box.append(tile(t("battery"), pct(pc.battery) + "%" + (pc.plugged ? " ⚡" : ""), pct(pc.battery), pc.plugged ? t("charging") : ""));
   if (pc.cpu != null && fresh) box.append(tile(t("cpu") + " / " + t("ram"), "⁦" + pct(pc.cpu) + "% · " + pct(pc.ram) + "%⁩", pct(pc.ram)));
+  if (pc.gpu != null && fresh) box.append(tile("GPU", pct(pc.gpu) + "%", pct(pc.gpu)));
   const ln = el("div", "tile wide"); ln.append(el("small", null, t("lines")));
   const list = el("div", "lines");
   ["claude", "gpt", "gemini"].forEach((k) => {
@@ -1030,7 +1049,7 @@ function renderPc() {
     list.append(r);
   });
   ln.append(list);
-  if (pc.at) ln.append(el("small", null, t("pcOld") + ago(Date.now() - toMs(pc.at))));
+  ln.append(el("small", null, t("pcTokNote")));
   box.append(ln);
 }
 
