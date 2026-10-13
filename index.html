@@ -417,6 +417,11 @@ footer.mpicking .quick { display: none; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #151515; --surface: #202020; --line: #313131; --bubble: #262626; --ink: #ececec; --muted: #8f8f8f; --code: #1b1b1b; } }
 :root[data-theme="dark"] { --bg: #151515; --surface: #202020; --line: #313131; --bubble: #262626; --ink: #ececec; --muted: #8f8f8f; --code: #1b1b1b; }
 html, body { overflow-x: hidden; max-width: 100%; }
+/* iPhone: the page itself never scrolls or bounces (that moved the header and composer); only the chat scrolls.
+   The body is pinned to the visible area, which shrinks when the keyboard opens (--app-h / top from visualViewport). */
+html { height: 100%; overflow: hidden; overscroll-behavior: none; }
+body { position: fixed; top: 0; left: 0; right: 0; height: var(--app-h, 100dvh); overscroll-behavior: none; }
+main { overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
 main { overflow-x: hidden; touch-action: pan-y; overscroll-behavior-x: none; }
 .thread > *, .tail > * { min-width: 0; max-width: 100%; }
 .tool, .toolgrp, .runrow { min-width: 0; max-width: 100%; }
@@ -1817,6 +1822,11 @@ $("signOutBtn").onclick = async () => { await sb.auth.signOut(); location.reload
 const ta = $("composer");
 let picked = [];
 const MAX_PICS = 4;
+(function pinToViewport() {
+  const vv = window.visualViewport; if (!vv) return;
+  const set = () => { document.documentElement.style.setProperty("--app-h", vv.height + "px"); document.body.style.top = vv.offsetTop + "px"; };
+  vv.addEventListener("resize", set); vv.addEventListener("scroll", set); set();
+})();
 function fit() { ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, window.innerHeight * 0.38) + "px"; }
 /* while the model is working and nothing is typed, the send button is a pulsing stop button */
 const SEND_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
