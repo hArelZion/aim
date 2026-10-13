@@ -524,6 +524,17 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
 .pb.allow { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .pst { font-size: .86rem; color: var(--muted); }
 .pst.allow { color: var(--live); } .pst.deny { color: var(--warn); }
+.sesh { width: 100%; max-width: 480px; margin-top: 18px; font-size: .8rem; font-weight: 600; color: var(--muted); text-align: start; }
+.pcsess { width: 100%; max-width: 480px; display: grid; gap: 2px; text-align: start; }
+.pcsess .sfold { margin-top: 10px; font-size: .74rem; color: var(--muted); }
+.pcsess .srow { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 10px; }
+.pcsess .srow:nth-child(odd) { background: var(--surface); }
+.pcsess .sdot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); opacity: .45; flex: none; }
+.pcsess .s-running .sdot { background: var(--live); opacity: 1; box-shadow: 0 0 0 3px rgb(60 207 120 / .25); animation: pulse 1.4s ease-in-out infinite; }
+.pcsess .s-unread .sdot { background: var(--spark); opacity: 1; }
+.pcsess .s-needs .sdot, .pcsess .s-waiting .sdot { background: #e5b33b; opacity: 1; }
+.pcsess .sname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pcsess .sst { flex: none; font-size: .76rem; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -571,6 +582,8 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
       <h2 data-t="convsTitle"></h2>
       <div class="csearch"><input class="field" id="convSearch" type="search" autocomplete="off" enterkeyhint="search"></div>
       <div class="convs" id="convList"></div>
+      <div class="sesh" data-t="pcSessions"></div>
+      <div class="pcsess" id="pcSess"></div>
     </div>
   </div>
   <div class="sheet" id="sheet" hidden>
@@ -740,7 +753,7 @@ const I18N = {
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
     deleteConv: "מחיקת שיחה", deleteAsk: "למחוק את \"%s\" לצמיתות, כולל כל ההודעות שלה?",
-    newChat: "שיחה חדשה", permTitle: "Claude מבקש אישור", permAllow: "אשר", permDeny: "דחה", perm_sending: "שולח למחשב…", perm_allow: "אושר", perm_deny: "נדחה", perm_timeout: "לא נענה בזמן. הבקשה מחכה במחשב.", closeX: "סגור", mModel: "מודל", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
+    newChat: "שיחה חדשה", pcSessions: "השיחות של Claude Code במחשב", pinnedS: "מוצמדות", thisS: "מחובר לטלפון", st_Running: "עובדת", "st_Unread response": "תשובה חדשה", "st_Needs input": "מחכה לך", st_Waiting: "מחכה", st_Idle: "", st_Error: "שגיאה", permTitle: "Claude מבקש אישור", permAllow: "אשר", permDeny: "דחה", perm_sending: "שולח למחשב…", perm_allow: "אושר", perm_deny: "נדחה", perm_timeout: "לא נענה בזמן. הבקשה מחכה במחשב.", closeX: "סגור", mModel: "מודל", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
     noGptConv: "ChatGPT עדיין לא חובר. הקלד $phone ב-Codex במחשב.", offlineGpt: "ChatGPT לא מחובר. הקלד $phone ב-Codex במחשב.", switchTo: "מעבר ל-",
     language: "שפת האפליקציה", pause: "השהיית הקו", resume: "המשך הקו", signOut: "התנתקות",
     placeholder: "כתוב ל-Claude…", msgAria: "הודעה ל-Claude", send: "שליחה", settings: "הגדרות",
@@ -787,7 +800,7 @@ const I18N = {
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
     deleteConv: "Delete conversation", deleteAsk: "Permanently delete \"%s\" and all its messages?",
-    newChat: "New chat", permTitle: "Claude asks for permission", permAllow: "Allow", permDeny: "Deny", perm_sending: "Sending to the computer…", perm_allow: "Allowed", perm_deny: "Denied", perm_timeout: "Not answered in time. The request waits on the computer.", closeX: "Close", mModel: "Model", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
+    newChat: "New chat", pcSessions: "Claude Code sessions on the computer", pinnedS: "Pinned", thisS: "on the phone", st_Running: "working", "st_Unread response": "new reply", "st_Needs input": "needs you", st_Waiting: "waiting", st_Idle: "", st_Error: "error", permTitle: "Claude asks for permission", permAllow: "Allow", permDeny: "Deny", perm_sending: "Sending to the computer…", perm_allow: "Allowed", perm_deny: "Denied", perm_timeout: "Not answered in time. The request waits on the computer.", closeX: "Close", mModel: "Model", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
     noGptConv: "ChatGPT is not connected yet. Type $phone in Codex on the computer.", offlineGpt: "ChatGPT is not connected. Type $phone in Codex on the computer.", switchTo: "Switch to ",
     language: "App language", pause: "Pause the line", resume: "Resume the line", signOut: "Sign out",
     placeholder: "Message Claude…", msgAria: "Message to Claude", send: "Send", settings: "Settings",
@@ -1233,6 +1246,23 @@ function toast(s) {
   n.textContent = s; n.hidden = false;
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { n.hidden = true; }, 1800);
 }
+/* the Claude app's sidebar, read by the computer (aim_model.py state, control row "model".sessions) */
+function renderSessions() {
+  const box = $("pcSess"); if (!box) return; box.replaceChildren();
+  const list = Array.isArray(mstate.sessions) ? mstate.sessions : [];
+  box.previousElementSibling.hidden = !list.length;
+  let folder = null;
+  list.forEach((x) => {
+    if (x.folder !== folder) { folder = x.folder; box.append(el("div", "sfold", folder || t("pinnedS"))); }
+    const r = el("div", "srow s-" + x.status.split(" ")[0].toLowerCase());
+    r.append(el("i", "sdot"));
+    const nm = el("span", "sname"), bi = document.createElement("bdi"); bi.textContent = x.title; nm.append(bi); r.append(nm);
+    const me = mstate.title && x.title === mstate.title;
+    const st = me ? t("thisS") : t("st_" + x.status) || "";
+    if (st) r.append(el("span", "sst", st));
+    box.append(r);
+  });
+}
 /* a permission request from the computer (PermissionRequest hook): Allow / Deny from the phone */
 const permSent = {};
 function permEl(m) {
@@ -1454,7 +1484,7 @@ function applyControl(row) {
   if (row.id === "step") step = row.data || {};
   if (row.id === "tasks") tasks = row.data || {};
   if (row.id === "commands") cmds = Array.isArray((row.data || {}).list) ? row.data.list : [];
-  if (row.id === "model") { mstate = row.data || {}; if (mpend && mstate.req === mpend.at) { mpend = null; clearTimeout(mTimer); mmsg = mstate.ok ? ["", t("mDone")] : mstate.error === "confirm" && mstate.ask ? ["ask", mstate.ask] : ["err", mErr(mstate.error)]; } if (typeof paintModelChip === "function") paintModelChip(); }
+  if (row.id === "model") { mstate = row.data || {}; if (typeof renderSessions === "function") renderSessions(); if (mpend && mstate.req === mpend.at) { mpend = null; clearTimeout(mTimer); mmsg = mstate.ok ? ["", t("mDone")] : mstate.error === "confirm" && mstate.ask ? ["ask", mstate.ask] : ["err", mErr(mstate.error)]; } if (typeof paintModelChip === "function") paintModelChip(); }
   if (row.id === "status") statuses.claude = row.data || {};
   if (row.id === "status-gpt") statuses.gpt = row.data || {};
   if (row.id === "watcher") watchers.claude = row.data || {};
