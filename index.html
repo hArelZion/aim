@@ -102,6 +102,29 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .agent summary b { font-weight: 600; flex: none; }
 .agent summary .prev { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .agent[open] .prev { display: none; }
+.tool { align-self: stretch; margin-block: 1px; font-size: .84rem; color: var(--muted); }
+.tool summary { display: inline-flex; gap: 4px; align-items: center; cursor: pointer; list-style: none; max-width: 100%; padding-block: 2px; }
+.tool summary::-webkit-details-marker { display: none; }
+.tool summary span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.tool summary::after { content: "\203A"; flex: none; transition: transform .15s; }
+:root[dir="rtl"] .tool summary::after { transform: scaleX(-1); }
+.tool[open] summary::after { transform: rotate(90deg); }
+.tool .tbox { margin-top: 4px; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: var(--surface); direction: ltr; text-align: left; }
+.tool .tname { font-size: .74rem; font-weight: 600; margin-bottom: 4px; }
+.tool pre { margin: 0; background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: .74rem; line-height: 1.45; color: var(--ink); max-height: 340px; overflow: auto; }
+.tool pre.out { background: none; border: 0; padding: 6px 0 0; color: var(--muted); }
+.tool .dl { display: block; } .tool .dl.add { color: var(--live); } .tool .dl.del { color: var(--warn, #c0392b); }
+.toolgrp { align-self: stretch; margin-block: 1px; font-size: .84rem; color: var(--muted); }
+.toolgrp > summary { display: inline-flex; gap: 4px; align-items: center; cursor: pointer; list-style: none; max-width: 100%; padding-block: 2px; }
+.toolgrp > summary::-webkit-details-marker { display: none; }
+.toolgrp > summary span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.toolgrp > summary::after { content: "\203A"; flex: none; transition: transform .15s; }
+:root[dir="rtl"] .toolgrp > summary::after { transform: scaleX(-1); }
+.toolgrp[open] > summary::after { transform: rotate(90deg); }
+.toolgrp .tool { padding-inline-start: 12px; border-inline-start: 2px solid var(--line); }
+.steprow { font-size: .82rem; color: var(--muted); display: flex; gap: 6px; min-width: 0; }
+.steprow .st-t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; direction: ltr; unicode-bidi: isolate; }
+.steprow .st-time { flex: none; font-variant-numeric: tabular-nums; font-weight: 600; }
 .agent .agent-body { white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 6px; direction: ltr; text-align: start; }
 
 /* login */
@@ -311,6 +334,63 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 .nohits { font-size: .85rem; color: var(--muted); padding: 8px; }
 .toast { position: fixed; inset-inline: 0; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); margin-inline: auto; width: fit-content; max-width: 90vw; z-index: 70; padding: 8px 14px; border-radius: 12px; background: var(--ink); color: var(--bg); font-size: .85rem; box-shadow: 0 4px 16px rgb(0 0 0 / .2); }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .shimmer { color: var(--muted); background: none; } }
+/* Claude app look: title + project in the header with a menu, flowing replies without a logo per message,
+   blue inline code, step lines with +/- badges, a running row with a timer, background tasks, a two-row composer */
+:root { --code-ink: #1d5bd8; --code-bg: rgb(37 99 235 / .09); --link: #2f6fde; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --code-ink: #8ab4f8; --code-bg: rgb(120 160 255 / .14); --link: #6ea0ff; } }
+:root[data-theme="dark"] { --code-ink: #8ab4f8; --code-bg: rgb(120 160 255 / .14); --link: #6ea0ff; }
+header { position: relative; border-bottom: 0; }
+.bar { gap: 4px; padding-block: 6px; }
+.bar .who { flex: 1; min-width: 0; padding-inline: 4px; }
+.bar .who .name { font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar .logo-btn { width: 24px; height: 24px; margin-inline: 4px; }
+.menu-btn svg, #moreBtn svg { width: 24px; height: 24px; }
+.hspin { width: 22px; height: 22px; flex: none; margin-inline: 6px; border-radius: 50%; border: 2.5px solid rgb(127 127 127 / .25); border-top-color: var(--link); animation: spin .9s linear infinite; }
+.menu { position: absolute; z-index: 40; top: calc(100% - 4px); inset-inline-end: 12px; min-width: 220px; display: grid; padding: 6px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 10px 30px rgb(0 0 0 / .25); }
+.menu .mi { display: flex; gap: 12px; align-items: center; width: 100%; height: 44px; padding-inline: 12px; border: 0; border-radius: 10px; background: transparent; color: var(--ink); font-size: .95rem; text-align: start; }
+.menu .mi:hover, .menu .mi:focus-visible { background: var(--bubble); }
+.menu .mi svg { width: 20px; height: 20px; flex: none; color: var(--muted); }
+.reply { font-family: var(--font-ui); font-size: 1.06rem; line-height: 1.62; }
+.reply code { color: var(--code-ink); background: var(--code-bg); border-radius: 6px; padding: .06em .38em; font-size: .9em; }
+.reply pre code { color: inherit; }
+.row.ai.solo { grid-template-columns: minmax(0, 1fr); }
+.row.ai.solo .afoot, .row.ai.solo .pics { grid-column: 1; }
+.row.ai.solo:not(.last) .afoot { display: none; }
+.row.ai.solo .afoot { margin-top: 4px; }
+.row.ai.solo .afoot .ts { display: none; }
+.row.ai.solo .afoot .act { width: 32px; height: 32px; }
+.row.ai.solo .afoot .act svg { width: 20px; height: 20px; }
+.tool, .toolgrp { font-size: 1rem; margin-block: 4px; }
+.tool summary, .toolgrp > summary { gap: 8px; padding-block: 4px; }
+.badges { display: inline-flex; flex: none; direction: ltr; font: 600 .72rem/1.5 var(--font-mono); }
+.badges b { font-weight: 600; padding: 1px 6px; }
+.badges .add { color: #2da44e; background: rgb(46 160 67 / .16); border-radius: 6px 0 0 6px; }
+.badges .del { color: #e5534b; background: rgb(229 83 75 / .16); border-radius: 0 6px 6px 0; }
+.badges .add:only-child, .badges .del:only-child { border-radius: 6px; }
+.thinking.solo { grid-template-columns: minmax(0, 1fr); }
+.runrow { display: flex; gap: 8px; align-items: baseline; min-width: 0; font-size: 1rem; }
+.runrow .shimmer { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.runrow .st-time { flex: none; color: var(--muted); font-variant-numeric: tabular-nums; font-size: .9rem; }
+.runrow .chev { flex: none; color: var(--muted); }
+:root[dir="rtl"] .runrow .chev { transform: scaleX(-1); }
+.tasks-link { justify-self: start; border: 0; background: none; padding: 2px 0; color: var(--link); font-size: 1rem; }
+.tasks-list { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-size: .88rem; }
+.tasks-list .tk { display: flex; gap: 10px; min-width: 0; }
+.tasks-list .tk span:first-child { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: ltr; unicode-bidi: isolate; text-align: start; }
+.tasks-list .st-time { flex: none; color: var(--muted); font-variant-numeric: tabular-nums; }
+.box { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "ta ta ta ta" "at . mic send"; gap: 4px 6px; align-items: center; border-radius: 24px; padding: 8px 10px 10px; }
+.box textarea { grid-area: ta; width: 100%; min-height: 44px; padding: 8px 6px; font-size: 1.05rem; }
+.box .attach { grid-area: at; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); color: var(--ink); }
+.box .attach svg { width: 20px; height: 20px; }
+.box .mic { grid-area: mic; }
+.box .send { grid-area: send; width: 40px; height: 40px; border-radius: 50%; }
+.box .send.stop { border-radius: 12px; background: transparent; color: var(--ink); border: 1.5px solid var(--muted); }
+footer.slashing .quick { display: none; }
+.slash { display: grid; max-height: 42vh; overflow-y: auto; margin-top: 6px; padding: 6px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.slash button { display: grid; gap: 1px; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent; color: var(--ink); text-align: start; }
+.slash button:hover, .slash button[aria-selected="true"] { background: var(--bubble); }
+.slash b { font: 600 .92rem var(--font-mono); direction: ltr; unicode-bidi: isolate; justify-self: start; }
+.slash span { font-size: .8rem; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -332,26 +412,24 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 <div id="app" hidden style="display:contents">
 <header>
   <div class="wrap bar">
-    <button class="logo logo-btn" id="modelBtn" type="button"></button>
+    <button class="icon-btn menu-btn" id="convBtn" type="button" aria-expanded="false" aria-controls="convSheet">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h11M4 17h7"/></svg>
+    </button>
     <div class="who">
       <span class="name" id="modelName">Claude</span>
       <span class="sub"><i class="dot" id="dot" data-s="off"></i><span id="sub"></span></span>
     </div>
-    <div class="actions">
-      <button class="icon-btn" id="screenBtn" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
-      </button>
-      <button class="icon-btn" id="newBtn" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-      </button>
-      <button class="icon-btn" id="convBtn" type="button" aria-expanded="false" aria-controls="convSheet">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 10h7M8.5 13.5h4.5"/></svg>
-      </button>
-      <button class="icon-btn" id="themeBtn" type="button"></button>
-      <button class="icon-btn" id="gear" type="button" aria-expanded="false" aria-controls="sheet">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.66 0-1.25.4-1.51 1z"/></svg>
-      </button>
-    </div>
+    <span class="hspin" id="hspin" hidden></span>
+    <button class="logo logo-btn" id="modelBtn" type="button"></button>
+    <button class="icon-btn" id="moreBtn" type="button" aria-expanded="false" aria-controls="menu">
+      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg>
+    </button>
+  </div>
+  <div class="menu" id="menu" role="menu" hidden>
+    <button class="mi" id="newBtn" type="button" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span data-t="newChat"></span></button>
+    <button class="mi" id="screenBtn" type="button" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span data-t="mScreen"></span></button>
+    <button class="mi" id="themeBtn" type="button" role="menuitem"></button>
+    <button class="mi" id="gear" type="button" role="menuitem" aria-expanded="false" aria-controls="sheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.66 0-1.25.4-1.51 1z"/></svg><span data-t="settings"></span></button>
   </div>
   <div class="wrap"><div class="alert" id="alert" hidden></div><div class="nudge" id="nudge" hidden><span id="nudgeTxt"></span><button class="go" type="button" id="nudgeGo"></button><button class="x" type="button" id="nudgeX">&times;</button></div></div>
   <div class="sheet" id="convSheet" hidden>
@@ -366,6 +444,7 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
       <div class="meta" id="meta"></div>
       <div class="pc" id="pc"></div>
       <label class="toggle"><input type="checkbox" id="autoRead"><span data-t="autoRead"></span></label>
+      <label class="toggle"><input type="checkbox" id="showSteps"><span data-t="showSteps"></span></label>
       <span class="lang-label" data-t="language"></span>
       <div class="seg" role="group" id="langSeg">
         <button type="button" id="lang-he" lang="he">עברית</button>
@@ -423,9 +502,10 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
       <div class="row-btns"><button class="btn-plain" type="button" id="qsave" data-t="save"></button><button class="btn-plain" type="button" id="qcancel" data-t="cancel"></button><button class="btn-link" type="button" id="qreset" data-t="reset"></button></div>
     </div>
     <div class="previews" id="previews" hidden></div>
+    <div class="slash" id="slash" role="listbox" hidden></div>
     <form class="box" id="form">
       <button class="attach" id="attach" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.1-8.5 8.5a5.5 5.5 0 0 1-7.8-7.8l8.5-8.5a3.7 3.7 0 0 1 5.2 5.2l-8.5 8.5a1.8 1.8 0 0 1-2.6-2.6l7.8-7.8"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       </button>
       <input type="file" id="filePick" multiple hidden>
       <textarea id="composer" rows="1"></textarea>
@@ -495,6 +575,7 @@ document.querySelectorAll("[data-logo]").forEach((n) => { n.innerHTML = LOGO; })
 
 const $ = (id) => document.getElementById(id);
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let step = {}, tasks = {}, cmds = [], tasksOpen = false;   // control row "step": the tool Claude is running right now {text, at, conv}
 let msgs = [], settings = {}, statuses = {}, watchers = {}, sending = false, firstLoad = true, ready = false, signedIn = false;
 let convs = [], currentConv = null, viewConv = null;
 const curByModel = { claude: null, gpt: null, gemini: null, team: null }, viewByModel = { claude: null, gpt: null, gemini: null, team: null };
@@ -519,7 +600,7 @@ const I18N = {
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
     deleteConv: "מחיקת שיחה", deleteAsk: "למחוק את \"%s\" לצמיתות, כולל כל ההודעות שלה?",
-    newChat: "שיחה חדשה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
+    newChat: "שיחה חדשה", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "הרצה: ", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
     noGptConv: "ChatGPT עדיין לא חובר. הקלד $phone ב-Codex במחשב.", offlineGpt: "ChatGPT לא מחובר. הקלד $phone ב-Codex במחשב.", switchTo: "מעבר ל-",
     language: "שפת האפליקציה", pause: "השהיית הקו", resume: "המשך הקו", signOut: "התנתקות",
     placeholder: "כתוב ל-Claude…", msgAria: "הודעה ל-Claude", send: "שליחה", settings: "הגדרות",
@@ -550,7 +631,7 @@ const I18N = {
     edited: "נערכה", editMsg: "עריכת ההודעה", saveEdit: "שמירה ושליחה מחדש",
     quickHint: "כפתור בכל שורה. לחיצה על כפתור שולחת את הטקסט שלו מיד.", save: "שמירה", cancel: "ביטול", reset: "ברירת מחדל", editQuick: "עריכת הכפתורים",
     quickDefault: ["המשך", "מה המצב?", "עצור", "תסכם בקצרה", "פרסם", "תבדוק שוב ותתקן"],
-    autoRead: "הקראה אוטומטית של תשובות", mic: "הקלטה קולית", micErr: "המיקרופון לא זמין. אשר גישה בהגדרות הדפדפן.",
+    autoRead: "הקראה אוטומטית של תשובות", showSteps: "הצגת הצעדים של Claude (פקודות, עריכות, חיפושים)", mic: "הקלטה קולית", micErr: "המיקרופון לא זמין. אשר גישה בהגדרות הדפדפן.",
     copy: "העתקה", copied: "הועתק", speak: "הקראה", stopSpeak: "עצור הקראה",
     searchConvs: "חיפוש בכל השיחות…", noHits: "לא נמצא כלום.", pin: "הצמדה", unpin: "ביטול הצמדה", rename: "שינוי שם", renameAsk: "שם חדש לשיחה:", share: "ייצוא ושיתוף", exported: "השיחה נשמרה כקובץ",
     queued: "ממתין לרשת", queuedNote: "אין רשת. ההודעה תישלח לבד כשהחיבור יחזור.", fileErr: "הקובץ גדול מדי (עד 20MB).",
@@ -566,7 +647,7 @@ const I18N = {
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
     deleteConv: "Delete conversation", deleteAsk: "Permanently delete \"%s\" and all its messages?",
-    newChat: "New chat", namePrompt: "Name for the new chat (optional):",
+    newChat: "New chat", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
     noGptConv: "ChatGPT is not connected yet. Type $phone in Codex on the computer.", offlineGpt: "ChatGPT is not connected. Type $phone in Codex on the computer.", switchTo: "Switch to ",
     language: "App language", pause: "Pause the line", resume: "Resume the line", signOut: "Sign out",
     placeholder: "Message Claude…", msgAria: "Message to Claude", send: "Send", settings: "Settings",
@@ -597,7 +678,7 @@ const I18N = {
     edited: "edited", editMsg: "Edit message", saveEdit: "Save and resend",
     quickHint: "One button per line. Tapping a button sends its text right away.", save: "Save", cancel: "Cancel", reset: "Defaults", editQuick: "Edit buttons",
     quickDefault: ["Continue", "What's the status?", "Stop", "Summarize briefly", "Publish", "Check again and fix"],
-    autoRead: "Read replies aloud automatically", mic: "Voice input", micErr: "The microphone isn't available. Allow it in the browser settings.",
+    autoRead: "Read replies aloud automatically", showSteps: "Show Claude's steps (commands, edits, searches)", mic: "Voice input", micErr: "The microphone isn't available. Allow it in the browser settings.",
     copy: "Copy", copied: "Copied", speak: "Read aloud", stopSpeak: "Stop reading",
     searchConvs: "Search all conversations…", noHits: "Nothing found.", pin: "Pin", unpin: "Unpin", rename: "Rename", renameAsk: "New name for the conversation:", share: "Export and share", exported: "Conversation saved as a file",
     queued: "Waiting for network", queuedNote: "No network. The message sends by itself when you're back online.", fileErr: "The file is too big (20MB max).",
@@ -630,7 +711,7 @@ function applyLang() {
   document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
   document.querySelectorAll("[data-t]").forEach((n) => fillText(n, t(n.dataset.t)));
   $("password").placeholder = t("password");
-  $("composer").placeholder = t("placeholder").replace("Claude", mname()); $("composer").setAttribute("aria-label", t("msgAria").replace("Claude", mname()));
+  $("composer").placeholder = model === "claude" ? t("phSlash") : t("placeholder").replace("Claude", mname()); $("composer").setAttribute("aria-label", t("msgAria").replace("Claude", mname()));
   $("send").setAttribute("aria-label", t("send")); $("gear").setAttribute("aria-label", t("settings"));
   $("attach").setAttribute("aria-label", t("attach")); $("convBtn").setAttribute("aria-label", t("conversations")); $("newBtn").setAttribute("aria-label", t("newChat"));
   $("lang-he").setAttribute("aria-pressed", String(lang === "he"));
@@ -732,6 +813,11 @@ async function newChat() {
   await makeConv(asked.trim() || stamp);
 }
 $("newBtn").onclick = newChat;
+$("moreBtn").onclick = (e) => { e.stopPropagation(); const open = $("menu").hidden; $("menu").hidden = !open; $("moreBtn").setAttribute("aria-expanded", String(open)); };
+const closeMenu = () => { $("menu").hidden = true; $("moreBtn").setAttribute("aria-expanded", "false"); };
+$("menu").addEventListener("click", closeMenu);
+document.addEventListener("click", (e) => { if (!$("menu").hidden && !e.target.closest("#menu")) closeMenu(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
 /* ---------- connection state ---------- */
 function conn() {
   const now = Date.now();
@@ -747,7 +833,11 @@ function toBottom() { const sc = $("scroller"); sc.scrollTop = sc.scrollHeight; 
 function renderHeader() {
   const c = ready ? conn() : "connecting";
   $("dot").dataset.s = c === "working" || c === "waiting" || c === "live" ? "live" : "off";
-  $("sub").textContent = t(c);
+  const cvNow = convs.find((x) => x.id === (viewConv || currentConv));
+  $("modelName").textContent = (cvNow && cvNow.title) || mname(); $("modelName").dir = "auto";
+  const proj = (cvNow && cvNow.project) || curS().project;
+  $("sub").textContent = (proj ? proj + " \u00b7 " : "") + t(c);
+  $("hspin").hidden = c !== "working";
   const alert = $("alert"); alert.hidden = true;
   if (c === "offline") { fillText(alert, model === "gpt" ? t("offlineGpt") : model === "gemini" ? t("offlineGemini") : t("offlineAlert")); alert.hidden = false; }
   else if (c === "paused") { fillText(alert, t("pausedAlert").replace("Claude", mname())); alert.hidden = false; }
@@ -856,14 +946,14 @@ function picsEl(paths) {
 function renderThread() {
   const stick = near() || firstLoad;
   const thread = $("thread"); thread.replaceChildren();
-  if (!msgs.some((m) => m.kind !== "system")) {   // only connect/pause notes so far: still show the welcome
+  if (!msgs.some((m) => m.kind !== "system" && m.kind !== "tool")) {   // only connect/pause notes so far: still show the welcome
     const e = el("div", "empty"); e.append(logoEl());
     e.append(el("span", "brand", "AIM"));
     e.append(el("strong", null, t("emptyTitle")));
     e.append(el("p", null, model === "gpt" ? t("emptyGpt") : model === "gemini" ? t("emptyGemini") : model === "team" ? t("emptyTeam") : t("emptyBody")));
     thread.append(e);
   }
-  let prevAi = false, prevAu = ""; const animate = [];
+  let prevAi = false, prevAu = "", grp = null, lastAiRow = null; const animate = [];
   for (const m of msgs) {
     if (m.kind === "system") { thread.append(el("div", "sys", m.text)); prevAi = false; continue; }
     if (m.kind === "stop") { thread.append(el("div", "sys", "⏹ " + t("stopSent"))); prevAi = false; continue; }
@@ -876,7 +966,7 @@ function renderThread() {
       if (mt && (AUTHORS[mt[1]] || mt[1] === "all")) { toA = mt[1]; body = body.slice(mt[0].length); }
       if (toA) { const chip = el("div", "tochip"); if (toA !== "all") chip.append(logoEl(toA)); chip.append(document.createTextNode("\u2192 " + (toA === "all" ? t("allFree") : AUTHORS[toA].name))); row.append(chip); }
       if (editingId === m.id) { row.append(editBox(m, toA, body)); thread.append(row); prevAi = false; continue; }
-      if (body) row.append(el("div", "ububble", body));
+      if (body) { const ub = el("div", "ububble", body); ub.dir = "auto"; row.append(ub); }
       const f = el("div", "ufoot", stamp(m.ts) + " · ");
       f.append(m.queued ? el("span", null, t("queued")) : m.pending ? el("span", null, t("sending")) : m.seen ? el("span", "read", t("read")) : el("span", null, t("sent")));
       if (edits.includes(m.id)) f.append(document.createTextNode(" · " + t("edited")));
@@ -887,16 +977,35 @@ function renderThread() {
     }
     const au = authorOf(m), team = model === "team";
     if (m.kind === "agent") { thread.append(agentEl(m, au)); prevAi = false; continue; }
-    const row = el("div", "row ai" + (prevAi && prevAu === au ? " cont" : ""));
-    row.append(team ? logoEl(au) : logoEl());
+    if (m.kind === "tool") {
+      if (!showSteps()) continue;
+      const card = toolEl(m); prevAi = false;
+      if (!grp) { grp = { first: card, list: [m] }; thread.append(card); continue; }
+      if (!grp.wrap) {
+        grp.wrap = document.createElement("details"); grp.wrap.className = "toolgrp";
+        grp.wrap.append(document.createElement("summary"));
+        grp.first.replaceWith(grp.wrap); grp.wrap.append(grp.first);
+      }
+      grp.list.push(m); grp.wrap.append(card);
+      grp.wrap.firstChild.replaceChildren(el("span", null, stepsSummary(grp.list)));
+      const tot = grp.list.reduce((a, x) => { let c = {}; try { c = JSON.parse(x.text); } catch (e) {} const n = diffCount(c); return [a[0] + n[0], a[1] + n[1]]; }, [0, 0]);
+      const bd = badgesEl(tot); if (bd) grp.wrap.firstChild.append(bd);
+      continue;
+    }
+    grp = null;
+    if (m.sender === "me" && lastAiRow) { lastAiRow.classList.add("last"); lastAiRow = null; }
+    const row = el("div", "row ai" + (team ? (prevAi && prevAu === au ? " cont" : "") : " solo"));
+    if (team) row.append(logoEl(au));
+    lastAiRow = row;
     const body = el("div", "reply");
     if (team && !(prevAi && prevAu === au)) body.append(el("div", "who", AUTHORS[au].name));
-    body.insertAdjacentHTML("beforeend", md(m.text)); row.append(body);
+    body.insertAdjacentHTML("beforeend", md(m.text)); body.querySelectorAll("p, li, h4").forEach((n) => { n.dir = "auto"; }); row.append(body);
     if (imgs.length) row.append(picsEl(imgs));
     row.append(replyFoot(m));
     thread.append(row); prevAi = true; prevAu = au;
     if (!firstLoad && !known.has(m.id)) animate.push(body);
   }
+  if (lastAiRow) lastAiRow.classList.add("last");
   msgs.forEach((m) => known.add(m.id));
   firstLoad = false;
   if (stick) toBottom();
@@ -956,6 +1065,70 @@ function toast(s) {
   n.textContent = s; n.hidden = false;
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { n.hidden = true; }, 1800);
 }
+function toolEl(m) {
+  let c; try { c = JSON.parse(m.text); } catch (e) { c = { t: "", title: m.text, in: "", out: "" }; }
+  const d = document.createElement("details"); d.className = "tool";
+  const sm = document.createElement("summary");
+  const sl = el("span", null, (c.t === "Bash" || c.t === "PowerShell" ? t("ranStep") : "")); const bt = document.createElement("bdi"); bt.textContent = c.title || c.t || ""; sl.append(bt); sm.append(sl);
+  const bd = badgesEl(diffCount(c)); if (bd) sm.append(bd);
+  d.append(sm);
+  d.addEventListener("toggle", () => {
+    if (!d.open || d.querySelector(".tbox")) return;
+    const box = el("div", "tbox"); box.append(el("div", "tname", c.t || ""));
+    if (c.in) {
+      const pre = el("pre");
+      if (c.diff) c.in.split("\n").forEach((l) => pre.append(el("span", "dl" + (l.startsWith("+ ") ? " add" : l.startsWith("- ") ? " del" : ""), l || "\u00a0")));
+      else pre.textContent = c.in;
+      box.append(pre);
+    }
+    if (c.out) box.append(el("pre", "out", c.out));
+    d.append(box);
+  });
+  return d;
+}
+function diffCount(c) {
+  if (c.add != null || c.del != null) return [c.add || 0, c.del || 0];
+  if (!c.diff || !c.in) return [0, 0];
+  const ls = c.in.split("\n");
+  return [ls.filter((l) => l.startsWith("+ ")).length, ls.filter((l) => l.startsWith("- ")).length];
+}
+function badgesEl(n) {
+  if (!n[0] && !n[1]) return null;
+  const b = el("span", "badges");
+  if (n[0]) b.append(el("b", "add", "+" + n[0]));
+  if (n[1]) b.append(el("b", "del", "-" + n[1]));
+  return b;
+}
+function stepsSummary(list) {
+  const he = lang === "he", n = { run: 0, read: 0, find: 0, web: 0, browse: 0, agent: 0 }, files = [];
+  list.forEach((m) => {
+    let c = {}; try { c = JSON.parse(m.text); } catch (e) {}
+    if (c.t === "Edit" || c.t === "Write" || c.t === "NotebookEdit") { const f = (c.title || "").replace(/^(Edited|Wrote) /, ""); if (!files.includes(f)) files.push(f); }
+    else if (c.t === "Bash" || c.t === "PowerShell") n.run++;
+    else if (c.t === "Read") n.read++;
+    else if (c.t === "Grep" || c.t === "Glob") n.find++;
+    else if (c.t === "WebSearch" || c.t === "WebFetch") n.web++;
+    else if (c.t === "Browser") n.browse++;
+    else if (c.t === "Agent") n.agent++;
+  });
+  const cnt = (k, one, many) => (n[k] === 1 ? one : many.replace("#", n[k]));
+  const out = [];
+  if (files.length) out.push((he ? "ערך " : "Edited ") + files.slice(0, 2).join(", ") + (files.length > 2 ? (he ? " ועוד " : " +") + (files.length - 2) : ""));
+  if (n.run) out.push(he ? cnt("run", "הריץ פקודה", "הריץ # פקודות") : cnt("run", "ran a command", "ran # commands"));
+  if (n.read) out.push(he ? cnt("read", "קרא קובץ", "קרא # קבצים") : cnt("read", "read a file", "read # files"));
+  if (n.find) out.push(he ? cnt("find", "חיפש בקוד", "חיפש # פעמים") : cnt("find", "searched the code", "searched # times"));
+  if (n.web) out.push(he ? "חיפש ברשת" : "searched the web");
+  if (n.browse) out.push(he ? "השתמש בדפדפן" : "used the browser");
+  if (n.agent) out.push(he ? "הפעיל סוכן" : "ran an agent");
+  const s2 = out.join(", ");
+  return s2 ? s2.charAt(0).toUpperCase() + s2.slice(1) : list.length + (he ? " צעדים" : " steps");
+}
+function elapsed(ms) {
+  const sec = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, s2 = sec % 60;
+  return h ? h + "h " + m + "m" : m ? m + "m " + s2 + "s" : s2 + "s";
+}
+setInterval(() => document.querySelectorAll(".st-time").forEach((x) => { x.textContent = elapsed(Date.now() - +x.dataset.at); }), 1000);
+const showSteps = () => { try { return localStorage.getItem("aim-steps") !== "0"; } catch (e) { return true; } };
 function agentEl(m, au) {
   let text = m.text || "", to = "";
   const mm = /^@(\w+)\n/.exec(text);
@@ -992,12 +1165,34 @@ function renderTail() {
     tail.append(el("div", "pending", t(key)));
   }
   if (c === "working") {
-    const who = AUTHORS[curS().who] ? curS().who : "claude";
-    const row = el("div", "thinking"); row.append(model === "team" ? logoEl(who) : logoEl());
+    const who = AUTHORS[curS().who] ? curS().who : "claude", team = model === "team";
+    const row = el("div", "thinking" + (team ? "" : " solo")); if (team) row.append(logoEl(who));
     const tx = el("div", "think-txt");
-    tx.append(el("span", "shimmer", model === "team" ? AUTHORS[who].name + " \u00b7 " + t("thinking") : t("thinking")));
-    if (curS().activity) tx.append(el("span", "activity", curS().activity));
+    const live = model === "claude" && step.text && step.at && (!step.conv || step.conv === (viewConv || currentConv)) && Date.now() - step.at < 6 * 3600e3;
+    if (team) {
+      tx.append(el("span", "shimmer", AUTHORS[who].name + " \u00b7 " + t("thinking")));
+      if (curS().activity) tx.append(el("span", "activity", curS().activity));
+    } else {
+      const rr = el("div", "runrow");
+      const sh = el("span", "shimmer", live ? step.text : curS().activity || t("thinking")); sh.dir = "auto"; rr.append(sh);
+      if (live) { const tm = el("span", "st-time", elapsed(Date.now() - step.at)); tm.dataset.at = step.at; rr.append(tm); }
+      rr.append(el("span", "chev", "\u203a"));
+      tx.append(rr);
+      if (live && curS().activity) tx.append(el("span", "activity", curS().activity));
+    }
     row.append(tx); tail.append(row);
+  }
+  const tl = Array.isArray(tasks.list) ? tasks.list : [];
+  if (model === "claude" && tl.length && (!tasks.conv || tasks.conv === (viewConv || currentConv))) {
+    const b = el("button", "tasks-link", tl.length === 1 ? t("task1") : t("tasksN").replace("#", tl.length)); b.type = "button";
+    b.setAttribute("aria-expanded", String(tasksOpen));
+    b.onclick = () => { tasksOpen = !tasksOpen; renderTail(); };
+    tail.append(b);
+    if (tasksOpen) {
+      const box = el("div", "tasks-list");
+      tl.forEach((k) => { const r = el("div", "tk"); r.append(el("span", null, k.title)); const tm = el("span", "st-time", elapsed(Date.now() - k.at)); tm.dataset.at = k.at; r.append(tm); box.append(r); });
+      tail.append(box);
+    }
   }
   if (stick) toBottom();
   if (typeof syncSend === "function" && ta) syncSend();   // the send button turns into stop while the model works
@@ -1016,6 +1211,9 @@ function applyControl(row) {
     settings = row.data || {};
     if ((settings.lang === "he" || settings.lang === "en") && settings.lang !== lang) setLang(settings.lang, false);
   }
+  if (row.id === "step") step = row.data || {};
+  if (row.id === "tasks") tasks = row.data || {};
+  if (row.id === "commands") cmds = Array.isArray((row.data || {}).list) ? row.data.list : [];
   if (row.id === "status") statuses.claude = row.data || {};
   if (row.id === "status-gpt") statuses.gpt = row.data || {};
   if (row.id === "watcher") watchers.claude = row.data || {};
@@ -1049,7 +1247,7 @@ let booting = false;
 async function loadConvs() {
   const { data, error } = await sb.from("conversations").select("*").order("created_at", { ascending: false });
   if (!error) convs = data || [];
-  renderConvs();
+  renderConvs(); renderHeader();
 }
 async function loadMessages() {
   if (!viewConv && model !== "claude") { msgs = []; firstLoad = true; renderAll(); renderOldBar(); return; }
@@ -1123,7 +1321,7 @@ async function shareConv(cv) {
   if (error) { showErr(t("sendErr")); return; }
   const lines = ["# " + (cv.title || t("untitled")), ""];
   (data || []).forEach((m) => {
-    if (m.kind === "system" || !m.text) return;
+    if (m.kind === "system" || m.kind === "tool" || !m.text) return;
     const who = m.sender === "me" ? (lang === "he" ? "אני" : "Me") : AUTHORS[authorOf(m)].name;
     const body = m.sender === "me" ? m.text.replace(/^@[a-z0-9]+\n/, "") : m.text;
     lines.push("**" + who + "** · " + stamp(m.ts), "", body, "");
@@ -1143,7 +1341,7 @@ $("convSearch").addEventListener("input", () => { clearTimeout(searchTimer); sea
 async function renderHits() {
   const q = $("convSearch").value.trim(), my = ++searchSeq;
   const prefix = { claude: "c", gpt: "g", gemini: "m", team: "t" }[model];
-  const { data, error } = await sb.from("messages").select("id,conv,text,ts").ilike("text", "%" + q.replace(/[%_\\]/g, (c) => "\\" + c) + "%").like("conv", prefix + "%").neq("kind", "system").order("ts", { ascending: false }).limit(40);
+  const { data, error } = await sb.from("messages").select("id,conv,text,ts").ilike("text", "%" + q.replace(/[%_\\]/g, (c) => "\\" + c) + "%").like("conv", prefix + "%").not("kind", "in", "(system,tool)").order("ts", { ascending: false }).limit(40);
   if (my !== searchSeq) return;
   const list = $("convList"); list.replaceChildren();
   if (error || !data || !data.length) { list.append(el("div", "nohits", t("noHits"))); return; }
@@ -1434,7 +1632,7 @@ function subscribe() {
       else if (viewConv ? (p.new.conv === viewConv || (!p.new.conv && model === "claude")) : model === "claude") {
         upsertMsg(p.new);
         if (!speakNext && autoRead() && !document.hidden && p.eventType === "INSERT" && p.new.sender !== "me" && ["reply", "question"].includes(p.new.kind) && p.new.text) speakText(p.new.text, p.new.id);
-        if (speakNext && p.eventType === "INSERT" && p.new.sender === "claude" && !["system", "agent", "escalate"].includes(p.new.kind) && p.new.text) { speakNext = false; speakText(p.new.text); }
+        if (speakNext && p.eventType === "INSERT" && p.new.sender === "claude" && !["system", "agent", "escalate", "tool"].includes(p.new.kind) && p.new.text) { speakNext = false; speakText(p.new.text); }
       }
       renderThread(); renderTail();
     })
@@ -1454,6 +1652,8 @@ async function saveSettings(patch) {
 
 /* ---------- settings sheet ---------- */
 const autoRead = () => { try { return localStorage.getItem("aim-autoread") === "1"; } catch (e) { return false; } };
+$("showSteps").checked = showSteps();
+$("showSteps").onchange = () => { try { localStorage.setItem("aim-steps", $("showSteps").checked ? "1" : "0"); } catch (e) {} renderThread(); };
 $("autoRead").checked = autoRead();
 $("autoRead").hidden = $("autoRead").parentNode.hidden = !window.speechSynthesis;
 $("autoRead").onchange = () => { try { localStorage.setItem("aim-autoread", $("autoRead").checked ? "1" : "0"); } catch (e) {} if (!$("autoRead").checked) stopSpeak(); };
@@ -1612,6 +1812,42 @@ window.addEventListener("online", flushOutbox);
 setInterval(flushOutbox, 15000);
 const isNetErr = (err) => !navigator.onLine || (err && (err.name === "TypeError" || /fetch|network|load failed/i.test(String(err.message || err))));
 try { ta.value = localStorage.getItem("aim-draft") || ""; } catch (e) {}
+let slashSel = 0;
+function slashItems() {
+  const v = ta.value;
+  if (model !== "claude" || !/^\/[\w:-]*$/.test(v)) return null;
+  const q = v.slice(1).toLowerCase();
+  const local = [{ name: "new", desc: t("cmdNew"), run: () => newChat() }, { name: "stop", desc: t("cmdStop"), run: () => sendStop() }];
+  return local.concat(cmds).filter((c) => c.name.toLowerCase().includes(q)).slice(0, 30);
+}
+function renderSlash() {
+  const box = $("slash"), items = slashItems();
+  document.querySelector("footer").classList.toggle("slashing", !!(items && items.length));
+  if (!items || !items.length) { box.hidden = true; box.replaceChildren(); return; }
+  slashSel = Math.min(slashSel, items.length - 1);
+  box.replaceChildren(...items.map((c, k) => {
+    const b = el("button"); b.type = "button"; b.setAttribute("role", "option"); b.setAttribute("aria-selected", String(k === slashSel));
+    b.append(el("b", null, "/" + c.name)); if (c.desc) b.append(el("span", null, c.desc));
+    b.onmousedown = (e) => e.preventDefault();
+    b.onclick = () => pickSlash(c);
+    return b;
+  }));
+  box.hidden = false;
+}
+function pickSlash(c) {
+  $("slash").hidden = true;
+  if (c.run) { ta.value = ""; fit(); syncSend(); c.run(); return; }
+  ta.value = "/" + c.name + " "; ta.focus(); fit(); syncSend();
+}
+ta.addEventListener("input", () => { slashSel = 0; renderSlash(); });
+ta.addEventListener("blur", () => setTimeout(() => { $("slash").hidden = true; document.querySelector("footer").classList.remove("slashing"); }, 150));
+ta.addEventListener("keydown", (e) => {
+  const items = $("slash").hidden ? null : slashItems();
+  if (!items || !items.length) return;
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); slashSel = (slashSel + (e.key === "ArrowDown" ? 1 : items.length - 1)) % items.length; renderSlash(); }
+  else if (e.key === "Enter" || e.key === "Tab") { e.preventDefault(); e.stopImmediatePropagation(); pickSlash(items[slashSel]); }
+  else if (e.key === "Escape") { $("slash").hidden = true; }
+});
 ta.addEventListener("input", () => { fit(); syncSend(); try { localStorage.setItem("aim-draft", ta.value); } catch (e) {} });
 ta.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey && window.matchMedia("(hover: hover) and (pointer: fine)").matches) { e.preventDefault(); $("form").requestSubmit(); }
@@ -1633,7 +1869,7 @@ async function sendMsg(text, pics, fromComposer) {
   const id = "m" + ts.toString(36) + Math.random().toString(36).slice(2, 6);
   const row = { id, sender: "me", kind: "command", text: model === "team" ? "@" + target + "\n" + text : text, ts, seen: false };
   if (currentConv) row.conv = currentConv;
-  const lastAi = [...msgs].reverse().find((m) => m.sender !== "me" && m.kind !== "system");
+  const lastAi = [...msgs].reverse().find((m) => m.sender !== "me" && m.kind !== "system" && m.kind !== "tool");
   if (lastAi && lastAi.kind === "question" && !msgs.slice(msgs.indexOf(lastAi) + 1).some((m) => m.sender === "me")) { row.kind = "answer"; row.reply_to = lastAi.id; }
   const done = () => {
     if (!fromComposer) return;
@@ -1675,7 +1911,7 @@ async function sendMsg(text, pics, fromComposer) {
 const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
 const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
 function isDark() { const th = document.documentElement.dataset.theme; return th ? th === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches; }
-function paintThemeBtn() { const d = isDark(), b = $("themeBtn"); b.innerHTML = d ? SUN : MOON; b.setAttribute("aria-label", d ? t("light") : t("dark")); }
+function paintThemeBtn() { const d = isDark(), b = $("themeBtn"); b.innerHTML = d ? SUN : MOON; b.append(el("span", null, d ? t("light") : t("dark"))); b.setAttribute("aria-label", d ? t("light") : t("dark")); }
 try { const saved = localStorage.getItem("aim-theme"); if (saved) document.documentElement.dataset.theme = saved; } catch (e) {}
 $("themeBtn").onclick = () => {
   const next = isDark() ? "light" : "dark";
