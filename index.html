@@ -440,14 +440,11 @@ main { overflow-x: hidden; touch-action: pan-y; overscroll-behavior-x: none; }
 .box .send.stop { width: 44px; height: 44px; border-radius: 14px; background: transparent; color: var(--ink); border: 1.5px solid #4b4b4b; }
 .box .send.stop svg { width: 26px; height: 26px; animation: none; }
 .box .send.stopping, .box .send.stopping:disabled { opacity: .5; }
-/* thinking: a small cluster of orange dots that drift and breathe, like the Claude app */
-.tdots { position: relative; width: 18px; height: 18px; margin-inline-end: 8px; flex: none; animation: tspin 3.2s linear infinite; }
-.tdots i { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%; background: var(--spark); animation: tdot 1.4s ease-in-out infinite; }
-.tdots i:nth-child(1) { --x: 0px; --y: -6px; } .tdots i:nth-child(2) { --x: 6px; --y: -2px; animation-delay: .2s; }
-.tdots i:nth-child(3) { --x: 4px; --y: 5px; animation-delay: .4s; } .tdots i:nth-child(4) { --x: -4px; --y: 5px; animation-delay: .6s; }
-.tdots i:nth-child(5) { --x: -6px; --y: -2px; animation-delay: .8s; }
-@keyframes tdot { 0%, 100% { transform: translate(var(--x), var(--y)) scale(.6); opacity: .45; } 50% { transform: translate(calc(var(--x) * .55), calc(var(--y) * .55)) scale(1.15); opacity: 1; } }
-@keyframes tspin { to { transform: rotate(360deg); } }
+/* thinking: three orange dots in a row that hop one after another (a wave), then rest, like the Claude app */
+.tdots { display: inline-flex; gap: 3px; align-items: center; height: 14px; margin-inline-end: 8px; flex: none; direction: ltr; }
+.tdots i { width: 5px; height: 5px; border-radius: 50%; background: var(--spark); animation: tdot 1.3s ease-in-out infinite; }
+.tdots i:nth-child(2) { animation-delay: .13s; } .tdots i:nth-child(3) { animation-delay: .26s; }
+@keyframes tdot { 0%, 40%, 100% { transform: translateY(1.5px) scale(.9); } 18% { transform: translateY(-2.5px) scale(1.15); } }
 .runrow { display: block; font-size: 1rem; }
 .runrow > summary, .runrow > .rr { display: flex; gap: 0; align-items: center; min-width: 0; cursor: pointer; list-style: none; padding-block: 4px; }
 .runrow > summary::-webkit-details-marker { display: none; }
@@ -463,7 +460,7 @@ main { overflow-x: hidden; touch-action: pan-y; overscroll-behavior-x: none; }
 .runrow .live-body { display: grid; gap: 2px; padding-inline-start: 4px; margin-top: 2px; }
 @media (prefers-reduced-motion: reduce) {
   .runrow .shimmer { animation: shine2 3.6s linear infinite !important; color: transparent !important; background: linear-gradient(100deg, var(--muted) 0%, var(--muted) 35%, var(--ink) 50%, var(--muted) 65%, var(--muted) 100%) !important; background-size: 250% 100% !important; -webkit-background-clip: text !important; background-clip: text !important; }
-  .tdots, .tdots i { animation-duration: 4.8s !important; }
+  .tdots i { animation-duration: 2.6s !important; }
 }
 /* code panels in step details */
 .tool .tbox { padding: 0; border: 0; background: transparent; margin-top: 6px; }
@@ -1441,7 +1438,7 @@ function renderTail() {
       const hasSteps = liveTools.length > 0;
       const rr = document.createElement(hasSteps ? "details" : "div"); rr.className = "runrow" + (hasSteps ? " live" : "");
       const hd = hasSteps ? document.createElement("summary") : el("div", "rr");
-      const dots = el("span", "tdots"); dots.append(el("i"), el("i"), el("i"), el("i"), el("i")); hd.append(dots);
+      const dots = el("span", "tdots"); dots.append(el("i"), el("i"), el("i")); hd.append(dots);
       const sh = el("span", "shimmer", live ? step.text : curS().activity || t("thinking")); sh.dir = "auto"; if (liveFull) sh.classList.add("full");
       sh.addEventListener("click", (ev) => { ev.preventDefault(); ev.stopPropagation(); liveFull = sh.classList.toggle("full"); }); hd.append(sh);
       if (live) { const tm = el("span", "st-time", elapsed(Date.now() - step.at)); tm.dataset.at = step.at; hd.append(tm); }
