@@ -1129,8 +1129,9 @@ const glyphs = (() => {
     cv.width = w * dpr; cv.height = h * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cx.font = "500 12px " + getComputedStyle(document.body).getPropertyValue("--font-mono"); cx.textAlign = "center"; cx.textBaseline = "middle";
   }
-  function field(x, y, t) {   // a few slow waves: soft drifting bands, no library
-    return (Math.sin(x * .09 + t * .55) + Math.sin(y * .11 - t * .4) + Math.sin((x + y) * .06 + t * .3) + Math.sin(Math.hypot(x - 20, y - 30) * .12 - t * .7)) / 4;
+  function field(x, y, t) {   // long waves rolling diagonally across the screen, gently bent by a slower wave so the crests curve like water
+    const wx = x + Math.sin(y * .07 + t * .35) * 4, wy = y + Math.sin(x * .06 - t * .28) * 4;
+    return Math.sin(wx * .16 + wy * .09 - t * 1.1) * .5 + Math.sin(wx * .05 - wy * .13 + t * .6) * .3 + Math.sin(Math.hypot(wx - 14, wy - 40) * .1 - t * .8) * .2;
   }
   function draw(now) {
     const t = (now - t0) / 1000, cs = getComputedStyle(document.documentElement);
@@ -1139,18 +1140,18 @@ const glyphs = (() => {
     cx.clearRect(0, 0, w, h); cx.fillStyle = ink;
     const cols = Math.ceil(w / CELL), rows = Math.ceil(h / CELL);
     for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
-      const n = Math.sin(i * 127.1 + j * 311.7 + Math.floor(t * .8 + (i * 7 + j * 3) % 5) * 74.7) * 43758.5453;   // per-cell flicker, so it reads as scattered letters, not tidy columns
-      const v = Math.max(0, Math.min(1, field(i, j, t) * .9 + .5 + (n - Math.floor(n) - .5) * .35));   // 0..1, stretched so the bands stand out
+      const n = Math.sin(i * 127.1 + j * 311.7) * 43758.5453;   // fixed per-cell grain, so it reads as scattered letters, not tidy columns, without flicker
+      const v = Math.max(0, Math.min(1, field(i, j, t) * .95 + .5 + (n - Math.floor(n) - .5) * .18));   // 0..1
       if (v < .22) continue;
       const k = Math.min(RAMP.length - 1, Math.floor((v - .22) / .78 * RAMP.length));
-      cx.globalAlpha = (dark ? 1 : .7) * (.12 + .6 * v * v);
+      cx.globalAlpha = (dark ? 1 : .7) * (.06 + .3 * v * v);
       cx.fillText(RAMP[k], i * CELL + CELL / 2, j * CELL + CELL / 2);
     }
     cx.globalAlpha = 1;
   }
   function loop(now) {
     if (!on) return;
-    if (now - last > 90) { last = now; draw(now); }   // ~11 fps is enough for a slow drift and spares the battery
+    if (now - last > 33) { last = now; draw(now); }   // ~30 fps: smooth motion, still half the screen rate to spare the battery
     raf = requestAnimationFrame(loop);
   }
   addEventListener("resize", () => { size(); if (on) draw(performance.now()); });
