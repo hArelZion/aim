@@ -393,7 +393,7 @@ footer.slashing .quick { display: none; }
 .mchip { grid-area: mdl; display: inline-flex; gap: 5px; align-items: center; max-width: 100%; height: 40px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-size: .92rem; white-space: nowrap; overflow: hidden; }
 .mchip { direction: ltr; }
 .mchip span { color: var(--muted); }
-footer.mpicking .quick { display: none; }
+footer.mpicking .quick, footer.fopen .quick { display: none; }
 .mchip[aria-expanded="true"] { background: var(--bubble); }
 .mpick { margin-top: 6px; padding: 6px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: 0 10px 30px rgb(0 0 0 / .18); display: grid; }
 .mpick .mrow { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; padding: 0 14px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font-size: 1.02rem; text-align: start; }
@@ -443,11 +443,10 @@ main { overflow-x: hidden; touch-action: pan-y; overscroll-behavior-x: none; }
 .box .send.stop { width: 44px; height: 44px; border-radius: 14px; background: transparent; color: var(--ink); border: 1.5px solid #4b4b4b; }
 .box .send.stop svg { width: 26px; height: 26px; animation: none; }
 .box .send.stopping, .box .send.stopping:disabled { opacity: .5; }
-/* thinking: three orange dots in a row that hop one after another (a wave), then rest, like the Claude app */
-.tdots { display: inline-flex; gap: 3px; align-items: center; height: 14px; margin-inline-end: 8px; flex: none; direction: ltr; }
-.tdots i { width: 5px; height: 5px; border-radius: 50%; background: var(--spark); animation: tdot 1.3s ease-in-out infinite; }
-.tdots i:nth-child(2) { animation-delay: .13s; } .tdots i:nth-child(3) { animation-delay: .26s; }
-@keyframes tdot { 0%, 40%, 100% { transform: translateY(1.5px) scale(.9); } 18% { transform: translateY(-2.5px) scale(1.15); } }
+/* thinking: the orange Claude spark next to the words turns and breathes, like the Claude app */
+.tspark { display: inline-grid; place-items: center; width: 18px; height: 18px; margin-inline-end: 8px; flex: none; color: var(--spark); }
+.tspark svg { width: 16px; height: 16px; animation: tspark 1.6s cubic-bezier(.6, 0, .4, 1) infinite; }
+@keyframes tspark { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(90deg) scale(.72); } 100% { transform: rotate(180deg) scale(1); } }
 .runrow { display: block; font-size: 1rem; }
 .runrow > summary, .runrow > .rr { display: flex; gap: 0; align-items: center; min-width: 0; cursor: pointer; list-style: none; padding-block: 4px; }
 .runrow > summary::-webkit-details-marker { display: none; }
@@ -463,7 +462,7 @@ main { overflow-x: hidden; touch-action: pan-y; overscroll-behavior-x: none; }
 .runrow .live-body { display: grid; gap: 2px; padding-inline-start: 4px; margin-top: 2px; }
 @media (prefers-reduced-motion: reduce) {
   .runrow .shimmer { animation: shine2 3.6s linear infinite !important; color: transparent !important; background: linear-gradient(100deg, var(--muted) 0%, var(--muted) 35%, var(--ink) 50%, var(--muted) 65%, var(--muted) 100%) !important; background-size: 250% 100% !important; -webkit-background-clip: text !important; background-clip: text !important; }
-  .tdots i { animation-duration: 2.6s !important; }
+  .tspark svg { animation-duration: 3.2s !important; }
 }
 /* code panels in step details */
 .tool .tbox { padding: 0; border: 0; background: transparent; margin-top: 6px; }
@@ -498,6 +497,63 @@ footer::before { content: ""; position: absolute; inset-inline: 0; bottom: 100%;
 .quick button { padding: 3px 10px; font-size: .78rem; }
 .quick .qedit { width: 26px; height: 26px; }
 footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
+/* ---------- ChatGPT chats look like Codex in the ChatGPT app (Codex remote) ---------- */
+:root[data-model="gpt"] { --font-reply: var(--font-ui); }
+.cx { align-self: stretch; margin-block: 2px; font-size: 1.04rem; color: var(--ink); opacity: .82; min-width: 0; max-width: 100%; }
+.cx > summary { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; list-style: none; padding-block: 7px; min-width: 0; }
+.cx > summary::-webkit-details-marker { display: none; }
+.cx .cxi { flex: none; width: 22px; height: 22px; display: grid; place-items: center; color: var(--muted); margin-top: 1px; }
+.cx .cxi svg { width: 21px; height: 21px; }
+.cx .cxl { flex: 1; min-width: 0; overflow-wrap: anywhere; line-height: 1.45; }
+.cx.cx-reasoning { opacity: .62; }
+.cx.cx-filechange .cxl, .cx.cx-read .cxl { overflow-wrap: anywhere; }
+.cx .badges { margin-top: 2px; }
+.cx .cxfail { flex: none; font-size: .78rem; color: var(--warn); border: 1px solid currentColor; border-radius: 999px; padding: 0 7px; margin-top: 3px; }
+.cx .tbox { margin: 2px 0 8px; padding-inline-start: 34px; }
+.cx .cxwhy { font-size: .95rem; color: var(--muted); line-height: 1.55; }
+.cx pre { margin: 0; background: var(--code); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: .78rem; line-height: 1.5; color: var(--ink); max-height: 340px; overflow: auto; direction: ltr; text-align: left; }
+.cx pre.out { border: 0; background: none; padding: 6px 2px 0; color: var(--muted); }
+.cx .cbox { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--code); direction: ltr; text-align: left; }
+.cx .cbox pre { border: 0; border-radius: 0; background: none; }
+.cx .cbox .chead { padding: 7px 12px; font-family: var(--font-mono); font-size: .74rem; color: var(--muted); border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.cx .cbox .dl, .fpanel .dl { display: block; padding: 0 10px; }
+.cx .cbox .dl::before, .fpanel .dl::before { content: attr(data-g); display: inline-block; min-width: 1.4em; color: var(--muted); opacity: .7; }
+.cx .cbox .dl.add, .fpanel .dl.add { background: rgb(46 160 67 / .16); color: #5fd17a; }
+.cx .cbox .dl.del, .fpanel .dl.del { background: rgb(248 81 73 / .14); color: #ff7b72; }
+.runrow.cxrun .cxi { flex: none; width: 22px; height: 22px; display: inline-grid; place-items: center; color: var(--muted); margin-inline-end: 12px; }
+.runrow.cxrun .cxi svg { width: 21px; height: 21px; animation: cxbreathe 1.8s ease-in-out infinite; }
+.runrow.cxrun .rr { font-size: 1.04rem; }
+@keyframes cxbreathe { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+/* "N files changed +a -d" pill and the list of changed files */
+.fchg { display: flex; justify-content: center; margin: 4px 0 6px; }
+.fchg button { display: inline-flex; align-items: center; gap: 10px; height: 40px; padding: 0 18px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font-size: .98rem; box-shadow: 0 2px 10px rgb(0 0 0 / .25); }
+.fchg button[aria-expanded="true"] { background: var(--bubble); }
+.fchg .badges, .fpanel .badges { display: inline-flex; gap: 8px; font-variant-numeric: tabular-nums; direction: ltr; }
+.fchg .badges b, .fpanel .badges b { background: none; padding: 0; }
+.fchg .badges b.add, .fpanel .badges b.add { color: #3fb950; font-weight: 500; } .fchg .badges b.del, .fpanel .badges b.del { color: #f85149; font-weight: 500; }
+.fpanel { margin-bottom: 6px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); max-height: 52vh; overflow: auto; padding: 4px; box-shadow: 0 10px 30px rgb(0 0 0 / .3); }
+.fpanel details > summary { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; list-style: none; border-radius: 12px; min-width: 0; direction: ltr; }
+.fpanel details > summary::-webkit-details-marker { display: none; }
+.fpanel .fn { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .95rem; }
+.fpanel .fn small { color: var(--muted); margin-inline-start: 6px; }
+.fpanel .fk { flex: none; font-size: .72rem; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 0 5px; }
+.fpanel pre { margin: 0 6px 8px; padding: 6px 0; border-radius: 10px; background: var(--code); white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: .76rem; line-height: 1.5; direction: ltr; text-align: left; }
+/* composer: + and permissions on one side, model + effort and the round send / stop button on the other */
+.box .shield { grid-area: sh; width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; color: var(--ink); display: grid; place-items: center; }
+.box .shield svg { width: 22px; height: 22px; }
+.box .shield[hidden] { display: none; }
+:root[data-model="gpt"] .box { grid-template-columns: auto auto minmax(0, 1fr) auto auto auto; grid-template-areas: "ta ta ta ta ta ta" "at sh . mdl mic send"; }
+:root[data-model="gpt"] .box .attach { border: 0; }
+:root[data-model="gpt"] .mchip { border: 0; padding: 0 6px; font-weight: 600; font-size: .98rem; }
+:root[data-model="gpt"] .mchip span { color: var(--ink); font-weight: 600; }
+:root[data-model="gpt"] .box .send:not(.stop) { background: var(--ink); color: var(--bg); }
+:root[data-model="gpt"] .box .send:not(.stop):disabled { opacity: .35; }
+:root[data-model="gpt"] .box .send.stop { width: 44px; height: 44px; border-radius: 50%; background: var(--ink); color: var(--bg); border: 0; }
+:root[data-model="gpt"] .box .send.stop svg { width: 22px; height: 22px; }
+.mpick .mdesc { padding: 0 14px 8px; font-size: .84rem; color: var(--muted); }
+.sub .cxw { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
+.sub .cxw svg { width: 13px; height: 13px; flex: none; }
+.sub .cxw + .cxw { margin-inline-start: 8px; }
 .box { margin-block: 4px 6px; padding: 5px 8px 6px; gap: 2px 6px; border-radius: 22px; box-shadow: none; }
 .box textarea { min-height: 34px; padding: 5px 6px; }
 .box .attach, .box .send, .mchip { width: 36px; height: 36px; }
@@ -655,12 +711,15 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
       <div class="row-btns"><button class="btn-plain" type="button" id="qsave" data-t="save"></button><button class="btn-plain" type="button" id="qcancel" data-t="cancel"></button><button class="btn-link" type="button" id="qreset" data-t="reset"></button></div>
     </div>
     <div class="previews" id="previews" hidden></div>
+    <div class="fpanel" id="fpanel" hidden></div>
+    <div class="fchg" id="fchg" hidden></div>
     <div class="mpick" id="mpick" hidden></div>
     <div class="slash" id="slash" role="listbox" hidden></div>
     <form class="box" id="form">
       <button class="attach" id="attach" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       </button>
+      <button class="shield" id="permBtn" type="button" aria-expanded="false" aria-controls="mpick" hidden></button>
       <input type="file" id="filePick" multiple hidden>
       <textarea id="composer" rows="1"></textarea>
       <button class="mchip" id="mchip" type="button" aria-expanded="false" aria-controls="mpick" hidden></button>
@@ -761,7 +820,7 @@ const I18N = {
     newChat: "שיחה חדשה", mMode: "מצב עבודה", md_Auto: "Claude מחליט לבד מה מותר. לא תקבל בקשות אישור.", md_Manual: "Claude שואל לפני כל שינוי. הבקשות יגיעו אליך לכאן.", "md_Accept edits": "עריכת קבצים מאושרת לבד, פקודות אחרות דורשות אישור.", md_Plan: "Claude רק מתכנן ומציג תוכנית, בלי לשנות קבצים.", "md_Bypass permissions": "כל ההגנות כבויות. אפשר לשנות את זה רק במחשב.", pcSessions: "השיחות של Claude Code במחשב", pinnedS: "מוצמדות", thisS: "מחובר לטלפון", st_Running: "עובדת", "st_Unread response": "תשובה חדשה", "st_Needs input": "מחכה לך", st_Waiting: "מחכה", st_Idle: "", st_Error: "שגיאה", permTitle: "Claude מבקש אישור", permAllow: "אשר", permDeny: "דחה", perm_sending: "שולח למחשב…", perm_allow: "אושר", perm_deny: "נדחה", perm_timeout: "לא נענה בזמן. הבקשה מחכה במחשב.", closeX: "סגור", mModel: "מודל", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
     noGptConv: "ChatGPT עדיין לא חובר. הקלד $phone ב-Codex במחשב.", offlineGpt: "ChatGPT לא מחובר. הקלד $phone ב-Codex במחשב.", switchTo: "מעבר ל-",
     language: "שפת האפליקציה", pause: "השהיית הקו", resume: "המשך הקו", signOut: "התנתקות",
-    placeholder: "כתוב ל-Claude…", msgAria: "הודעה ל-Claude", send: "שליחה", settings: "הגדרות",
+    placeholder: "כתוב ל-Claude…", cxCmd: "הרצת פקודה", cxPlan: "תוכנית", cxFiles: (n) => (n === 1 ? "קובץ אחד השתנה" : n + " קבצים השתנו"), cxWorkOn: "עבודה על ", cxEditing: "עורך קבצים", cxWeb: "מחפש ברשת", cxModel: "מודל", cxEffort: "רמת חשיבה", cxPerm: "הרשאות", "cx_read-only": "קריאה בלבד", "cx_workspace-write": "ברירת מחדל", "cxd_read-only": "Codex קורא קבצים ומריץ פקודות, אבל לא משנה כלום.", "cxd_workspace-write": "Codex עורך קבצים בתיקיית העבודה, בלי רשת.", cxNext: "יחול מההודעה הבאה.", cxNoCfg: "הרשימה תגיע כשהקו של ChatGPT יעלה במחשב.", msgAria: "הודעה ל-Claude", send: "שליחה", settings: "הגדרות",
     attach: "צירוף תמונה", removePic: "הסרת התמונה", dark: "מצב כהה", light: "מצב בהיר",
     emptyTitle: "שלום, מה נעשה היום?",
     emptyTeam: "שיחה משותפת: אני מנהל, ומעביר עבודה ל-ChatGPT כשצריך. תראה כאן מי עובד ומה אנחנו אומרים זה לזה (לחיצה על ההודעה פותחת אותה), וכל מה שמופנה אליך יהיה בעברית. כדי להתחיל, הקלד /phone במחשב.",
@@ -808,7 +867,7 @@ const I18N = {
     newChat: "New chat", mMode: "Work mode", md_Auto: "Claude decides what is allowed. No permission requests.", md_Manual: "Claude asks before every change. Requests come here.", "md_Accept edits": "File edits are allowed, other commands ask.", md_Plan: "Claude only plans and shows a plan, no file changes.", "md_Bypass permissions": "All checks are off. Only the computer can change this.", pcSessions: "Claude Code sessions on the computer", pinnedS: "Pinned", thisS: "on the phone", st_Running: "working", "st_Unread response": "new reply", "st_Needs input": "needs you", st_Waiting: "waiting", st_Idle: "", st_Error: "error", permTitle: "Claude asks for permission", permAllow: "Allow", permDeny: "Deny", perm_sending: "Sending to the computer…", perm_allow: "Allowed", perm_deny: "Denied", perm_timeout: "Not answered in time. The request waits on the computer.", closeX: "Close", mModel: "Model", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
     noGptConv: "ChatGPT is not connected yet. Type $phone in Codex on the computer.", offlineGpt: "ChatGPT is not connected. Type $phone in Codex on the computer.", switchTo: "Switch to ",
     language: "App language", pause: "Pause the line", resume: "Resume the line", signOut: "Sign out",
-    placeholder: "Message Claude…", msgAria: "Message to Claude", send: "Send", settings: "Settings",
+    placeholder: "Message Claude…", cxCmd: "Command execution", cxPlan: "Plan", cxFiles: (n) => (n === 1 ? "1 file changed" : n + " files changed"), cxWorkOn: "Work on ", cxEditing: "Editing files", cxWeb: "Searching the web", cxModel: "Model", cxEffort: "Reasoning", cxPerm: "Permissions", "cx_read-only": "Read only", "cx_workspace-write": "Default", "cxd_read-only": "Codex reads files and runs commands but changes nothing.", "cxd_workspace-write": "Codex edits files in its work folder, no network.", cxNext: "Applies from your next message.", cxNoCfg: "The list arrives when the ChatGPT line is up on the computer.", msgAria: "Message to Claude", send: "Send", settings: "Settings",
     attach: "Attach a photo", removePic: "Remove photo", dark: "Dark mode", light: "Light mode",
     emptyTitle: "Hi, what are we doing today?",
     emptyTeam: "A shared chat: I lead and hand work to ChatGPT when needed. You see who is working and what we tell each other (tap a message to open it), and anything addressed to you is in your language. To start, type /phone on the computer.",
@@ -864,13 +923,16 @@ function fillText(node, s) {
 }
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) fillText(e, text); return e; }
 
+function paintPlaceholder() {   // ChatGPT: "Work on <computer>" like Codex remote
+  $("composer").placeholder = model === "claude" ? t("phSlash") : model === "gpt" && gcfg.host ? t("cxWorkOn") + gcfg.host : t("placeholder").replace("Claude", mname());
+}
 function applyLang() {
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
   document.querySelectorAll("[data-t]").forEach((n) => fillText(n, t(n.dataset.t)));
   $("password").placeholder = t("password");
   document.querySelectorAll("[data-t-aria]").forEach((n) => n.setAttribute("aria-label", t(n.dataset.tAria)));
-  $("composer").placeholder = model === "claude" ? t("phSlash") : t("placeholder").replace("Claude", mname()); $("composer").setAttribute("aria-label", t("msgAria").replace("Claude", mname()));
+  paintPlaceholder(); $("composer").setAttribute("aria-label", t("msgAria").replace("Claude", mname()));
   $("send").setAttribute("aria-label", t("send")); $("gear").setAttribute("aria-label", t("settings"));
   $("attach").setAttribute("aria-label", t("attach")); $("convBtn").setAttribute("aria-label", t("conversations")); $("newBtn").setAttribute("aria-label", t("newChat"));
   $("lang-he").setAttribute("aria-pressed", String(lang === "he"));
@@ -1000,6 +1062,10 @@ function renderHeader() {
   $("modelName").textContent = (cvNow && cvNow.title) || mname(); $("modelName").dir = "auto";
   const proj = (cvNow && cvNow.project) || curS().project;
   $("sub").textContent = (proj ? proj + " \u00b7 " : "") + t(c);
+  if (model === "gpt" && gcfg.host && c !== "offline" && c !== "paused") {   // Codex remote: work folder and computer
+    const w = (icon, s) => { const x = el("span", "cxw"); x.innerHTML = icon; const b2 = document.createElement("bdi"); b2.textContent = s; x.append(b2); return x; };
+    $("sub").replaceChildren(w(ICON_FOLDER, gcfg.dir || ""), w(ICON_LAPTOP, gcfg.host));
+  }
   $("hspin").hidden = c !== "working";
   const alert = $("alert"); alert.hidden = true;
   if (c === "offline") { fillText(alert, model === "gpt" ? t("offlineGpt") : model === "gemini" ? t("offlineGemini") : t("offlineAlert")); alert.hidden = false; }
@@ -1222,6 +1288,7 @@ function renderThread() {
     if (m.kind === "agent") { thread.append(agentEl(m, au)); prevAi = false; continue; }
     if (m.kind === "tool") {
       if (!showSteps()) continue;
+      if (model === "gpt") { thread.append(codexStepEl(m)); prevAi = false; continue; }   // Codex shows every step as its own row
       const card = toolEl(m); prevAi = false;
       if (!grp) { grp = { first: card, list: [m] }; thread.append(card); continue; }
       if (!grp.wrap) {
@@ -1253,6 +1320,7 @@ function renderThread() {
     if (!firstLoad && !known.has(m.id)) animate.push(body);
   }
   if (lastAiRow) lastAiRow.classList.add("last");
+  renderFiles();
   msgs.forEach((m) => known.add(m.id));
   firstLoad = false;
   if (stick) toBottom(); else $("scroller").scrollTop = keepTop;
@@ -1412,6 +1480,126 @@ function toolEl(m) {
   if (openSet.has(m.id)) d.open = true;
   return d;
 }
+/* ---------- ChatGPT chats: Codex-style steps (the bridge aim_gpt.py posts one card per Codex event) ---------- */
+const cxSvg = (p) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + "</svg>";
+const CX_ICONS = {
+  Reasoning: cxSvg('<path d="M7.5 17.5h9a4 4 0 0 0 .6-7.95A5.5 5.5 0 0 0 6.6 8.6 4.5 4.5 0 0 0 7.5 17.5z"/><circle cx="6" cy="20.6" r="1.1"/><path d="M10 11.5h4"/>'),
+  Command: cxSvg('<rect x="3" y="4.5" width="18" height="15" rx="3"/><path d="M7.5 9.5 10 12l-2.5 2.5M12.5 15H16"/>'),
+  FileChange: cxSvg('<path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14 7l3 3"/>'),
+  Read: cxSvg('<path d="M3 5.5A1.5 1.5 0 0 1 4.5 4H9a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H3z"/><path d="M21 5.5A1.5 1.5 0 0 0 19.5 4H15a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H21z"/>'),
+  Web: cxSvg('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'),
+  Plan: cxSvg('<path d="M10 6h10M10 12h10M10 18h10"/><path d="m3.5 6 1.2 1.2L7 5M3.5 12l1.2 1.2L7 11M3.5 18l1.2 1.2L7 17"/>'),
+  Tool: cxSvg('<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/>'),
+  Error: cxSvg('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V13M12 16.5v.01"/>'),
+};
+const ICON_SHIELD = { "workspace-write": cxSvg('<path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6z"/><path d="m9 12 2 2 4-4"/>'), "read-only": cxSvg('<path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6z"/><path d="M9 12h6"/>') };
+const ICON_FOLDER = cxSvg('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>');
+const ICON_LAPTOP = cxSvg('<rect x="5" y="5" width="14" height="10" rx="1.5"/><path d="M3 19h18"/>');
+let gcfg = {}, gpick = {}, filesOpen = false, gpMsg = "";   // control rows "gpt-models" (from the computer) and "gpt-pick" (the phone's choice)
+const cxCard = (m) => { try { return JSON.parse(m.text); } catch (e) { return { t: "", title: m.text }; } };
+function codexStepEl(m) {
+  const c = cxCard(m);
+  const d = document.createElement("details"); d.className = "cx cx-" + String(c.t || "tool").toLowerCase();
+  const sm = document.createElement("summary");
+  const ic = el("span", "cxi"); ic.innerHTML = CX_ICONS[c.t] || CX_ICONS.Tool; sm.append(ic);
+  const lb = el("span", "cxl"), bi = document.createElement("bdi");
+  bi.textContent = c.t === "Command" ? t("cxCmd") : c.t === "Plan" ? t("cxPlan") + " · " + (c.title || "") : c.title || c.t || "";
+  lb.append(bi); sm.append(lb);
+  if (c.t === "FileChange") { const bd = badgesEl(diffCount(c)); if (bd) sm.append(bd); }
+  if (c.t === "Command" && c.code != null && c.code !== 0) sm.append(el("span", "cxfail", "exit " + c.code));
+  d.append(sm);
+  d.addEventListener("toggle", () => {
+    if (d.open) openSet.add(m.id); else openSet.delete(m.id);
+    if (!d.open || d.querySelector(".tbox")) return;
+    const box = el("div", "tbox");
+    if (c.t === "Reasoning") { const w = el("div", "cxwhy"); w.innerHTML = md(c.out || ""); w.querySelectorAll("p, li").forEach((n) => { n.dir = "auto"; }); box.append(w); }
+    else {
+      if (c.in) box.append(c.diff ? codeBox(c) : el("pre", null, c.in));
+      if (c.out) box.append(el("pre", "out", c.out));
+    }
+    if (box.childNodes.length) d.append(box);
+  });
+  if (openSet.has(m.id)) d.open = true;
+  return d;
+}
+/* the pill above the composer: every file this conversation changed, with +/- totals; tap for the diffs */
+function renderFiles() {
+  const pill = $("fchg"), panel = $("fpanel");
+  const files = new Map();
+  if (model === "gpt") msgs.forEach((m) => {
+    if (m.kind !== "tool") return;
+    const c = cxCard(m); if (c.t !== "FileChange" || !c.title) return;
+    const f = files.get(c.title) || { path: c.title, add: 0, del: 0, cards: [] };
+    f.add += c.add || 0; f.del += c.del || 0; f.kind = c.kind; f.cards.push(c); files.set(c.title, f);
+  });
+  if (!files.size) { pill.hidden = true; panel.hidden = true; filesOpen = false; document.querySelector("footer").classList.remove("fopen"); return; }
+  const list = [...files.values()], add = list.reduce((a, f) => a + f.add, 0), del = list.reduce((a, f) => a + f.del, 0);
+  const b = el("button", null, t("cxFiles", list.length)); b.type = "button"; b.setAttribute("aria-expanded", String(filesOpen));
+  const bd = el("span", "badges"); bd.append(el("b", "add", "+" + add), el("b", "del", "-" + del)); b.append(bd);
+  b.onclick = () => { filesOpen = !filesOpen; renderFiles(); };
+  pill.replaceChildren(b); pill.hidden = false;
+  panel.hidden = !filesOpen; document.querySelector("footer").classList.toggle("fopen", filesOpen); if (!filesOpen) return;
+  const keepOpen = new Set([...panel.querySelectorAll("details[open]")].map((x) => x.dataset.p));
+  panel.replaceChildren();
+  list.forEach((f) => {
+    const d = document.createElement("details"); d.dataset.p = f.path; if (keepOpen.has(f.path)) d.open = true;
+    const sm = document.createElement("summary");
+    const parts = f.path.split(/[\\/]/), name = parts.pop();
+    const fn = el("span", "fn", name); fn.append(el("small", null, parts.slice(-2).join("/"))); sm.append(fn);
+    if (f.kind === "add" || f.kind === "delete") sm.append(el("span", "fk", f.kind === "add" ? "A" : "D"));
+    const fb = el("span", "badges"); if (f.add) fb.append(el("b", "add", "+" + f.add)); if (f.del) fb.append(el("b", "del", "-" + f.del)); sm.append(fb);
+    d.append(sm);
+    const pre = el("pre");
+    f.cards.forEach((c) => (c.in || "").split("\n").slice(2).forEach((l) => {
+      const add2 = l.startsWith("+ "), del2 = l.startsWith("- ");
+      const sp = el("span", "dl" + (add2 ? " add" : del2 ? " del" : ""), l.slice(2) || " "); sp.dataset.g = add2 ? "+" : del2 ? "-" : ""; pre.append(sp);
+    }));
+    d.append(pre); panel.append(d);
+  });
+}
+const cxModelName = (slug) => { const m = (gcfg.list || []).find((x) => x.slug === slug); return String(m ? m.name : slug || "").replace(/^GPT[\s-]*/i, ""); };
+const CX_EFF = { low: "Low", medium: "Medium", high: "High", xhigh: "Extra High", max: "Max", ultra: "Ultra", minimal: "Minimal", none: "None" };
+const gNow = () => ({ model: gpick.model || gcfg.model, effort: gpick.effort || gcfg.effort, sandbox: gpick.sandbox || gcfg.sandbox || "workspace-write" });
+function setGpick(patch) {
+  const cur = gNow(), next = Object.assign({}, cur, patch);
+  const info = (gcfg.list || []).find((x) => x.slug === next.model);
+  if (info && info.efforts.length && !info.efforts.includes(next.effort)) next.effort = info.efforts.includes(cur.effort) ? cur.effort : info.def;
+  gpick = Object.assign(next, { at: Date.now() }); gpMsg = t("cxNext");
+  putCtl("gpt-pick", gpick).then((r) => { if (r.error) { gpMsg = t("sendErr"); renderModelPick(); } });
+  paintModelChip();
+}
+function renderGptPick(box, part) {
+  const cur = gNow(), list = gcfg.list || [];
+  if (part === "perm") {
+    box.append(el("div", "mhead", t("cxPerm")));
+    (gcfg.sandboxes || ["read-only", "workspace-write"]).forEach((s) => {
+      const b = el("button", "mrow"); b.type = "button";
+      const ic = el("span", "ck"); ic.innerHTML = ICON_SHIELD[s] || ""; ic.style.color = "var(--ink)"; b.append(ic);
+      const nm = el("span", "nm"); nm.append(el("div", null, t("cx_" + s))); const ds = el("div", null, t("cxd_" + s)); ds.style.cssText = "font-size:.8rem;color:var(--muted)"; nm.append(ds); b.append(nm);
+      const ck = el("span", "ck"); if (s === cur.sandbox) ck.innerHTML = CHECK; b.append(ck);
+      b.setAttribute("aria-pressed", String(s === cur.sandbox)); b.onclick = () => { if (s !== cur.sandbox) setGpick({ sandbox: s }); };
+      box.append(b);
+    });
+  } else {
+    if (!list.length) { box.append(el("div", "mstat", t("cxNoCfg"))); return; }
+    box.append(el("div", "mhead", t("cxModel")));
+    list.forEach((m) => {
+      const b = el("button", "mrow"); b.type = "button";
+      const nm = el("span", "nm"), bi = document.createElement("bdi"); bi.textContent = m.name; nm.append(bi); b.append(nm);
+      const ck = el("span", "ck"); if (m.slug === cur.model) ck.innerHTML = CHECK; b.append(ck);
+      b.setAttribute("aria-pressed", String(m.slug === cur.model)); b.onclick = () => { if (m.slug !== cur.model) setGpick({ model: m.slug }); };
+      box.append(b);
+    });
+    const info = list.find((x) => x.slug === cur.model);
+    if (info && info.efforts.length > 1) {
+      box.append(el("div", "mhead", t("cxEffort")));
+      const seg = el("div", "mseg");
+      info.efforts.forEach((e) => { const b = el("button", null, CX_EFF[e] || e); b.type = "button"; b.setAttribute("aria-pressed", String(e === cur.effort)); b.onclick = () => { if (e !== cur.effort) setGpick({ effort: e }); }; seg.append(b); });
+      box.append(seg);
+    }
+  }
+  if (gpMsg) box.append(el("div", "mstat", gpMsg));
+}
 function diffCount(c) {
   if (c.add != null || c.del != null) return [c.add || 0, c.del || 0];
   if (!c.diff || !c.in) return [0, 0];
@@ -1499,11 +1687,21 @@ function renderTail() {
     if (team) {
       tx.append(el("span", "shimmer", AUTHORS[who].name + " \u00b7 " + t("thinking")));
       if (curS().activity) tx.append(el("span", "activity", curS().activity));
+    } else if (model === "gpt") {   // Codex: the step running now, with the thinking mark, shimmering
+      const rr = el("div", "runrow cxrun"), hd = el("div", "rr");
+      const ic = el("span", "cxi"); ic.innerHTML = CX_ICONS.Reasoning; hd.append(ic);
+      const a = curS().activity || "";
+      const sh = el("span", "shimmer", !a || a === "Thinking" || a === "ChatGPT \u05d7\u05d5\u05e9\u05d1" ? t("thinking") : a === "Editing files" ? t("cxEditing") : a === "Searching the web" ? t("cxWeb") : a); sh.dir = "auto";
+      if (liveFull) sh.classList.add("full");
+      sh.addEventListener("click", () => { liveFull = sh.classList.toggle("full"); }); hd.append(sh);
+      const at = curS().stepAt || toMs(curS().updatedAt);
+      if (at) { const tm = el("span", "st-time", elapsed(Date.now() - at)); tm.dataset.at = at; hd.append(tm); }
+      rr.append(hd); tx.append(rr);
     } else {
       const hasSteps = liveTools.length > 0;
       const rr = document.createElement(hasSteps ? "details" : "div"); rr.className = "runrow" + (hasSteps ? " live" : "");
       const hd = hasSteps ? document.createElement("summary") : el("div", "rr");
-      const dots = el("span", "tdots"); dots.append(el("i"), el("i"), el("i")); hd.append(dots);
+      const spark = el("span", "tspark"); spark.innerHTML = modelLogo(); hd.append(spark);
       const sh = el("span", "shimmer", live ? step.text : curS().activity || t("thinking")); sh.dir = "auto"; if (liveFull) sh.classList.add("full");
       sh.addEventListener("click", (ev) => { ev.preventDefault(); ev.stopPropagation(); liveFull = sh.classList.toggle("full"); }); hd.append(sh);
       if (live) { const tm = el("span", "st-time", elapsed(Date.now() - step.at)); tm.dataset.at = step.at; hd.append(tm); }
@@ -1548,6 +1746,10 @@ function applyControl(row) {
     if ((settings.lang === "he" || settings.lang === "en") && settings.lang !== lang) setLang(settings.lang, false);
   }
   if (row.id === "step") step = row.data || {};
+  if (row.id === "gpt-models" || row.id === "gpt-pick") {
+    if (row.id === "gpt-models") gcfg = row.data || {}; else gpick = row.data || {};
+    if (typeof paintModelChip === "function" && ta) { paintModelChip(); paintPlaceholder(); }
+  }
   if (row.id === "tasks") tasks = row.data || {};
   if (row.id === "commands") cmds = Array.isArray((row.data || {}).list) ? row.data.list : [];
   if (row.id === "model") { mstate = row.data || {}; if (typeof renderSessions === "function") renderSessions(); if (mpend && mstate.req === mpend.at) { mpend = null; clearTimeout(mTimer); mmsg = mstate.ok ? ["", t("mDone")] : mstate.error === "confirm" && mstate.ask ? ["ask", mstate.ask] : ["err", mErr(mstate.error)]; } if (typeof paintModelChip === "function") paintModelChip(); }
@@ -2158,10 +2360,19 @@ try { ta.value = localStorage.getItem("aim-draft") || ""; } catch (e) {}
 /* model picker: the computer presses the real Model / Effort buttons of the Claude app (aim_model.py via the watcher) */
 const mErr = (e) => ({ "other-session": t("mOther"), window: t("mNoWin") }[e] || t("mFail"));
 /* work modes: the user approved this button on the computer on 2026-10-14; "Bypass permissions" is never offered */
+let pickPart = "model";   // ChatGPT: the chip opens model + reasoning, the shield opens permissions
 function paintModelChip() {
-  const c = $("mchip"), on = model === "claude" && !!mstate.model;
+  const c = $("mchip"), gpt = model === "gpt", on = gpt ? !!(gcfg.list || gcfg.model) : model === "claude" && !!mstate.model;
+  const pb = $("permBtn"); pb.hidden = !gpt;
+  if (gpt) { const sb2 = gNow().sandbox; pb.innerHTML = ICON_SHIELD[sb2] || ICON_SHIELD["workspace-write"]; pb.setAttribute("aria-label", t("cxPerm") + ": " + t("cx_" + sb2)); pb.title = pb.getAttribute("aria-label"); }
   c.hidden = !on;
   if (!on) { $("mpick").hidden = true; return; }
+  if (gpt) {
+    const g = gNow(); c.replaceChildren(document.createTextNode(cxModelName(g.model) + " "));
+    if (g.effort) c.append(el("span", null, CX_EFF[g.effort] || g.effort));
+    if (!$("mpick").hidden) renderModelPick();
+    return;
+  }
   c.replaceChildren(document.createTextNode(mstate.model + " "));
   if (mstate.effort) c.append(el("span", null, mstate.effort));
   if (!$("mpick").hidden) renderModelPick();
@@ -2175,6 +2386,7 @@ function askModel(req) {
 const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 function renderModelPick() {
   const box = $("mpick"); box.replaceChildren();
+  if (model === "gpt") { renderGptPick(box, pickPart); return; }
   const cur = mpend && mpend.model ? mpend.model : mstate.model;
   box.append(el("div", "mhead", t("mModel")));
   const list = Array.isArray(mstate.models) && mstate.models.length ? mstate.models : [{ name: mstate.model }];
@@ -2226,13 +2438,16 @@ function renderModelPick() {
   else if (mstate.same === false) box.append(el("div", "mstat err", t("mOtherNow")));
   else box.append(el("div", "mstat", t("mCost")));
 }
-$("mchip").onclick = (e) => {
-  e.stopPropagation();
-  const open = $("mpick").hidden; $("mpick").hidden = !open; $("mchip").setAttribute("aria-expanded", String(open));
+function togglePick(part) {
+  const same = pickPart === part, open = $("mpick").hidden || !same;
+  pickPart = part; $("mpick").hidden = !open;
+  $("mchip").setAttribute("aria-expanded", String(open && part === "model")); $("permBtn").setAttribute("aria-expanded", String(open && part === "perm"));
   document.querySelector("footer").classList.toggle("mpicking", open);
-  if (open) { mmsg = null; renderModelPick(); }
-};
-document.addEventListener("click", (e) => { if (!$("mpick").hidden && e.target.isConnected && !e.target.closest("#mpick") && !e.target.closest("#mchip")) { $("mpick").hidden = true; $("mchip").setAttribute("aria-expanded", "false"); document.querySelector("footer").classList.remove("mpicking"); } });
+  if (open) { mmsg = null; gpMsg = ""; filesOpen = false; renderFiles(); renderModelPick(); }
+}
+$("mchip").onclick = (e) => { e.stopPropagation(); togglePick("model"); };
+$("permBtn").onclick = (e) => { e.stopPropagation(); togglePick("perm"); };
+document.addEventListener("click", (e) => { if (!$("mpick").hidden && e.target.isConnected && !e.target.closest("#mpick") && !e.target.closest("#mchip") && !e.target.closest("#permBtn")) { $("mpick").hidden = true; $("mchip").setAttribute("aria-expanded", "false"); $("permBtn").setAttribute("aria-expanded", "false"); document.querySelector("footer").classList.remove("mpicking"); } });
 let slashSel = 0;
 function slashItems() {
   const v = ta.value;
