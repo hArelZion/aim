@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IMPERIVM — The Eternal Reign &amp; Archival Chronicle</title>
+  <meta name="description" content="A monumental historical archive chronicling ancient Rome through authoritative epochs, imperial edicts, classical architecture, and civic legacy.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23121110'/%3E%3Cpath d='M16 4 L26 26 L22 26 L19.5 19 L12.5 19 L10 26 L6 26 Z M16 9 L13.5 16 L18.5 16 Z' fill='%23C6A355'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="kit.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Sticky Nav: Declared once for the document -->
+  <header class="nav">
+    <div class="wrap nav__inner">
+      <a href="#hero" class="logo">IMPERIVM</a>
+      <button class="nav__toggle" aria-label="Toggle Navigation"><span></span></button>
+      <ul class="nav__links">
+        <li><a href="#epochs">Epochs</a></li>
+        <li><a href="#emperors">Imperators</a></li>
+        <li><a href="#legions">Warfare</a></li>
+        <li><a href="#monuments">Monuments</a></li>
+        <li><a href="#legacy">Legacy</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <img class="hero__bg" src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1920&q=80" alt="Sunlight raking across the weathered stone arches of the Colosseum in Rome" width="1920" height="1080">
+    <div class="wrap reveal">
+      <div class="gold-frame">
+        <p class="eyebrow">Tabularium Populi Romani · Anno DCCLIII A.U.C.</p>
+        <h1>The Eternal Reign</h1>
+        <p class="lede">From muddy Tiber marshland to an empire binding three continents under sunlit travertine and bronze. Explore the sovereign architecture, military genius, and juridical pillars that built the modern world.</p>
+        
+        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 1.75rem;">
+          <a href="#epochs" class="btn btn--accent">Enter the Archives <span class="arrow">→</span></a>
+          <button class="audio-toggle" id="ambientToggle" aria-pressed="false" onclick="this.setAttribute('aria-pressed', this.getAttribute('aria-pressed')==='true'?'false':'true'); this.classList.toggle('active');">
+            <span class="disc"></span> Ambient Antiquity Audio
+          </button>
+        </div>
+
+        <div class="motto-bar">
+          <span>Senatus Populusque Romanus</span>
+          <span>Roma Invicta</span>
+          <span>Veni Vidi Vici</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Epochs: The Three Ages -->
+  <section class="section" id="epochs">
+    <div class="wrap">
+      <div class="head reveal">
+        <p class="eyebrow">Constitutional Metamorphosis</p>
+        <h2>The Three Ages of Rome</h2>
+        <p>A millennium-spanning journey across monarchic foundations, republican civic virtue, and absolute autocratic dominance.</p>
+      </div>
+
+      <div class="grid-3 reveal" data-delay="1">
+        <div class="epoch-card">
+          <div class="epoch-card__num">I</div>
+          <p class="eyebrow">753 – 509 BCE</p>
+          <h3>The Regnum</h3>
+          <p>Founded by Romulus atop the Palatine, seven early kings forged religious rituals, military tribal centuriae, and early stone masonry under Etruscan influence until Tarquin's tyrannical fall.</p>
+          <div class="military-stat" style="margin-top: 1.5rem;">
+            <strong>Core Dynamic:</strong> Tribal clan rule &amp; initial sacred boundaries (Pomerium).
+          </div>
+        </div>
+
+        <div class="epoch-card">
+          <div class="epoch-card__num">II</div>
+          <p class="eyebrow">509 – 27 BCE</p>
+          <h3>The Res Publica</h3>
+          <p>Consuls, Tribunes, and the Senate balanced power through collective governance. The Republic weathered Hannibal, annexed Carthage, and subdued Hellas before civil wars broke its constitution.</p>
+          <div class="military-stat" style="margin-top: 1.5rem;">
+            <strong>Core Dynamic:</strong> The <em>Cursus Honorum</em> and agrarian conquest.
+          </div>
+        </div>
+
+        <div class="epoch-card">
+          <div class="epoch-card__num">III</div>
+          <p class="eyebrow">27 BCE – 476 CE</p>
+          <h3>The Imperium</h3>
+          <p>Inaugurated by Augustus as <em>Princeps</em>, expanding through Trajan to the Persian Gulf. Bureaucratic administrative efficiency paired with unprecedented infrastructural integration.</p>
+          <div class="military-stat" style="margin-top: 1.5rem;">
+            <strong>Core Dynamic:</strong> Imperial central command and the Pax Romana.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Imperators & Architects -->
+  <section class="section section--alt" id="emperors">
+    <div class="wrap">
+      <div class="split reveal">
+        <div>
+          <p class="eyebrow">Principate &amp; Sovereign Rule</p>
+          <h2>Imperators &amp; Architects</h2>
+          <p class="lede">From subtle republican disguises to cosmopolitan philosopher-kings, these rulers transformed physical stone and legal edicts into instruments of supreme statecraft.</p>
+          
+          <div role="tablist" aria-label="Emperor Dossiers" style="margin-top: 2rem;">
+            <button class="tab" role="tab" aria-selected="true" aria-controls="panel-augustus" id="tab-augustus">Augustus</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-trajan" id="tab-trajan">Trajan</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="panel-aurelius" id="tab-aurelius">Marcus Aurelius</button>
+          </div>
+
+          <div id="panel-augustus" role="tabpanel" aria-labelledby="tab-augustus">
+            <h3 style="margin-top: 1.25rem;">Gaius Julius Caesar Augustus</h3>
+            <p>First Emperor of Rome (27 BCE – 14 CE). Restructured the praetorian guard, founded the vigiles, and instituted taxation reforms that funded monumental marble restoration across the Campus Martius.</p>
+            <div class="edict-box">
+              <p>“I found Rome a city of sun-dried clay bricks, and I left her clothed in majestic marble.”</p>
+              <cite>Res Gestae Divi Augusti · XIV</cite>
+            </div>
+          </div>
+
+          <div id="panel-trajan" role="tabpanel" aria-labelledby="tab-trajan" hidden>
+            <h3 style="margin-top: 1.25rem;">Marcus Ulpius Traianus</h3>
+            <p>Optimus Princeps (98 – 117 CE). Expanded the empire to its territorial zenith through the conquest of Dacia and Parthia. Financed extensive public welfare (alimenta) and his colossal helical victory column.</p>
+            <div class="edict-box">
+              <p>“Govern so that you fear not the verdict of history, nor the scrutiny of free citizens.”</p>
+              <cite>Epistulae ad Plinium Secundum · X</cite>
+            </div>
+          </div>
+
+          <div id="panel-aurelius" role="tabpanel" aria-labelledby="tab-aurelius" hidden>
+            <h3 style="margin-top: 1.25rem;">Marcus Aurelius Antoninus</h3>
+            <p>Philosopher-King (161 – 180 CE). Defended the Danubian frontiers during the Marcomannic Wars while penning Stoic reflections on mortal duty, transience, and cosmological reason.</p>
+            <div class="edict-box">
+              <p>“Waste no more time arguing what a good man should be. Be one.”</p>
+              <cite>Meditations · Liber IV</cite>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <figure class="media ratio-43">
+            <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80" alt="Classical sculpted Roman marble bust with dramatic museum sidelighting" width="800" height="600">
+            <figcaption>Augustus of Prima Porta profile study. Musei Vaticani collection.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pax Romana & Warfare -->
+  <section class="section" id="legions">
+    <div class="wrap">
+      <div class="head reveal">
+        <p class="eyebrow">Logistics, Iron &amp; Surveying</p>
+        <h2>Pax Romana &amp; Military Engineering</h2>
+        <p>Roman peace was not merely sustained by the gladius, but by the spade, plumb line, and standardized modular castra.</p>
+      </div>
+
+      <div class="split reveal" data-delay="1">
+        <div>
+          <figure class="media ratio-32">
+            <img src="https://images.unsplash.com/photo-1599833975787-5c143f373c30?auto=format&fit=crop&w=900&q=80" alt="Ancient monumental Roman stone aqueduct spanning across a sunlit river valley" width="900" height="600">
+            <figcaption>The Pont du Gard channel engineering. Gravitational grade calibrated to 1:3000.</figcaption>
+          </figure>
+        </div>
+        <div>
+          <div class="military-stat">
+            <span class="eyebrow">Infrastructural Lifeline</span>
+            <h3 style="margin-top: 0.25rem;">Via Militaris &amp; Curators</h3>
+            <p>Over 80,000 kilometers of paved highways crisscrossed the empire with deep gravel beds (statumen), curbstones, and drainage gullies, allowing a legion to march 35 kilometers per daylight cycle.</p>
+          </div>
+
+          <div class="military-stat">
+            <span class="eyebrow">Standardized Castra Layout</span>
+            <h3 style="margin-top: 0.25rem;">The Fortified Micro-City</h3>
+            <p>Every marching camp replicated the geometry of Rome: Cardo and Decumanus avenues crossing at the Praetorium, protected by earthen ramparts (vallum) and wooden stakes (palisades).</p>
+          </div>
+
+          <div class="military-stat">
+            <span class="eyebrow">Hydraulic Domination</span>
+            <h3 style="margin-top: 0.25rem;">Aqueducts &amp; Siphons</h3>
+            <p>Millions of gallons of mountain spring water were conveyed daily into metropolitan hubs to fuel public thermal baths, latrines, fountains, and industrial gold-mining operations.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Monuments: Stone & Sovereignty -->
+  <section class="section section--alt" id="monuments">
+    <div class="wrap">
+      <div class="head reveal">
+        <p class="eyebrow">Opus Caementicium</p>
+        <h2>Stone &amp; Sovereignty</h2>
+        <p>Volcanic pozzolana concrete allowed Roman builders to liberate interior space from load-bearing post-and-lintel limits.</p>
+      </div>
+
+      <div class="grid-2 reveal" data-delay="1">
+        <div class="card-monument">
+          <figure class="media ratio-43">
+            <img src="https://images.unsplash.com/photo-1542820229-081e0c12af0b?auto=format&fit=crop&w=800&q=80" alt="Interior view looking directly up at the open oculus of the Pantheon with a natural light beam" width="800" height="600">
+          </figure>
+          <div class="card-monument__body">
+            <h3>The Pantheon &amp; The Celestial Oculus</h3>
+            <p>Commissioned by Hadrian c. 125 CE, its unreinforced concrete dome remains the largest in human history. Lightweight pumice aggregate and coffered ceiling recesses reduce structural deadweight toward the 9-meter open apex.</p>
+            <div class="monument-meta">
+              <span>✦ Diameter: 43.3m</span>
+              <span>✦ Aggregate: Pozzolana</span>
+              <span>✦ Status: Intact</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-monument">
+          <figure class="media ratio-43">
+            <img src="https://images.unsplash.com/photo-1608494603682-913a9e6a987e?auto=format&fit=crop&w=800&q=80" alt="Ancient imperial Roman gold coin aureus resting beside antique bronze artifacts" width="800" height="600">
+          </figure>
+          <div class="card-monument__body">
+            <h3>Monetary Reform &amp; Imperial Minting</h3>
+            <p>The golden <em>Aureus</em> and silver <em>Denarius</em> circulated from the Thames to the Euphrates, functioning simultaneously as currency and imperial propaganda pamphlets depicting victorious battles and lineage.</p>
+            <div class="monument-meta">
+              <span>✦ Material: 24k Gold</span>
+              <span>✦ Inscription: Caesar Aug</span>
+              <span>✦ Mint: Lugdunum</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Echoes in Eternity (Legacy) -->
+  <section class="section" id="legacy">
+    <div class="wrap">
+      <div class="head reveal">
+        <p class="eyebrow">Enduring Foundations</p>
+        <h2>Echoes in Eternity</h2>
+        <p>The Western mind continues to calculate, arbitrate, and speak in dialects derived from Latium’s ancient magistrates.</p>
+      </div>
+
+      <div class="legacy-grid reveal" data-delay="1">
+        <div class="legacy-item">
+          <p class="eyebrow">Jurisprudentia</p>
+          <h3>Civil Code &amp; Natural Law</h3>
+          <p>The <em>Corpus Juris Civilis</em> codified under Justinian established the foundational concepts of presumption of innocence, contractual obligation, and statutory interpretation still operating globally.</p>
+        </div>
+
+        <div class="legacy-item">
+          <p class="eyebrow">Linguistics</p>
+          <h3>The Romance Dialects</h3>
+          <p>Vulgar Latin evolved into Italian, Spanish, French, Portuguese, and Romanian, while classical grammatical terminology provided the vocabulary of modern scientific classification.</p>
+        </div>
+
+        <div class="legacy-item">
+          <p class="eyebrow">Civic Design</p>
+          <h3>Urban Grids &amp; Senates</h3>
+          <p>From bicameral legislative assemblies to orthogonal city grid layouts, Roman town-planning and republican theory formed the blueprint for Enlightenment constitutional republics.</p>
+        </div>
+      </div>
+
+      <!-- Research Inquiries & Dispatch Form -->
+      <div class="gold-frame reveal" data-delay="2" style="margin-top: 4rem;">
+        <div class="split">
+          <div>
+            <p class="eyebrow">Academic Epistolary</p>
+            <h3>Access the Classical Archives</h3>
+            <p>Request high-resolution scans of epigraphic rubbings, numismatic catalogs, or translation treaties directly from our archival curation fellowship.</p>
+          </div>
+          <div>
+            <form class="form" data-confirm="Optime! Your dispatch has been entered into the Tabularium registry.">
+              <div class="field">
+                <label for="scholar-name">Scholar Designation</label>
+                <input type="text" id="scholar-name" required placeholder="e.g. Marcus Valerius">
+              </div>
+              <div class="field">
+                <label for="scholar-email">Direct Epistle / Email</label>
+                <input type="email" id="scholar-email" required placeholder="valerius@academia.edu">
+              </div>
+              <div class="field field--full">
+                <label for="scholar-interest">Field of Inquiry</label>
+                <select id="scholar-interest">
+                  <option>Epigraphy &amp; Latin Inscriptions</option>
+                  <option>Military Logistics &amp; Cartography</option>
+                  <option>Numismatics &amp; Fiscal Archives</option>
+                  <option>Pozzolanic Concrete Preservation</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn--accent" style="margin-top: 0.5rem;">Transmit Dispatch <span class="arrow">→</span></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="wrap footer__row">
+      <div>
+        <a href="#hero" class="logo">IMPERIVM</a>
+        <p style="color: var(--muted); font-size: 0.95rem; margin-top: 0.5rem; max-width: 320px;">
+          An academic repository dedicated to the preservation, material analysis, and digital transmission of ancient Roman civilization.
+        </p>
+      </div>
+      <div>
+        <p class="eyebrow">Navigation</p>
+        <ul style="list-style: none; padding: 0; line-height: 2;">
+          <li><a href="#epochs">The Three Epochs</a></li>
+          <li><a href="#emperors">Augustan Imperial Line</a></li>
+          <li><a href="#legions">Centuria &amp; Logistics</a></li>
+          <li><a href="#monuments">Architectural Cutaways</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="eyebrow">Curatorial Vault</p>
+        <p style="color: var(--muted); font-size: 0.95rem;">
+          Via Sacra VIII, Roma<br>
+          Tabularium Capitolinum<br>
+          Regio VIII Forum Romanum
+        </p>
+      </div>
+    </div>
+    <div class="wrap" style="text-align: center; border-top: 1px solid var(--line); padding: 1.5rem 0; margin-top: 2rem; font-size: 0.85rem; color: var(--muted);">
+      <p>Requiescat in Pace · All epigraphic transcriptions verified against CIL (Corpus Inscriptionum Latinarum).</p>
+    </div>
+  </footer>
+
+  <script src="kit.js"></script>
+</body>
+</html>
