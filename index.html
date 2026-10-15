@@ -1129,9 +1129,18 @@ const glyphs = (() => {
     cv.width = w * dpr; cv.height = h * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cx.font = "500 12px " + getComputedStyle(document.body).getPropertyValue("--font-mono"); cx.textAlign = "center"; cx.textBaseline = "middle";
   }
-  function field(x, y, t) {   // long waves rolling diagonally across the screen, gently bent by a slower wave so the crests curve like water
-    const wx = x + Math.sin(y * .07 + t * .35) * 4, wy = y + Math.sin(x * .06 - t * .28) * 4;
-    return Math.sin(wx * .16 + wy * .09 - t * 1.1) * .5 + Math.sin(wx * .05 - wy * .13 + t * .6) * .3 + Math.sin(Math.hypot(wx - 14, wy - 40) * .1 - t * .8) * .2;
+  const SEED = Math.random() * 1000;   // a new pattern on every visit
+  function hash(i, j, k) { const n = Math.sin(i * 127.1 + j * 311.7 + k * 74.7 + SEED) * 43758.5453; return n - Math.floor(n); }
+  function noise(x, y, z) {   // smooth 3D value noise: blobs that grow, melt and wander without ever repeating
+    const i = Math.floor(x), j = Math.floor(y), k = Math.floor(z), fx = x - i, fy = y - j, fz = z - k;
+    const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy), w = fz * fz * (3 - 2 * fz), L = (a, b, f) => a + (b - a) * f;
+    return L(L(L(hash(i, j, k), hash(i + 1, j, k), u), L(hash(i, j + 1, k), hash(i + 1, j + 1, k), u), v),
+             L(L(hash(i, j, k + 1), hash(i + 1, j, k + 1), u), L(hash(i, j + 1, k + 1), hash(i + 1, j + 1, k + 1), u), v), w) * 2 - 1;
+  }
+  function field(x, y, t) {   // the noise is pushed around by another, slower noise, so the waves drift in changing directions
+    const dx = noise(x * .04, y * .04, t * .07) * 6, dy = noise(x * .04 + 17, y * .04 + 31, t * .07) * 6;
+    const px = x + dx + t * .9, py = y + dy + Math.sin(t * .13) * 6;
+    return Math.max(-1, Math.min(1, (noise(px * .08, py * .08, t * .22) * .7 + noise(px * .19, py * .19, t * .35) * .3) * 1.3));
   }
   function draw(now) {
     const t = (now - t0) / 1000, cs = getComputedStyle(document.documentElement);
