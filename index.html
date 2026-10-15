@@ -1244,13 +1244,29 @@ const glyphs = (() => {
 })();
 
 /* ---------- thread ---------- */
+/* every message keeps the element it was drawn as; a redraw reuses it while nothing it shows has changed, and the
+   page is patched in place, so a new step on a long chat costs one row instead of the whole thread (smooth on phones) */
+const nodeCache = new Map();
+function keep(m, extra, make) {
+  const sig = m.text + "|" + (extra || ""), c = nodeCache.get(m.id);
+  if (c && c.sig === sig) return c.node;
+  const node = make(); nodeCache.set(m.id, { sig, node }); return node;
+}
+function patchChildren(parent, nodes) {
+  let cur = parent.firstChild;
+  for (const n of nodes) {
+    if (cur === n) { cur = cur.nextSibling; continue; }
+    parent.insertBefore(n, cur);
+  }
+  while (cur) { const nx = cur.nextSibling; cur.remove(); cur = nx; }
+}
 function renderThread() {
   const stick = near() || firstLoad, keepTop = $("scroller").scrollTop;
   lastWorking = isLive();
   let liveFrom = msgs.length;
   if (lastWorking) while (liveFrom > 0 && msgs[liveFrom - 1].kind === "tool") liveFrom--;
   liveTools = msgs.slice(liveFrom).filter((m) => m.kind === "tool");
-  const thread = $("thread"); thread.replaceChildren();
+  const thread = { list: [], append(...ns) { this.list.push(...ns); } };   // collected first, then only what changed touches the page
   const isEmpty = !msgs.some((m) => m.kind !== "system" && m.kind !== "tool");
   glyphs.set(isEmpty);
   if (isEmpty) {   // only connect/pause notes so far: still show the welcome
@@ -1264,9 +1280,14 @@ function renderThread() {
   for (let mi = 0; mi < msgs.length; mi++) {
     const m = msgs[mi];
     if (mi >= liveFrom && m.kind === "tool") continue;   // the steps of the current run live under "running", like the desktop app
-    if (m.kind === "system") { thread.append(el("div", "sys", m.text)); prevAi = false; continue; }
-    if (m.kind === "stop") { thread.append(el("div", "sys", "⏹ " + t("stopSent"))); prevAi = false; continue; }
+    if (m.kind === "system") { thread.append(keep(m, m.text, () => el("div", "sys", m.text))); prevAi = false; continue; }
+    if (m.kind === "stop") { thread.append(keep(m, lang, () => el("div", "sys", "⏹ " + t("stopSent")))); prevAi = false; continue; }
     const imgs = Array.isArray(m.images) ? m.images : [];
+    if (m.sender === "me" && editingId !== m.id) {
+      const sig = [m.text, m.seen, m.pending, m.queued, edits.includes(m.id), !viewConv || viewConv === currentConv, lang, imgs.join(",")].join("|");
+      const c = nodeCache.get(m.id);
+      if (c && c.sig === sig) { thread.append(c.node); prevAi = false; continue; }
+    }
     if (m.sender === "me") {
       const row = el("div", "row me");
       if (imgs.length) row.append(picsEl(imgs));
@@ -1282,13 +1303,14 @@ function renderThread() {
       if (body && !m.pending && (!viewConv || viewConv === currentConv)) {
         f.append(iconBtn("uedit", ICON_EDIT, t("editMsg"), () => { editingId = m.id; editDraft = null; renderThread(); const x = document.querySelector(".uedit-box textarea"); if (x) { x.focus(); x.setSelectionRange(x.value.length, x.value.length); } }));
       }
-      row.append(f); thread.append(row); prevAi = false; continue;
+      row.append(f); nodeCache.set(m.id, { sig: [m.text, m.seen, m.pending, m.queued, edits.includes(m.id), !viewConv || viewConv === currentConv, lang, imgs.join(",")].join("|"), node: row });
+      thread.append(row); prevAi = false; continue;
     }
     const au = authorOf(m), team = model === "team";
     if (m.kind === "agent") { thread.append(agentEl(m, au)); prevAi = false; continue; }
     if (m.kind === "tool") {
       if (!showSteps()) continue;
-      if (model === "gpt") { thread.append(codexStepEl(m)); prevAi = false; continue; }   // Codex shows every step as its own row
+      if (model === "gpt") { thread.append(keep(m, lang, () => codexStepEl(m))); prevAi = false; continue; }   // Codex shows every step as its own row
       const card = toolEl(m); prevAi = false;
       if (!grp) { grp = { first: card, list: [m] }; thread.append(card); continue; }
       if (!grp.wrap) {
@@ -1296,7 +1318,7 @@ function renderThread() {
         const gk = "g:" + grp.list[0].id; if (openSet.has(gk)) w.open = true;
         w.addEventListener("toggle", () => { if (w.open) openSet.add(gk); else openSet.delete(gk); });
         grp.wrap.append(document.createElement("summary"));
-        grp.first.replaceWith(grp.wrap); grp.wrap.append(grp.first);
+        thread.list[thread.list.indexOf(grp.first)] = grp.wrap; grp.wrap.append(grp.first);
       }
       grp.list.push(m); grp.wrap.append(card);
       grp.wrap.firstChild.replaceChildren(el("span", null, stepsSummary(grp.list)));
@@ -1306,20 +1328,25 @@ function renderThread() {
     }
     grp = null;
     if (m.kind === "perm") { thread.append(permEl(m)); prevAi = false; continue; }
-    if (m.sender === "me" && lastAiRow) { lastAiRow.classList.add("last"); lastAiRow = null; }
-    const row = el("div", "row ai" + (team ? (prevAi && prevAu === au ? " cont" : "") : " solo"));
+    const openQ = m.kind === "question" && !msgs.some((x) => x.sender === "me" && x.ts > m.ts), cont = team && prevAi && prevAu === au;
+    const sig = [m.text, m.kind, team, cont, au, openQ, speakingId === m.id, lang, imgs.join(",")].join("|"), c = nodeCache.get(m.id);
+    if (c && c.sig === sig) { c.node.classList.remove("last"); lastAiRow = c.node; thread.append(c.node); prevAi = true; prevAu = au; continue; }
+    const row = el("div", "row ai" + (team ? (cont ? " cont" : "") : " solo"));
     if (team) row.append(logoEl(au));
     lastAiRow = row;
     const body = el("div", "reply");
     if (team && !(prevAi && prevAu === au)) body.append(el("div", "who", AUTHORS[au].name));
     body.insertAdjacentHTML("beforeend", md(m.text)); body.querySelectorAll("p, li, h4").forEach((n) => { n.dir = "auto"; }); row.append(body);
     if (imgs.length) row.append(picsEl(imgs));
-    if (m.kind === "question" && !msgs.some((x) => x.sender === "me" && x.ts > m.ts)) { const qo = questionOptions(m); if (qo) row.append(qo); }
+    if (openQ) { const qo = questionOptions(m); if (qo) row.append(qo); }
     row.append(replyFoot(m));
+    nodeCache.set(m.id, { sig, node: row });
     thread.append(row); prevAi = true; prevAu = au;
     if (!firstLoad && !known.has(m.id)) animate.push(body);
   }
   if (lastAiRow) lastAiRow.classList.add("last");
+  patchChildren($("thread"), thread.list);
+  if (nodeCache.size > msgs.length + 200) { const ids = new Set(msgs.map((m) => m.id)); nodeCache.forEach((_, k) => { if (!ids.has(k)) nodeCache.delete(k); }); }
   renderFiles();
   msgs.forEach((m) => known.add(m.id));
   firstLoad = false;
@@ -2208,8 +2235,16 @@ let picked = [];
 const MAX_PICS = 4;
 (function pinToViewport() {
   const vv = window.visualViewport; if (!vv) return;
-  const set = () => { document.documentElement.style.setProperty("--app-h", vv.height + "px"); document.body.style.top = vv.offsetTop + "px"; };
+  /* the keyboard (Android especially) shrinks the screen: a chat that was at the bottom stays at the bottom */
+  const sc = $("scroller"); let stuck = true;
+  sc.addEventListener("scroll", () => { stuck = sc.scrollHeight - sc.scrollTop - sc.clientHeight < 140; }, { passive: true });
+  const set = () => {
+    const was = stuck;
+    document.documentElement.style.setProperty("--app-h", vv.height + "px"); document.body.style.top = vv.offsetTop + "px";
+    if (was) requestAnimationFrame(() => { sc.scrollTop = sc.scrollHeight; stuck = true; });
+  };
   vv.addEventListener("resize", set); vv.addEventListener("scroll", set); set();
+  if (window.ResizeObserver) new ResizeObserver(() => { if (stuck) sc.scrollTop = sc.scrollHeight; }).observe(sc);
 })();
 function fit() { ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, window.innerHeight * 0.38) + "px"; }
 /* while the model is working and nothing is typed, the send button is a pulsing stop button */
@@ -2611,6 +2646,28 @@ async function runDeepLink() {
   speakNext = d.speak;
   $("form").requestSubmit();
 }
+/* Android's back button (and the back swipe) closes the open sheet, panel or menu instead of leaving the app */
+(function backLayer() {
+  const ids = ["sheet", "convSheet", "screenView", "mpick", "fpanel", "menu"];
+  let pushed = false, skip = false;
+  const anyOpen = () => ids.some((id) => $(id) && !$(id).hidden);
+  const closeAll = () => {
+    closeSheets(); closeMenu(); if (scrOpen) closeScreen();
+    $("mpick").hidden = true; $("mchip").setAttribute("aria-expanded", "false"); $("permBtn").setAttribute("aria-expanded", "false");
+    document.querySelector("footer").classList.remove("mpicking");
+    if (filesOpen) { filesOpen = false; renderFiles(); }
+  };
+  const sync = () => {
+    if (anyOpen() && !pushed) { try { history.pushState({ aimLayer: 1 }, ""); pushed = true; } catch (e) {} }
+    else if (!anyOpen() && pushed) { pushed = false; skip = true; history.back(); }
+  };
+  new MutationObserver(sync).observe(document.body, { subtree: true, attributes: true, attributeFilter: ["hidden"] });
+  window.addEventListener("popstate", () => {
+    if (skip) { skip = false; return; }
+    if (!pushed) return;
+    pushed = false; closeAll();
+  });
+})();
 let deepDone = false;
 function showApp(on) {
   $("login").hidden = on; $("app").hidden = !on;
