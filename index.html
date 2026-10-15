@@ -333,6 +333,9 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 .conv .pin { color: var(--accent); }
 .nohits { font-size: .85rem; color: var(--muted); padding: 8px; }
 .toast { position: fixed; inset-inline: 0; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); margin-inline: auto; width: fit-content; max-width: 90vw; z-index: 70; padding: 8px 14px; border-radius: 12px; background: var(--ink); color: var(--bg); font-size: .85rem; box-shadow: 0 4px 16px rgb(0 0 0 / .2); }
+/* empty chat: a faint field of characters drifting behind the welcome, like the Claude app's new-session screen; fades out at the first message */
+#glyphs { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; opacity: 0; transition: opacity .8s ease; }
+body.is-empty #glyphs { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .shimmer { color: var(--muted); background: none; } }
 /* Claude app look: title + project in the header with a menu, flowing replies without a logo per message,
    blue inline code, step lines with +/- badges, a running row with a timer, background tasks, a two-row composer */
@@ -616,6 +619,7 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
   </div>
 </header>
 
+<canvas id="glyphs" aria-hidden="true"></canvas>
 <main id="scroller">
   <div class="wrap">
     <div class="thread" id="thread"></div>
@@ -1114,6 +1118,55 @@ function picsEl(paths) {
   return g;
 }
 
+/* ---------- empty-chat background: drifting characters ---------- */
+const glyphs = (() => {
+  const cv = $("glyphs"), cx = cv.getContext("2d");
+  const RAMP = ".·:;-~=+*xoea%#&@";   // density ramp: light dots in the calm areas, heavier marks and letters where the field rises
+  const CELL = 14;
+  let on = false, raf = 0, last = 0, w = 0, h = 0, dpr = 1, t0 = performance.now();
+  function size() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2); w = innerWidth; h = innerHeight;
+    cv.width = w * dpr; cv.height = h * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx.font = "500 12px " + getComputedStyle(document.body).getPropertyValue("--font-mono"); cx.textAlign = "center"; cx.textBaseline = "middle";
+  }
+  function field(x, y, t) {   // a few slow waves: soft drifting bands, no library
+    return (Math.sin(x * .09 + t * .55) + Math.sin(y * .11 - t * .4) + Math.sin((x + y) * .06 + t * .3) + Math.sin(Math.hypot(x - 20, y - 30) * .12 - t * .7)) / 4;
+  }
+  function draw(now) {
+    const t = (now - t0) / 1000, cs = getComputedStyle(document.documentElement);
+    const ink = cs.getPropertyValue("--muted").trim() || "#888";
+    const dark = (cs.getPropertyValue("color-scheme") || "").includes("dark");
+    cx.clearRect(0, 0, w, h); cx.fillStyle = ink;
+    const cols = Math.ceil(w / CELL), rows = Math.ceil(h / CELL);
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      const n = Math.sin(i * 127.1 + j * 311.7 + Math.floor(t * .8 + (i * 7 + j * 3) % 5) * 74.7) * 43758.5453;   // per-cell flicker, so it reads as scattered letters, not tidy columns
+      const v = Math.max(0, Math.min(1, field(i, j, t) * .9 + .5 + (n - Math.floor(n) - .5) * .35));   // 0..1, stretched so the bands stand out
+      if (v < .22) continue;
+      const k = Math.min(RAMP.length - 1, Math.floor((v - .22) / .78 * RAMP.length));
+      cx.globalAlpha = (dark ? 1 : .7) * (.12 + .6 * v * v);
+      cx.fillText(RAMP[k], i * CELL + CELL / 2, j * CELL + CELL / 2);
+    }
+    cx.globalAlpha = 1;
+  }
+  function loop(now) {
+    if (!on) return;
+    if (now - last > 90) { last = now; draw(now); }   // ~11 fps is enough for a slow drift and spares the battery
+    raf = requestAnimationFrame(loop);
+  }
+  addEventListener("resize", () => { size(); if (on) draw(performance.now()); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) cancelAnimationFrame(raf); else if (on && !reduceMotion) raf = requestAnimationFrame(loop); });
+  size();
+  return {
+    set(v) {
+      document.body.classList.toggle("is-empty", v);
+      if (v === on) return; on = v; cancelAnimationFrame(raf);
+      if (!on) return;
+      size(); draw(performance.now());
+      if (!reduceMotion) raf = requestAnimationFrame(loop);
+    },
+  };
+})();
+
 /* ---------- thread ---------- */
 function renderThread() {
   const stick = near() || firstLoad, keepTop = $("scroller").scrollTop;
@@ -1122,7 +1175,9 @@ function renderThread() {
   if (lastWorking) while (liveFrom > 0 && msgs[liveFrom - 1].kind === "tool") liveFrom--;
   liveTools = msgs.slice(liveFrom).filter((m) => m.kind === "tool");
   const thread = $("thread"); thread.replaceChildren();
-  if (!msgs.some((m) => m.kind !== "system" && m.kind !== "tool")) {   // only connect/pause notes so far: still show the welcome
+  const isEmpty = !msgs.some((m) => m.kind !== "system" && m.kind !== "tool");
+  glyphs.set(isEmpty);
+  if (isEmpty) {   // only connect/pause notes so far: still show the welcome
     const e = el("div", "empty"); e.append(logoEl());
     e.append(el("span", "brand", "AIM"));
     e.append(el("strong", null, t("emptyTitle")));
