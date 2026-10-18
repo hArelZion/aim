@@ -688,6 +688,11 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
       <div class="pc" id="pc"></div>
       <label class="toggle"><input type="checkbox" id="autoRead"><span data-t="autoRead"></span></label>
       <label class="toggle"><input type="checkbox" id="showSteps"><span data-t="showSteps"></span></label>
+      <span class="lang-label" data-t="camVoice"></span>
+      <div class="seg" role="group" id="camVoiceSeg">
+        <button type="button" id="cv-gb" data-t="cvGb"></button>
+        <button type="button" id="cv-us" data-t="cvUs"></button>
+      </div>
       <span class="lang-label" data-t="language"></span>
       <div class="seg" role="group" id="langSeg">
         <button type="button" id="lang-he" lang="he">עברית</button>
@@ -737,7 +742,6 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
 </div>
 <div class="camview" id="camView" hidden>
   <video id="camVid" playsinline muted autoplay></video>
-  <div class="cflash" id="camFlash"></div>
   <div class="ctop">
     <button type="button" id="camClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <span class="cstat" id="camStat"><i></i>Connecting…</span>
@@ -794,6 +798,11 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
 const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
 const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42"; // public by design; the tables are locked to one account
 const BUCKET = "aim-photos";
+// the staging build (/aim/staging/) keeps its own chats (ids "cs…", "gs…", "ms…", "ts…") and its own current row,
+// so what is written on main stays on main and what is written on staging stays there (the computer answers in the same chat)
+const STAGE = /\/staging\//.test(location.pathname);
+const CUR_ROW = STAGE ? "current-staging" : "current";
+const ownConv = (id) => /^[a-z]s/.test(id || "") === STAGE;
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* Claude mark: Bootstrap Icons "claude" (MIT) */
@@ -871,7 +880,7 @@ const I18N = {
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
     deleteConv: "מחיקת שיחה", deleteAsk: "למחוק את \"%s\" לצמיתות, כולל כל ההודעות שלה?",
-    newChat: "שיחה חדשה", mMode: "מצב עבודה", md_Auto: "Claude מחליט לבד מה מותר. לא תקבל בקשות אישור.", md_Manual: "Claude שואל לפני כל שינוי. הבקשות יגיעו אליך לכאן.", "md_Accept edits": "עריכת קבצים מאושרת לבד, פקודות אחרות דורשות אישור.", md_Plan: "Claude רק מתכנן ומציג תוכנית, בלי לשנות קבצים.", "md_Bypass permissions": "כל ההגנות כבויות. אפשר לשנות את זה רק במחשב.", pcSessions: "השיחות של Claude Code במחשב", pinnedS: "מוצמדות", thisS: "מחובר לטלפון", st_Running: "עובדת", "st_Unread response": "תשובה חדשה", "st_Needs input": "מחכה לך", st_Waiting: "מחכה", st_Idle: "", st_Error: "שגיאה", permTitle: "Claude מבקש אישור", permAllow: "אשר", permDeny: "דחה", perm_sending: "שולח למחשב…", perm_allow: "אושר", perm_deny: "נדחה", perm_timeout: "לא נענה בזמן. הבקשה מחכה במחשב.", closeX: "סגור", mModel: "מודל", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", mCam: "מצלמה חיה", phSlash: "הקלד / לפקודות", ranStep: "", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
+    newChat: "שיחה חדשה", mMode: "מצב עבודה", md_Auto: "Claude מחליט לבד מה מותר. לא תקבל בקשות אישור.", md_Manual: "Claude שואל לפני כל שינוי. הבקשות יגיעו אליך לכאן.", "md_Accept edits": "עריכת קבצים מאושרת לבד, פקודות אחרות דורשות אישור.", md_Plan: "Claude רק מתכנן ומציג תוכנית, בלי לשנות קבצים.", "md_Bypass permissions": "כל ההגנות כבויות. אפשר לשנות את זה רק במחשב.", pcSessions: "השיחות של Claude Code במחשב", pinnedS: "מוצמדות", thisS: "מחובר לטלפון", st_Running: "עובדת", "st_Unread response": "תשובה חדשה", "st_Needs input": "מחכה לך", st_Waiting: "מחכה", st_Idle: "", st_Error: "שגיאה", permTitle: "Claude מבקש אישור", permAllow: "אשר", permDeny: "דחה", perm_sending: "שולח למחשב…", perm_allow: "אושר", perm_deny: "נדחה", perm_timeout: "לא נענה בזמן. הבקשה מחכה במחשב.", closeX: "סגור", mModel: "מודל", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", mCam: "מצלמה חיה", camVoice: "הקול במצלמה החיה", cvGb: "בריטי", cvUs: "אמריקאי", phSlash: "הקלד / לפקודות", ranStep: "", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
     noGptConv: "ChatGPT עדיין לא חובר. הקלד $phone ב-Codex במחשב.", offlineGpt: "ChatGPT לא מחובר. הקלד $phone ב-Codex במחשב.", switchTo: "מעבר ל-",
     language: "שפת האפליקציה", pause: "השהיית הקו", resume: "המשך הקו", signOut: "התנתקות",
     placeholder: "כתוב ל-Claude…", cxCmd: "הרצת פקודה", cxPlan: "תוכנית", cxFiles: (n) => (n === 1 ? "קובץ אחד השתנה" : n + " קבצים השתנו"), cxWorkOn: "עבודה על ", cxEditing: "עורך קבצים", cxWeb: "מחפש ברשת", cxModel: "מודל", cxEffort: "רמת חשיבה", cxPerm: "הרשאות", "cx_read-only": "קריאה בלבד", "cx_workspace-write": "ברירת מחדל", "cxd_read-only": "Codex קורא קבצים ומריץ פקודות, אבל לא משנה כלום.", "cxd_workspace-write": "Codex עורך קבצים בתיקיית העבודה, בלי רשת.", cxNext: "יחול מההודעה הבאה.", cxNoCfg: "הרשימה תגיע כשהקו של ChatGPT יעלה במחשב.", msgAria: "הודעה ל-Claude", send: "שליחה", settings: "הגדרות",
@@ -918,7 +927,7 @@ const I18N = {
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
     deleteConv: "Delete conversation", deleteAsk: "Permanently delete \"%s\" and all its messages?",
-    newChat: "New chat", mMode: "Work mode", md_Auto: "Claude decides what is allowed. No permission requests.", md_Manual: "Claude asks before every change. Requests come here.", "md_Accept edits": "File edits are allowed, other commands ask.", md_Plan: "Claude only plans and shows a plan, no file changes.", "md_Bypass permissions": "All checks are off. Only the computer can change this.", pcSessions: "Claude Code sessions on the computer", pinnedS: "Pinned", thisS: "on the phone", st_Running: "working", "st_Unread response": "new reply", "st_Needs input": "needs you", st_Waiting: "waiting", st_Idle: "", st_Error: "error", permTitle: "Claude asks for permission", permAllow: "Allow", permDeny: "Deny", perm_sending: "Sending to the computer…", perm_allow: "Allowed", perm_deny: "Denied", perm_timeout: "Not answered in time. The request waits on the computer.", closeX: "Close", mModel: "Model", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", mCam: "Live camera", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
+    newChat: "New chat", mMode: "Work mode", md_Auto: "Claude decides what is allowed. No permission requests.", md_Manual: "Claude asks before every change. Requests come here.", "md_Accept edits": "File edits are allowed, other commands ask.", md_Plan: "Claude only plans and shows a plan, no file changes.", "md_Bypass permissions": "All checks are off. Only the computer can change this.", pcSessions: "Claude Code sessions on the computer", pinnedS: "Pinned", thisS: "on the phone", st_Running: "working", "st_Unread response": "new reply", "st_Needs input": "needs you", st_Waiting: "waiting", st_Idle: "", st_Error: "error", permTitle: "Claude asks for permission", permAllow: "Allow", permDeny: "Deny", perm_sending: "Sending to the computer…", perm_allow: "Allowed", perm_deny: "Denied", perm_timeout: "Not answered in time. The request waits on the computer.", closeX: "Close", mModel: "Model", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", mCam: "Live camera", camVoice: "Live camera voice", cvGb: "British", cvUs: "American", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
     noGptConv: "ChatGPT is not connected yet. Type $phone in Codex on the computer.", offlineGpt: "ChatGPT is not connected. Type $phone in Codex on the computer.", switchTo: "Switch to ",
     language: "App language", pause: "Pause the line", resume: "Resume the line", signOut: "Sign out",
     placeholder: "Message Claude…", cxCmd: "Command execution", cxPlan: "Plan", cxFiles: (n) => (n === 1 ? "1 file changed" : n + " files changed"), cxWorkOn: "Work on ", cxEditing: "Editing files", cxWeb: "Searching the web", cxModel: "Model", cxEffort: "Reasoning", cxPerm: "Permissions", "cx_read-only": "Read only", "cx_workspace-write": "Default", "cxd_read-only": "Codex reads files and runs commands but changes nothing.", "cxd_workspace-write": "Codex edits files in its work folder, no network.", cxNext: "Applies from your next message.", cxNoCfg: "The list arrives when the ChatGPT line is up on the computer.", msgAria: "Message to Claude", send: "Send", settings: "Settings",
@@ -1068,9 +1077,9 @@ function switchModel() {
   paintModel(); applyLang(); paintTarget(); renderConvs(); loadMessages();
 }
 $("modelBtn").onclick = switchModel;
-const saveCurrent = () => sb.from("control").upsert({ id: "current", data: { conv: curByModel.claude, gpt: curByModel.gpt, gemini: curByModel.gemini, team: curByModel.team, changed: model, at: Date.now() }, updated_at: new Date().toISOString() });
+const saveCurrent = () => sb.from("control").upsert({ id: CUR_ROW, data: { conv: curByModel.claude, gpt: curByModel.gpt, gemini: curByModel.gemini, team: curByModel.team, changed: model, at: Date.now() }, updated_at: new Date().toISOString() });
 async function makeConv(title) {
-  const id = { claude: "c", gpt: "g", gemini: "m", team: "t" }[model] + Date.now();
+  const id = { claude: "c", gpt: "g", gemini: "m", team: "t" }[model] + (STAGE ? "s" : "") + Date.now();
   const ins = await sb.from("conversations").insert({ id, title, project: curS().project || null });
   if (ins.error) { showErr(t("sendErr")); return null; }
   curByModel[model] = id;
@@ -1825,6 +1834,7 @@ function applyControl(row) {
   if (row.id === "settings") {
     settings = row.data || {};
     if ((settings.lang === "he" || settings.lang === "en") && settings.lang !== lang) setLang(settings.lang, false);
+    if (typeof paintCamVoice === "function") paintCamVoice();
   }
   if (row.id === "step") step = row.data || {};
   if (row.id === "gpt-models" || row.id === "gpt-pick") {
@@ -1853,7 +1863,7 @@ function applyControl(row) {
   if (row.id === "quick") { quickList = Array.isArray((row.data || {}).list) ? row.data.list : null; if (typeof renderQuick === "function") renderQuick(); }
   if (row.id === "pins") { pins = Array.isArray((row.data || {}).ids) ? row.data.ids : []; if (ready) renderConvs(); }
   if (row.id === "team") { teamCfg = row.data || {}; if (typeof paintModel === "function" && ready) { paintModel(); paintTarget(); renderMembers(); } }
-  if (row.id === "current") {
+  if (row.id === CUR_ROW) {
     const d = row.data || {};
     curByModel.claude = d.conv || null; curByModel.gpt = d.gpt || null; curByModel.team = d.team || null; curByModel.gemini = d.gemini || null;
     const next = curByModel[model];
@@ -1867,11 +1877,11 @@ function applyControl(row) {
 let booting = false;
 async function loadConvs() {
   const { data, error } = await sb.from("conversations").select("*").order("created_at", { ascending: false });
-  if (!error) convs = data || [];
+  if (!error) convs = (data || []).filter((c) => ownConv(c.id));
   renderConvs(); renderHeader();
 }
 async function loadMessages() {
-  if (!viewConv && model !== "claude") { msgs = []; firstLoad = true; renderAll(); renderOldBar(); return; }
+  if (!viewConv && (model !== "claude" || STAGE)) { msgs = []; firstLoad = true; renderAll(); renderOldBar(); return; }
   let q = sb.from("messages").select("*").order("ts", { ascending: false }).limit(300);
   if (viewConv) q = q.eq("conv", viewConv);
   const { data, error } = await q;
@@ -2093,21 +2103,24 @@ $("sUp").onclick = () => sendInput([{ t: "scroll", x: 0.5, y: 0.5, dy: 360 }]);
 $("sDown").onclick = () => sendInput([{ t: "scroll", x: 0.5, y: 0.5, dy: -360 }]);
 
 /* ---------- live camera: rear camera + voice (English for now). The computer's cam.py answers simple questions with a
-   fast vision model and hands hard ones to Claude (control rows cam-req / cam-ans). ---------- */
+   fast vision model and hands hard ones to Claude (control rows cam-req / cam-ans). Hands-free: say "Hey Claude, ..."
+   (or just "Claude, ..."); answers are spoken in Jarvis's voice (mp3 from the computer). ---------- */
 var camOpen = false;
-let camStream = null, camRec = null, camRoute = "auto", camItems = [], camReady = false, camReadyTimer = null, camLastQ = "";
+let camStream = null, camRec = null, camItems = [], camReady = false, camReadyTimer = null, camLastQ = "";
+let camBusy = false, camBusyTimer = null, camSilence = null, camPlaying = false, camWatch = null, camUrl = null;
+const camAudio = new Audio();
+const WAKE = /\b(?:(?:hey|hi|ok|okay|yo)[\s,]+)?(?:claude|claud|cloud|clod|clawed|klaud|klod)\b[\s,.!?]*/gi;
 const ICON_VOL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
 const ICON_MUTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>';
 const camMuted = () => { try { return localStorage.getItem("aim-cam-mute") === "1"; } catch (e) { return false; } };
 function paintCamMute() { $("camMute").innerHTML = camMuted() ? ICON_MUTE : ICON_VOL; }
 function camStatus(text, ok) { const s = $("camStat"); s.className = "cstat" + (ok ? " ok" : ""); s.replaceChildren(document.createElement("i"), document.createTextNode(text)); }
-function camSay(text) {
-  if (camMuted() || !window.speechSynthesis) return;
-  try {
-    window.speechSynthesis.cancel();
-    const parts = String(text).replace(/[*_`#>\[\]]/g, "").match(/[^.!?\n]{1,220}([.!?]+|$)/g) || [text];
-    parts.forEach((p) => { if (p.trim()) { const u = new SpeechSynthesisUtterance(p.trim()); u.lang = "en-US"; window.speechSynthesis.speak(u); } });
-  } catch (e) {}
+function camLive() { if (camOpen && camReady) camStatus(SR ? "Live · say “Hey Claude”" : "Live", true); }
+function silentWav() {   // a tenth of a second of silence: played inside the tap so iOS lets this page play audio later
+  const n = 2205, b = new ArrayBuffer(44 + n * 2), d = new DataView(b), w = (o, s) => [...s].forEach((c, i) => d.setUint8(o + i, c.charCodeAt(0)));
+  w(0, "RIFF"); d.setUint32(4, 36 + n * 2, true); w(8, "WAVE"); w(12, "fmt "); d.setUint32(16, 16, true); d.setUint16(20, 1, true); d.setUint16(22, 1, true);
+  d.setUint32(24, 22050, true); d.setUint32(28, 44100, true); d.setUint16(32, 2, true); d.setUint16(34, 16, true); w(36, "data"); d.setUint32(40, n * 2, true);
+  return URL.createObjectURL(new Blob([b], { type: "audio/wav" }));
 }
 function renderCamLog() {
   const box = $("camLog"); box.replaceChildren();
@@ -2119,109 +2132,191 @@ function renderCamLog() {
   });
   box.scrollTop = box.scrollHeight;
 }
+/* ---- the camera stays live: iOS pauses the video when the microphone starts, so it is resumed (or reopened) ---- */
+async function camStartVideo() {
+  try {
+    if (camStream) camStream.getTracks().forEach((tr) => tr.stop());
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+    if (!camOpen) { camStream.getTracks().forEach((tr) => tr.stop()); camStream = null; return; }
+    const v = $("camVid"); v.srcObject = camStream; try { await v.play(); } catch (e) {}
+    const old = $("camView").querySelector(".cerr"); if (old) old.remove();
+  } catch (e) {
+    if (!$("camView").querySelector(".cerr")) $("camView").append(el("div", "cerr", "Can't open the camera. Allow camera access for this site in the browser settings, then try again."));
+  }
+}
+function camKeepLive() {
+  if (!camOpen || !camStream) return;
+  const tr = camStream.getVideoTracks()[0], v = $("camVid");
+  if (!tr || tr.readyState === "ended") { camStartVideo(); return; }
+  if (v.paused) v.play().catch(() => {});
+}
+$("camVid").addEventListener("pause", () => { if (camOpen) setTimeout(camKeepLive, 50); });
+/* ---- speaking ---- */
+function camDone() {   // the answer was said (or could not be): listen again
+  camPlaying = false; camBusy = false; clearTimeout(camBusyTimer); $("camHeard").textContent = "";
+  camKeepLive(); setTimeout(camHands, 250);
+}
+function camTTS(text) {   // the browser's own voice, when the computer's voice doesn't arrive
+  if (camMuted() || !window.speechSynthesis) { camDone(); return; }
+  try {
+    window.speechSynthesis.cancel(); camPlaying = true;
+    const parts = String(text).replace(/[*_`#>\[\]]/g, "").match(/[^.!?\n]{1,220}([.!?]+|$)/g) || [text];
+    const list = parts.map((p) => p.trim()).filter(Boolean);
+    list.forEach((p, i) => { const u = new SpeechSynthesisUtterance(p); u.lang = settings.cam_voice === "us" ? "en-US" : "en-GB"; if (i === list.length - 1) u.onend = u.onerror = camDone; window.speechSynthesis.speak(u); });
+    if (!list.length) camDone();
+  } catch (e) { camDone(); }
+}
+async function camPlay(path) {
+  if (camMuted()) { camDone(); return; }
+  camPlaying = true; $("camHeard").textContent = "";
+  try {
+    const { data } = await sb.storage.from(BUCKET).download(path);
+    if (!data || !camOpen) { camDone(); return; }
+    if (camUrl) URL.revokeObjectURL(camUrl);
+    camUrl = URL.createObjectURL(data);
+    camAudio.onended = camAudio.onerror = camDone;
+    camAudio.src = camUrl; await camAudio.play();
+    camKeepLive();
+  } catch (e) { camDone(); }
+}
+/* ---- open / close ---- */
 async function openCam() {
   $("menu").hidden = true; $("moreBtn").setAttribute("aria-expanded", "false");
-  camOpen = true; $("camView").hidden = false; paintCamMute(); renderCamLog(); $("camHeard").textContent = "";
+  camOpen = true; camBusy = false; camPlaying = false; $("camView").hidden = false; paintCamMute(); renderCamLog(); $("camHeard").textContent = "";
   $("camMic").hidden = !SR; $("camForm").hidden = !!SR;
-  try { if (window.speechSynthesis) window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); } catch (e) {}   // iOS: unlock speech inside the tap
+  try { camAudio.src = silentWav(); camAudio.play().catch(() => {}); } catch (e) {}                                  // iOS: unlock audio inside the tap
+  try { if (window.speechSynthesis) window.speechSynthesis.speak(new SpeechSynthesisUtterance(" ")); } catch (e) {}
   camReady = false; camStatus("Connecting to the computer…");
   clearTimeout(camReadyTimer); camReadyTimer = setTimeout(() => { if (!camReady && camOpen) camStatus("The computer isn't answering. Is the line on?"); }, 7000);
   putCtl("cam-req", { state: "open", at: nowIso() });
-  const old = $("camView").querySelector(".cerr"); if (old) old.remove();
-  try {
-    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
-    if (!camOpen) { camStream.getTracks().forEach((tr) => tr.stop()); camStream = null; return; }
-    $("camVid").srcObject = camStream; try { await $("camVid").play(); } catch (e) {}
-  } catch (e) {
-    $("camView").append(el("div", "cerr", "Can't open the camera. Allow camera access for this site in the browser settings, then try again."));
-  }
+  await camStartVideo();
+  clearInterval(camWatch); camWatch = setInterval(camKeepLive, 1000);
+  camHands();
 }
+function camStopRec() { if (camRec) { const r = camRec; r._done = true; camRec = null; try { r.abort(); } catch (e) {} } clearTimeout(camSilence); $("camMic").classList.remove("rec"); }
 function closeCam() {
   camOpen = false; $("camView").hidden = true;
-  if (camRec) { camRec.onend = null; try { camRec.abort(); } catch (e) {} camRec = null; }
-  $("camMic").classList.remove("rec");
+  camStopRec(); clearInterval(camWatch); clearTimeout(camBusyTimer);
   if (camStream) { camStream.getTracks().forEach((tr) => tr.stop()); camStream = null; }
   $("camVid").srcObject = null;
+  try { camAudio.pause(); } catch (e) {}
   try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {}
   putCtl("cam-req", { state: "close", at: nowIso() });
 }
-function grabFrame() {
-  const v = $("camVid");
-  if (!v.videoWidth) return Promise.resolve(null);
-  const k = Math.min(1, 1600 / Math.max(v.videoWidth, v.videoHeight));
-  const c = document.createElement("canvas"); c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k);
-  c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
-  const f = $("camFlash"); f.classList.add("on"); requestAnimationFrame(() => requestAnimationFrame(() => f.classList.remove("on")));
-  return new Promise((res) => c.toBlob(res, "image/jpeg", 0.85));
-}
-function smallFrame() {   // 768 px JPEG as base64, for the fast model
+/* ---- asking ---- */
+function frameBlob(max) {
   const v = $("camVid"); if (!v.videoWidth) return null;
-  const k = Math.min(1, 768 / Math.max(v.videoWidth, v.videoHeight));
+  const k = Math.min(1, max / Math.max(v.videoWidth, v.videoHeight));
   const c = document.createElement("canvas"); c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k);
   c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
-  return c.toDataURL("image/jpeg", 0.8).split(",")[1];
+  return c;
+}
+async function camConv() {   // the Claude chat a camera question escalates into (staging makes its own)
+  if (curByModel.claude || !STAGE) return curByModel.claude || null;
+  const id = "cs" + Date.now();
+  const ins = await sb.from("conversations").insert({ id, title: "Live camera", project: curS().project || null });
+  if (ins.error) return null;
+  curByModel.claude = id; await saveCurrent(); loadConvs();
+  return id;
 }
 async function camAsk(text, route) {
   text = (text || "").trim(); if (text) camLastQ = text;
-  const blob = await grabFrame();
-  if (!blob) { camItems.push({ q: text, text: "The camera isn't ready yet." }); renderCamLog(); return; }
+  const big = frameBlob(1600), small = route === "claude" ? null : frameBlob(768);
+  if (!big) { camItems.push({ q: text, text: "The camera isn't ready yet." }); renderCamLog(); return; }
+  camBusy = true; clearTimeout(camBusyTimer); camBusyTimer = setTimeout(camDone, route === "claude" ? 90000 : 30000);
   const ts = Date.now(), id = "m" + ts.toString(36) + Math.random().toString(36).slice(2, 6), path = "me/" + id + "/0.jpg";
   const it = { id, q: text || "(what is this?)", wait: route === "claude" ? "Sending to Claude…" : "Looking…" };
   camItems.push(it); renderCamLog();
   // the full frame goes to storage (for Claude); the fast model gets a small copy inline, so it can start at once
+  const blob = await new Promise((res) => big.toBlob(res, "image/jpeg", 0.85));
   const up = sb.storage.from(BUCKET).upload(path, blob, { contentType: "image/jpeg" }).then((r) => r, (e) => ({ error: e }));
-  const img = route === "claude" ? null : smallFrame();
-  if (!img) { const { error } = await up; if (error) { it.text = "Couldn't send the picture. Check the connection."; renderCamLog(); return; } }
-  await putCtl("cam-req", { state: "ask", id, text, path, img, route, at: nowIso() });
-  setTimeout(() => { if (!it.text && !it.claude && camItems.includes(it)) { it.text = "No answer from the computer. Is the line on?"; renderCamLog(); } }, 25000);
+  const img = small ? small.toDataURL("image/jpeg", 0.8).split(",")[1] : null;
+  if (!img) { const { error } = await up; if (error) { it.text = "Couldn't send the picture. Check the connection."; renderCamLog(); camDone(); return; } }
+  await putCtl("cam-req", { state: "ask", id, text, path, img, route, conv: await camConv(), at: nowIso() });
+  setTimeout(() => { if (!it.text && !it.claude && camItems.includes(it)) { it.text = "No answer from the computer. Is the line on?"; renderCamLog(); camDone(); } }, 25000);
 }
 function camAns(d) {
-  if (d.state === "ready") { camReady = true; clearTimeout(camReadyTimer); if (camOpen) camStatus("Live · fast AI + Claude", true); return; }
+  if (d.state === "ready") { camReady = true; clearTimeout(camReadyTimer); camLive(); return; }
   if (d.state === "off") { camReady = false; if (camOpen) camStatus("The camera helper is off on the computer."); return; }
   const it = camItems.find((x) => x.id === d.id); if (!it) return;
-  camReady = true; clearTimeout(camReadyTimer); if (camOpen) camStatus("Live · fast AI + Claude", true);
+  camReady = true; clearTimeout(camReadyTimer); camLive();
   if (d.state === "thinking") it.wait = "Looking…";
   else if (d.state === "claude") { it.claude = true; it.wait = "Claude is looking at it… (about 20 seconds)"; }
   else if (d.state === "done" || d.state === "error") {
-    if (it.text === d.text) return;
+    const fresh = it.text !== d.text;
     it.text = d.text || "…"; it.by = d.by; it.ms = d.ms;
-    if (camOpen && d.text) camSay(d.text);
+    if (!it.played && camOpen) {
+      if (d.audio) { it.played = true; clearTimeout(it.tts); camPlay(d.audio); }
+      else if (d.state === "error") { it.played = true; camDone(); }
+      else if (fresh) it.tts = setTimeout(() => { if (!it.played) { it.played = true; camTTS(it.text); } }, 4000);
+    }
   }
   renderCamLog();
 }
-function camListen(route) {
-  if (camRec) { camRoute = route || camRoute; try { camRec.stop(); } catch (e) {} return; }
+/* ---- listening: hands-free wake word ("Hey Claude ..."), or the mic button for one question ---- */
+function camHands() {
+  if (!camOpen || !SR || camRec || camBusy || camPlaying) return;
+  let woke = false, q = "";
+  const r = new SR(); r.lang = "en-US"; r.continuous = true; r.interimResults = true; r._mode = "hands";
+  camRec = r;
+  r.onresult = (ev) => {
+    let all = ""; for (let i = 0; i < ev.results.length; i++) all += ev.results[i][0].transcript + " ";
+    const ms = [...all.matchAll(WAKE)], m = ms[ms.length - 1];
+    if (m) { woke = true; q = all.slice(m.index + m[0].length).trim(); }
+    if (!woke) return;
+    $("camMic").classList.add("rec"); $("camHeard").textContent = q || "I'm listening…";
+    clearTimeout(camSilence);
+    camSilence = setTimeout(() => { if (q) camFinish(r, q, r._route || "auto"); else camStopRec(); }, q ? 1300 : 7000);
+  };
+  r.onerror = (ev) => { if (ev.error === "not-allowed" || ev.error === "service-not-allowed") { r._done = true; $("camHeard").textContent = "Microphone blocked. Allow it, or type."; $("camForm").hidden = false; } };
+  r.onend = () => { if (camRec === r) camRec = null; $("camMic").classList.remove("rec"); if (!r._done) setTimeout(camHands, 300); };
+  try { r.start(); } catch (e) { camRec = null; }
+}
+function camFinish(r, q, route) {
+  r._done = true; clearTimeout(camSilence); if (camRec === r) camRec = null;
+  try { r.abort(); } catch (e) {}
+  $("camMic").classList.remove("rec"); $("camHeard").textContent = "";
+  camAsk(q, route);
+}
+function camListenOnce(route) {   // the mic button: one question without the wake word
+  if (camRec && camRec._mode === "once") { camRec._route = route || camRec._route; try { camRec.stop(); } catch (e) {} return; }
+  camStopRec();
   if (!SR) { $("camForm").hidden = false; $("camText").focus(); return; }
-  try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {}
-  camRoute = route || "auto";
+  try { camAudio.pause(); window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {}
+  camPlaying = false; camBusy = false;
   let heard = "";
-  try {
-    camRec = new SR(); camRec.lang = "en-US"; camRec.interimResults = true; camRec.continuous = false;
-    camRec.onresult = (ev) => { heard = ""; for (let i = 0; i < ev.results.length; i++) heard += ev.results[i][0].transcript; $("camHeard").textContent = heard; };
-    camRec.onerror = (ev) => { if (ev.error === "not-allowed" || ev.error === "service-not-allowed") { $("camHeard").textContent = "Microphone blocked. Type instead."; $("camForm").hidden = false; } };
-    camRec.onend = () => {
-      camRec = null; $("camMic").classList.remove("rec");
-      const q = heard.trim();
-      if (q) { $("camHeard").textContent = ""; camAsk(q, camRoute); }
-      else if (!$("camHeard").textContent.startsWith("Microphone")) $("camHeard").textContent = "";
-    };
-    camRec.start(); $("camMic").classList.add("rec"); $("camHeard").textContent = "Listening…";
-  } catch (e) { camRec = null; $("camForm").hidden = false; }
+  const r = new SR(); r.lang = "en-US"; r.interimResults = true; r.continuous = false; r._mode = "once"; r._route = route || "auto";
+  camRec = r;
+  r.onresult = (ev) => { heard = ""; for (let i = 0; i < ev.results.length; i++) heard += ev.results[i][0].transcript; heard = heard.replace(WAKE, " ").trim(); $("camHeard").textContent = heard; };
+  r.onerror = (ev) => { if (ev.error === "not-allowed" || ev.error === "service-not-allowed") { r._done = true; $("camHeard").textContent = "Microphone blocked. Allow it, or type."; $("camForm").hidden = false; } };
+  r.onend = () => {
+    if (camRec === r) camRec = null; $("camMic").classList.remove("rec");
+    if (r._done) return;
+    if (heard) { $("camHeard").textContent = ""; camAsk(heard, r._route); } else { $("camHeard").textContent = ""; setTimeout(camHands, 250); }
+  };
+  try { r.start(); $("camMic").classList.add("rec"); $("camHeard").textContent = "I'm listening…"; } catch (e) { camRec = null; $("camForm").hidden = false; }
 }
 $("camBtn").onclick = openCam;
 $("camClose").onclick = closeCam;
-$("camMute").onclick = () => { try { localStorage.setItem("aim-cam-mute", camMuted() ? "0" : "1"); } catch (e) {} paintCamMute(); if (camMuted()) try { window.speechSynthesis.cancel(); } catch (e) {} };
-$("camMic").onclick = () => camListen("auto");
+$("camMute").onclick = () => { try { localStorage.setItem("aim-cam-mute", camMuted() ? "0" : "1"); } catch (e) {} paintCamMute(); if (camMuted()) { try { camAudio.pause(); window.speechSynthesis.cancel(); } catch (e) {} if (camPlaying) camDone(); } };
+$("camMic").onclick = () => camListenOnce("auto");
 $("camKbd").onclick = () => { $("camForm").hidden = !$("camForm").hidden; if (!$("camForm").hidden) $("camText").focus(); };
-// Ask Claude: while listening, the question goes to Claude; otherwise the last question is asked again, with a fresh frame
+// Ask Claude: while a question is being heard it goes to Claude; otherwise the last question is asked again, with a fresh frame
 $("camClaude").onclick = () => {
-  if (camRec) { camListen("claude"); return; }
+  const r = camRec;
+  if (r && r._mode === "once") { camListenOnce("claude"); return; }
+  const heard = $("camHeard").textContent;
+  if (r && r._mode === "hands" && $("camMic").classList.contains("rec") && heard && heard !== "I'm listening…") { camFinish(r, heard, "claude"); return; }
   const typed = $("camText").value.trim();
-  if (typed) { $("camText").value = ""; camAsk(typed, "claude"); return; }
-  if (camItems.length) { camAsk(camLastQ, "claude"); return; }
-  camListen("claude");
+  if (typed) { $("camText").value = ""; camStopRec(); camAsk(typed, "claude"); return; }
+  if (camItems.length) { camStopRec(); camAsk(camLastQ, "claude"); return; }
+  camListenOnce("claude");
 };
-$("camForm").addEventListener("submit", (e) => { e.preventDefault(); const v = $("camText").value.trim(); $("camText").value = ""; camAsk(v, "auto"); });
+$("camForm").addEventListener("submit", (e) => { e.preventDefault(); const v = $("camText").value.trim(); $("camText").value = ""; camStopRec(); camAsk(v, "auto"); });
+/* camera voice accent (settings sheet): settings.cam_voice gb | us, used by cam.py */
+function paintCamVoice() { const v = settings.cam_voice === "us" ? "us" : "gb"; $("cv-gb").setAttribute("aria-pressed", String(v === "gb")); $("cv-us").setAttribute("aria-pressed", String(v === "us")); }
+$("cv-gb").onclick = () => { saveSettings({ cam_voice: "gb" }); paintCamVoice(); };
+$("cv-us").onclick = () => { saveSettings({ cam_voice: "us" }); paintCamVoice(); };
 
 /* ---------- team chat: who gets the next message, and who takes part ---------- */
 let target = "claude";
@@ -2382,7 +2477,7 @@ function subscribe() {
     .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, (p) => {
       if (p.eventType === "INSERT") maybeNotify(p.new);
       if (p.eventType === "DELETE") msgs = msgs.filter((m) => m.id !== p.old.id);
-      else if (viewConv ? (p.new.conv === viewConv || (!p.new.conv && model === "claude")) : model === "claude") {
+      else if (viewConv ? (p.new.conv === viewConv || (!p.new.conv && model === "claude" && !STAGE)) : model === "claude") {
         upsertMsg(p.new);
         if (!speakNext && !camOpen && autoRead() && !document.hidden && p.eventType === "INSERT" && p.new.sender !== "me" && ["reply", "question"].includes(p.new.kind) && p.new.text) speakText(p.new.text, p.new.id);
         if (speakNext && p.eventType === "INSERT" && p.new.sender === "claude" && !["system", "agent", "escalate", "tool"].includes(p.new.kind) && p.new.text) { speakNext = false; speakText(p.new.text); }
@@ -2720,7 +2815,7 @@ $("form").addEventListener("submit", (e) => {
 });
 async function sendMsg(text, pics, fromComposer) {
   if ((!text && !pics.length) || sending) return;
-  if (model !== "claude" && !currentConv && !(await makeConv(model === "team" ? t("teamDefault") : (text || "").slice(0, 40) || t("newChat")))) return;   // every model starts its own chat on the first message
+  if ((model !== "claude" || STAGE) && !currentConv && !(await makeConv(model === "team" ? t("teamDefault") : (text || "").slice(0, 40) || t("newChat")))) return;   // every model starts its own chat on the first message
   sending = true; syncSend(); showErr("");
   const ts = Date.now();
   const id = "m" + ts.toString(36) + Math.random().toString(36).slice(2, 6);
