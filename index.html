@@ -2149,42 +2149,78 @@ function camKeepLive() {
   const tr = camStream.getVideoTracks()[0], v = $("camVid");
   if (!tr || tr.readyState === "ended") { camStartVideo(); return; }
   if (v.paused) v.play().catch(() => {});
+  if (SR && !camRec && !camAsking && Date.now() - camLastStart > 2500) camHands();   // listening stopped by itself: start it again
 }
 $("camVid").addEventListener("pause", () => { if (camOpen) setTimeout(camKeepLive, 50); });
-/* ---- speaking ---- */
+/* ---- diagnostics: what the phone did, so the computer can see why sound or listening failed (control row cam-diag) ---- */
+let camDiagBuf = [], camDiagT = null;
+function camDiag(ev, x) {
+  camDiagBuf.push({ t: Date.now(), ev, x: x === undefined ? undefined : String(x).slice(0, 160) }); camDiagBuf = camDiagBuf.slice(-50);
+  clearTimeout(camDiagT); camDiagT = setTimeout(() => putCtl("cam-diag", { ua: navigator.userAgent, stage: STAGE, list: camDiagBuf }), 1500);
+}
+/* ---- speaking: the computer's mp3 (HTML audio, then Web Audio), the browser's voice as a last resort ---- */
+let camCtx = null, camSrc = null, camSpeaking = "", camAsking = false, camLastStart = 0;
+function camStopVoice() {
+  try { camAudio.pause(); } catch (e) {}
+  try { if (camSrc) camSrc.stop(); } catch (e) {}
+  camSrc = null;
+  try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {}
+  camSpeaking = "";
+}
 function camDone() {   // the answer was said (or could not be): listen again
-  camPlaying = false; camBusy = false; clearTimeout(camBusyTimer); $("camHeard").textContent = "";
+  camPlaying = false; camBusy = false; camSpeaking = ""; clearTimeout(camBusyTimer);
+  if (!$("camMic").classList.contains("rec")) $("camHeard").textContent = "";
   camKeepLive(); setTimeout(camHands, 250);
 }
-function camTTS(text) {   // the browser's own voice, when the computer's voice doesn't arrive
+function camTTS(text) {   // the browser's own voice, when the computer's voice can't be played
   if (camMuted() || !window.speechSynthesis) { camDone(); return; }
   try {
-    window.speechSynthesis.cancel(); camPlaying = true;
+    window.speechSynthesis.cancel(); camPlaying = true; camSpeaking = text;
     const parts = String(text).replace(/[*_`#>\[\]]/g, "").match(/[^.!?\n]{1,220}([.!?]+|$)/g) || [text];
-    const list = parts.map((p) => p.trim()).filter(Boolean);
-    list.forEach((p, i) => { const u = new SpeechSynthesisUtterance(p); u.lang = settings.cam_voice === "us" ? "en-US" : "en-GB"; if (i === list.length - 1) u.onend = u.onerror = camDone; window.speechSynthesis.speak(u); });
+    const list = parts.map((x) => x.trim()).filter(Boolean);
+    list.forEach((x, i) => { const u = new SpeechSynthesisUtterance(x); u.lang = settings.cam_voice === "us" ? "en-US" : "en-GB"; if (i === list.length - 1) u.onend = u.onerror = (e) => { camDiag("tts-end", e && e.type); camDone(); }; window.speechSynthesis.speak(u); });
+    camDiag("tts-start", list.length);
     if (!list.length) camDone();
-  } catch (e) { camDone(); }
+  } catch (e) { camDiag("tts-err", e && e.message); camDone(); }
 }
-async function camPlay(path) {
+async function camPlay(path, text) {
   if (camMuted()) { camDone(); return; }
-  camPlaying = true; $("camHeard").textContent = "";
-  try {
-    const { data } = await sb.storage.from(BUCKET).download(path);
-    if (!data || !camOpen) { camDone(); return; }
+  camPlaying = true; camSpeaking = text || "";
+  let data = null;
+  try { data = (await sb.storage.from(BUCKET).download(path)).data; } catch (e) { camDiag("dl-err", e && e.message); }
+  if (!camOpen || !camPlaying) return;
+  if (!data) { camDiag("dl-none"); camTTS(text); return; }
+  try {   // 1) an <audio> element that was unlocked inside the tap that opened the camera
     if (camUrl) URL.revokeObjectURL(camUrl);
-    camUrl = URL.createObjectURL(data);
-    camAudio.onended = camAudio.onerror = camDone;
-    camAudio.src = camUrl; await camAudio.play();
-    camKeepLive();
-  } catch (e) { camDone(); }
+    camUrl = URL.createObjectURL(new Blob([data], { type: "audio/mpeg" }));
+    camAudio.onended = () => { camDiag("audio-end"); camDone(); };
+    camAudio.onerror = () => { camDiag("audio-error", camAudio.error && camAudio.error.code); };
+    camAudio.src = camUrl; camAudio.volume = 1; camAudio.muted = false;
+    await camAudio.play();
+    camDiag("audio-play", data.size); camKeepLive(); return;
+  } catch (e) { camDiag("audio-reject", e && (e.name + " " + e.message)); }
+  try {   // 2) Web Audio (also unlocked inside that tap)
+    if (camCtx) {
+      if (camCtx.state !== "running") await camCtx.resume();
+      const buf = await camCtx.decodeAudioData(await data.arrayBuffer());
+      const src = camCtx.createBufferSource(); src.buffer = buf; src.connect(camCtx.destination);
+      src.onended = () => { if (camSrc === src) { camSrc = null; camDiag("webaudio-end"); camDone(); } };
+      camSrc = src; src.start(); camDiag("webaudio-play", camCtx.state); return;
+    }
+  } catch (e) { camDiag("webaudio-err", e && e.message); }
+  camTTS(text);   // 3) the browser's voice
 }
 /* ---- open / close ---- */
 async function openCam() {
   $("menu").hidden = true; $("moreBtn").setAttribute("aria-expanded", "false");
   camOpen = true; camBusy = false; camPlaying = false; $("camView").hidden = false; paintCamMute(); renderCamLog(); $("camHeard").textContent = "";
   $("camMic").hidden = !SR; $("camForm").hidden = !!SR;
-  try { camAudio.src = silentWav(); camAudio.play().catch(() => {}); } catch (e) {}                                  // iOS: unlock audio inside the tap
+  try { camAudio.src = silentWav(); camAudio.play().then(() => camDiag("unlock-audio-ok"), (e) => camDiag("unlock-audio-fail", e && e.name)); } catch (e) {}   // iOS: unlock audio inside the tap
+  try {
+    if (!camCtx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) camCtx = new AC(); }
+    if (camCtx) { const b = camCtx.createBuffer(1, 1, 22050), src = camCtx.createBufferSource(); src.buffer = b; src.connect(camCtx.destination); src.start(0); camCtx.resume().then(() => camDiag("unlock-ctx", camCtx.state), () => {}); }
+  } catch (e) { camDiag("unlock-ctx-fail", e && e.message); }
+  camDiag("open", (SR ? "sr " : "no-sr ") + (navigator.mediaDevices ? "md" : "no-md"));
   try { if (window.speechSynthesis) window.speechSynthesis.speak(new SpeechSynthesisUtterance(" ")); } catch (e) {}
   camReady = false; camStatus("Connecting to the computer…");
   clearTimeout(camReadyTimer); camReadyTimer = setTimeout(() => { if (!camReady && camOpen) camStatus("The computer isn't answering. Is the line on?"); }, 7000);
@@ -2245,8 +2281,8 @@ function camAns(d) {
   else if (d.state === "done" || d.state === "error") {
     const fresh = it.text !== d.text;
     it.text = d.text || "…"; it.by = d.by; it.ms = d.ms;
-    if (!it.played && camOpen) {
-      if (d.audio) { it.played = true; clearTimeout(it.tts); camPlay(d.audio); }
+    if (!it.played && !it.superseded && camOpen) {
+      if (d.audio) { it.played = true; clearTimeout(it.tts); camPlay(d.audio, it.text); }
       else if (d.state === "error") { it.played = true; camDone(); }
       else if (fresh) it.tts = setTimeout(() => { if (!it.played) { it.played = true; camTTS(it.text); } }, 4000);
     }
@@ -2254,35 +2290,48 @@ function camAns(d) {
   renderCamLog();
 }
 /* ---- listening: hands-free wake word ("Hey Claude ..."), or the mic button for one question ---- */
-function camHands() {
-  if (!camOpen || !SR || camRec || camBusy || camPlaying) return;
+function camHands() {   // runs the whole time the camera is open, also while an answer is coming or being said
+  if (!camOpen || !SR || camRec || camAsking) return;
   let woke = false, q = "";
   const r = new SR(); r.lang = "en-US"; r.continuous = true; r.interimResults = true; r._mode = "hands";
-  camRec = r;
+  camRec = r; camLastStart = Date.now();
   r.onresult = (ev) => {
     let all = ""; for (let i = 0; i < ev.results.length; i++) all += ev.results[i][0].transcript + " ";
     const ms = [...all.matchAll(WAKE)], m = ms[ms.length - 1];
-    if (m) { woke = true; q = all.slice(m.index + m[0].length).trim(); }
+    if (m && !woke) {
+      if (camPlaying && /\b(claude|cloud|clod)\b/i.test(camSpeaking)) return;   // it heard its own answer saying the name
+      woke = true; camDiag("wake", all.slice(-80));
+      if (camPlaying || camBusy) {   // barge in: stop the answer and listen
+        camStopVoice(); camItems.forEach((it) => { if (!it.played) it.superseded = true; });
+        camPlaying = false; camBusy = false; clearTimeout(camBusyTimer);
+      }
+    }
+    if (m) q = all.slice(m.index + m[0].length).trim();
     if (!woke) return;
     $("camMic").classList.add("rec"); $("camHeard").textContent = q || "I'm listening…";
     clearTimeout(camSilence);
     camSilence = setTimeout(() => { if (q) camFinish(r, q, r._route || "auto"); else camStopRec(); }, q ? 1300 : 7000);
   };
-  r.onerror = (ev) => { if (ev.error === "not-allowed" || ev.error === "service-not-allowed") { r._done = true; $("camHeard").textContent = "Microphone blocked. Allow it, or type."; $("camForm").hidden = false; } };
-  r.onend = () => { if (camRec === r) camRec = null; $("camMic").classList.remove("rec"); if (!r._done) setTimeout(camHands, 300); };
-  try { r.start(); } catch (e) { camRec = null; }
+  r.onerror = (ev) => {
+    camDiag("sr-error", ev.error);
+    if (ev.error === "not-allowed" || ev.error === "service-not-allowed") { r._done = true; $("camHeard").textContent = "Microphone blocked. Allow it, or type."; $("camForm").hidden = false; }
+  };
+  r.onend = () => { camDiag("sr-end", woke ? "woke" : ""); if (camRec === r) camRec = null; $("camMic").classList.remove("rec"); if (!r._done) setTimeout(camHands, 300); };
+  try { r.start(); camDiag("sr-start"); } catch (e) { camRec = null; camDiag("sr-start-fail", e && e.message); setTimeout(camHands, 1200); }
 }
 function camFinish(r, q, route) {
   r._done = true; clearTimeout(camSilence); if (camRec === r) camRec = null;
   try { r.abort(); } catch (e) {}
   $("camMic").classList.remove("rec"); $("camHeard").textContent = "";
-  camAsk(q, route);
+  camDiag("ask", q);
+  camAsking = true;
+  Promise.resolve(camAsk(q, route)).finally(() => { camAsking = false; setTimeout(camHands, 400); });
 }
 function camListenOnce(route) {   // the mic button: one question without the wake word
   if (camRec && camRec._mode === "once") { camRec._route = route || camRec._route; try { camRec.stop(); } catch (e) {} return; }
   camStopRec();
   if (!SR) { $("camForm").hidden = false; $("camText").focus(); return; }
-  try { camAudio.pause(); window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {}
+  camStopVoice(); camItems.forEach((it) => { if (!it.played) it.superseded = true; });
   camPlaying = false; camBusy = false;
   let heard = "";
   const r = new SR(); r.lang = "en-US"; r.interimResults = true; r.continuous = false; r._mode = "once"; r._route = route || "auto";
