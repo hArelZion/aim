@@ -264,6 +264,7 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 .camview .ctop { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 10px; padding: calc(env(safe-area-inset-top) + 10px) 14px 24px; background: linear-gradient(rgba(0,0,0,.55), transparent); }
 .camview .ctop button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(0,0,0,.45); color: #fff; display: grid; place-items: center; cursor: pointer; }
 .camview .ctop button svg { width: 20px; height: 20px; }
+.camview .ctop button[aria-pressed="true"] { background: #3ecf6e; color: #04210f; }
 .camview .cstat { flex: 1; text-align: center; font-size: .85rem; opacity: .9; direction: ltr; }
 .camview .cstat i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #888; margin-inline-end: 6px; vertical-align: middle; }
 .camview .cstat.ok i { background: #3ecf6e; }
@@ -745,6 +746,7 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
   <div class="ctop">
     <button type="button" id="camClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <span class="cstat" id="camStat"><i></i>Connecting…</span>
+    <button type="button" id="camChat" aria-label="Continuous conversation" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></button>
     <button type="button" id="camMute" aria-label="Voice answers"></button>
   </div>
   <div class="cpanel">
@@ -2113,9 +2115,11 @@ const WAKE = /\b(?:(?:hey|hi|ok|okay|yo)[\s,]+)?(?:claude|claud|cloud|clod|clawe
 const ICON_VOL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
 const ICON_MUTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>';
 const camMuted = () => { try { return localStorage.getItem("aim-cam-mute") === "1"; } catch (e) { return false; } };
+const camChatOn = () => { try { return localStorage.getItem("aim-cam-chat") === "1"; } catch (e) { return false; } };
+function paintCamChat() { $("camChat").setAttribute("aria-pressed", String(camChatOn())); }
 function paintCamMute() { $("camMute").innerHTML = camMuted() ? ICON_MUTE : ICON_VOL; }
 function camStatus(text, ok) { const s = $("camStat"); s.className = "cstat" + (ok ? " ok" : ""); s.replaceChildren(document.createElement("i"), document.createTextNode(text)); }
-function camLive() { if (camOpen && camReady) camStatus(SR ? "Live · say “Hey Claude”" : "Live", true); }
+function camLive() { if (camOpen && camReady) camStatus(SR ? (camChatOn() ? "Live · just talk" : "Live · say “Hey Claude”") : "Live", true); }
 function silentWav() {   // a tenth of a second of silence: played inside the tap so iOS lets this page play audio later
   const n = 2205, b = new ArrayBuffer(44 + n * 2), d = new DataView(b), w = (o, s) => [...s].forEach((c, i) => d.setUint8(o + i, c.charCodeAt(0)));
   w(0, "RIFF"); d.setUint32(4, 36 + n * 2, true); w(8, "WAVE"); w(12, "fmt "); d.setUint32(16, 16, true); d.setUint16(20, 1, true); d.setUint16(22, 1, true);
@@ -2167,9 +2171,13 @@ function camStopVoice() {
   try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {}
   camSpeaking = "";
 }
+let camLastSaid = "";
+const camNorm = (x) => String(x || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/ +/g, " ").trim();
 function camDone() {   // the answer was said (or could not be): listen again
+  if (camSpeaking) camLastSaid = camSpeaking;
   camPlaying = false; camBusy = false; camSpeaking = ""; clearTimeout(camBusyTimer);
   if (!$("camMic").classList.contains("rec")) $("camHeard").textContent = "";
+  if (camChatOn() && camRec && camRec._mode === "hands" && !camRec._chat && !camRec._woke) camStopRec();   // restart it in chat mode
   camKeepLive(); setTimeout(camHands, 250);
 }
 function camTTS(text) {   // the browser's own voice, when the computer's voice can't be played
@@ -2188,13 +2196,13 @@ function camParts(it, parts, total) {   // the computer sends the voice inline, 
   if (it.superseded || !camOpen || camMuted()) { if (camMuted()) camDone(); return; }
   it.queue = it.queue || []; it.got = it.got || 0;
   for (let i = it.got; i < parts.length; i++) it.queue.push(parts[i]);
-  it.got = parts.length; it.total = total || parts.length;
-  if (!it.busyQ) camNextPart(it);
+  it.got = parts.length; it.total = total == null ? Infinity : total;
+  if (!it.busyQ && !it.ended) camNextPart(it);
 }
 async function camNextPart(it) {
   if (it.superseded || !camOpen) { it.busyQ = false; return; }
   const b64 = it.queue.shift();
-  if (!b64) { it.busyQ = false; if (it.got >= it.total) { camDiag("voice-end"); if (it.text !== it.full) { it.text = it.full; renderCamLog(); } camDone(); } return; }   // else: the next part is on its way
+  if (!b64) { it.busyQ = false; if (it.got >= it.total && !it.ended) { it.ended = true; camDiag("voice-end"); if (it.text !== it.full) { it.text = it.full; renderCamLog(); } camDone(); } return; }   // else: the next part is on its way
   it.busyQ = true; camPlaying = true; camSpeaking = it.full || "";
   it.idx = (it.idx || 0) + 1;
   it.text = (it.texts && it.texts.length >= it.idx ? it.texts.slice(0, it.idx).join(" ") : it.full) || it.full; renderCamLog();
@@ -2247,7 +2255,7 @@ async function camPlay(path, text) {
 /* ---- open / close ---- */
 async function openCam() {
   $("menu").hidden = true; $("moreBtn").setAttribute("aria-expanded", "false");
-  camOpen = true; camBusy = false; camPlaying = false; $("camView").hidden = false; paintCamMute(); renderCamLog(); $("camHeard").textContent = "";
+  camOpen = true; camBusy = false; camPlaying = false; $("camView").hidden = false; paintCamMute(); paintCamChat(); renderCamLog(); $("camHeard").textContent = "";
   $("camMic").hidden = !SR; $("camForm").hidden = !!SR;
   try { camAudio.src = silentWav(); camAudio.play().then(() => camDiag("unlock-audio-ok"), (e) => camDiag("unlock-audio-fail", e && e.name)); } catch (e) {}   // iOS: unlock audio inside the tap
   try {
@@ -2335,23 +2343,27 @@ function camHands() {   // runs the whole time the camera is open, also while an
   if (!camOpen || !SR || camRec || camAsking) return;
   let woke = false, q = "";
   const r = new SR(); r.lang = "en-US"; r.continuous = true; r.interimResults = true; r._mode = "hands";
+  r._chat = camChatOn() && !camPlaying && !camBusy;   // continuous conversation: no wake word needed while nothing is being said or thought
   camRec = r; camLastStart = Date.now();
   r.onresult = (ev) => {
     let all = ""; for (let i = 0; i < ev.results.length; i++) all += ev.results[i][0].transcript + " ";
     const ms = [...all.matchAll(WAKE)], m = ms[ms.length - 1];
+    const heardN = camNorm(all.replace(WAKE, " ")), ownEcho = !!camLastSaid && camNorm(camLastSaid).includes(heardN);   // the tail of its own answer is not a question
+    if (r._chat && !woke && heardN.length > 1 && !ownEcho) { woke = true; r._woke = true; camDiag("chat-speech", all.slice(-80)); }
     if (m && !woke) {
       if (camPlaying && /\b(claude|cloud|clod)\b/i.test(camSpeaking)) return;   // it heard its own answer saying the name
-      woke = true; camDiag("wake", all.slice(-80));
+      woke = true; r._woke = true; camDiag("wake", all.slice(-80));
       if (camPlaying || camBusy) {   // barge in: stop the answer and listen
         camStopVoice(); camItems.forEach((it) => { if (!it.played || it.busyQ) it.superseded = true; if (it.full) it.text = it.full; }); renderCamLog();
         camPlaying = false; camBusy = false; clearTimeout(camBusyTimer);
       }
     }
     if (m) q = all.slice(m.index + m[0].length).trim();
+    else if (r._chat && woke) q = all.replace(WAKE, " ").replace(/\s+/g, " ").trim();
     if (!woke) return;
     $("camMic").classList.add("rec"); $("camHeard").textContent = q || "I'm listening…";
     clearTimeout(camSilence);
-    camSilence = setTimeout(() => { if (q) camFinish(r, q, r._route || "auto"); else camStopRec(); }, q ? 900 : 7000);
+    camSilence = setTimeout(() => { if (q) camFinish(r, q, r._route || "auto"); else camStopRec(); }, q ? (r._chat ? 700 : 900) : 7000);
   };
   r.onerror = (ev) => {
     camDiag("sr-error", ev.error);
@@ -2388,6 +2400,12 @@ function camListenOnce(route) {   // the mic button: one question without the wa
 }
 $("camBtn").onclick = openCam;
 $("camClose").onclick = closeCam;
+$("camChat").onclick = () => {
+  const on = !camChatOn();
+  try { localStorage.setItem("aim-cam-chat", on ? "1" : "0"); } catch (e) {}
+  paintCamChat(); camLive(); camDiag("chat-mode", on ? "on" : "off");
+  if (camRec && camRec._mode === "hands" && !camRec._woke) { camStopRec(); setTimeout(camHands, 250); }   // restart the listener in the new mode
+};
 $("camMute").onclick = () => { try { localStorage.setItem("aim-cam-mute", camMuted() ? "0" : "1"); } catch (e) {} paintCamMute(); if (camMuted()) { try { camAudio.pause(); window.speechSynthesis.cancel(); } catch (e) {} if (camPlaying) camDone(); } };
 $("camMic").onclick = () => camListenOnce("auto");
 $("camKbd").onclick = () => { $("camForm").hidden = !$("camForm").hidden; if (!$("camForm").hidden) $("camText").focus(); };
