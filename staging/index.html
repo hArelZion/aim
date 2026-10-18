@@ -2195,8 +2195,10 @@ function camParts(it, parts, total) {   // the computer sends the voice inline, 
 async function camNextPart(it) {
   if (it.superseded || !camOpen) { it.busyQ = false; return; }
   const b64 = it.queue.shift();
-  if (!b64) { it.busyQ = false; if (it.got >= it.total) { camDiag("voice-end"); camDone(); } return; }   // else: the next part is on its way
-  it.busyQ = true; camPlaying = true; camSpeaking = it.text || "";
+  if (!b64) { it.busyQ = false; if (it.got >= it.total) { camDiag("voice-end"); if (it.text !== it.full) { it.text = it.full; renderCamLog(); } camDone(); } return; }   // else: the next part is on its way
+  it.busyQ = true; camPlaying = true; camSpeaking = it.full || "";
+  it.idx = (it.idx || 0) + 1;
+  it.text = (it.texts && it.texts.length >= it.idx ? it.texts.slice(0, it.idx).join(" ") : it.full) || it.full; renderCamLog();
   const blob = camB64(b64), next = () => camNextPart(it);
   try {
     if (camUrl) URL.revokeObjectURL(camUrl);
@@ -2214,7 +2216,7 @@ async function camNextPart(it) {
       camSrc = src; src.start(); camDiag("webaudio-part", camCtx.state); return;
     }
   } catch (e) { camDiag("webaudio-err", e && e.message); }
-  it.superseded = true; camTTS(it.text);
+  it.superseded = true; it.text = it.full; renderCamLog(); camTTS(it.full);
 }
 async function camPlay(path, text) {
   if (camMuted()) { camDone(); return; }
@@ -2312,16 +2314,19 @@ function camAns(d) {
   if (d.state === "thinking") it.wait = "Looking…";
   else if (d.state === "claude") { it.claude = true; it.wait = "Claude is looking at it… (about 20 seconds)"; }
   else if (d.state === "done" || d.state === "error") {
-    const fresh = it.text !== d.text;
+    const fresh = it.full !== d.text;
     if (fresh) camDiag("text", Date.now() - (it.at || 0));
-    it.text = d.text || "…"; it.by = d.by; it.ms = d.ms;
+    it.full = d.text || "…"; it.by = d.by; it.ms = d.ms;
+    if (d.audio_texts) it.texts = d.audio_texts;
+    // the text appears together with its voice, sentence by sentence; shown at once when there will be no voice
+    if (d.state !== "done" || !camOpen || camMuted() || it.superseded || it.showAll) it.text = it.full;
     if (d.audio_parts && d.audio_parts.length && !it.superseded && camOpen) {
       if (!it.played) camDiag("voice-first", Date.now() - (it.at || 0));
       it.played = true; clearTimeout(it.tts); camParts(it, d.audio_parts, d.audio_n);
     } else if (!it.played && !it.superseded && camOpen) {
-      if (d.audio) { it.played = true; clearTimeout(it.tts); camPlay(d.audio, it.text); }
+      if (d.audio) { it.played = true; clearTimeout(it.tts); it.text = it.full; camPlay(d.audio, it.full); }
       else if (d.state === "error") { it.played = true; camDone(); }
-      else if (fresh) it.tts = setTimeout(() => { if (!it.played) { it.played = true; camDiag("voice-late"); camTTS(it.text); } }, 6000);
+      else if (fresh) it.tts = setTimeout(() => { if (!it.played) { it.played = true; it.showAll = true; it.text = it.full; renderCamLog(); camDiag("voice-late"); camTTS(it.full); } }, 6000);
     }
   }
   renderCamLog();
@@ -2339,7 +2344,7 @@ function camHands() {   // runs the whole time the camera is open, also while an
       if (camPlaying && /\b(claude|cloud|clod)\b/i.test(camSpeaking)) return;   // it heard its own answer saying the name
       woke = true; camDiag("wake", all.slice(-80));
       if (camPlaying || camBusy) {   // barge in: stop the answer and listen
-        camStopVoice(); camItems.forEach((it) => { if (!it.played) it.superseded = true; });
+        camStopVoice(); camItems.forEach((it) => { if (!it.played || it.busyQ) it.superseded = true; if (it.full) it.text = it.full; }); renderCamLog();
         camPlaying = false; camBusy = false; clearTimeout(camBusyTimer);
       }
     }
@@ -2368,7 +2373,7 @@ function camListenOnce(route) {   // the mic button: one question without the wa
   if (camRec && camRec._mode === "once") { camRec._route = route || camRec._route; try { camRec.stop(); } catch (e) {} return; }
   camStopRec();
   if (!SR) { $("camForm").hidden = false; $("camText").focus(); return; }
-  camStopVoice(); camItems.forEach((it) => { if (!it.played) it.superseded = true; });
+  camStopVoice(); camItems.forEach((it) => { if (!it.played || it.busyQ) it.superseded = true; if (it.full) it.text = it.full; }); renderCamLog();
   camPlaying = false; camBusy = false;
   let heard = "";
   const r = new SR(); r.lang = "en-US"; r.interimResults = true; r.continuous = false; r._mode = "once"; r._route = route || "auto";
