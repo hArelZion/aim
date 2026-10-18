@@ -799,6 +799,11 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
 const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
 const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42"; // public by design; the tables are locked to one account
 const BUCKET = "aim-photos";
+// the staging build (/aim/staging/) keeps its own chats (ids "cs…", "gs…", "ms…", "ts…") and its own current row,
+// so what is written on main stays on main and what is written on staging stays there (the computer answers in the same chat)
+const STAGE = /\/staging\//.test(location.pathname);
+const CUR_ROW = STAGE ? "current-staging" : "current";
+const ownConv = (id) => /^[a-z]s/.test(id || "") === STAGE;
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* Claude mark: Bootstrap Icons "claude" (MIT) */
@@ -1073,9 +1078,9 @@ function switchModel() {
   paintModel(); applyLang(); paintTarget(); renderConvs(); loadMessages();
 }
 $("modelBtn").onclick = switchModel;
-const saveCurrent = () => sb.from("control").upsert({ id: "current", data: { conv: curByModel.claude, gpt: curByModel.gpt, gemini: curByModel.gemini, team: curByModel.team, changed: model, at: Date.now() }, updated_at: new Date().toISOString() });
+const saveCurrent = () => sb.from("control").upsert({ id: CUR_ROW, data: { conv: curByModel.claude, gpt: curByModel.gpt, gemini: curByModel.gemini, team: curByModel.team, changed: model, at: Date.now() }, updated_at: new Date().toISOString() });
 async function makeConv(title) {
-  const id = { claude: "c", gpt: "g", gemini: "m", team: "t" }[model] + Date.now();
+  const id = { claude: "c", gpt: "g", gemini: "m", team: "t" }[model] + (STAGE ? "s" : "") + Date.now();
   const ins = await sb.from("conversations").insert({ id, title, project: curS().project || null });
   if (ins.error) { showErr(t("sendErr")); return null; }
   curByModel[model] = id;
@@ -1859,7 +1864,7 @@ function applyControl(row) {
   if (row.id === "quick") { quickList = Array.isArray((row.data || {}).list) ? row.data.list : null; if (typeof renderQuick === "function") renderQuick(); }
   if (row.id === "pins") { pins = Array.isArray((row.data || {}).ids) ? row.data.ids : []; if (ready) renderConvs(); }
   if (row.id === "team") { teamCfg = row.data || {}; if (typeof paintModel === "function" && ready) { paintModel(); paintTarget(); renderMembers(); } }
-  if (row.id === "current") {
+  if (row.id === CUR_ROW) {
     const d = row.data || {};
     curByModel.claude = d.conv || null; curByModel.gpt = d.gpt || null; curByModel.team = d.team || null; curByModel.gemini = d.gemini || null;
     const next = curByModel[model];
@@ -1873,11 +1878,11 @@ function applyControl(row) {
 let booting = false;
 async function loadConvs() {
   const { data, error } = await sb.from("conversations").select("*").order("created_at", { ascending: false });
-  if (!error) convs = data || [];
+  if (!error) convs = (data || []).filter((c) => ownConv(c.id));
   renderConvs(); renderHeader();
 }
 async function loadMessages() {
-  if (!viewConv && model !== "claude") { msgs = []; firstLoad = true; renderAll(); renderOldBar(); return; }
+  if (!viewConv && (model !== "claude" || STAGE)) { msgs = []; firstLoad = true; renderAll(); renderOldBar(); return; }
   let q = sb.from("messages").select("*").order("ts", { ascending: false }).limit(300);
   if (viewConv) q = q.eq("conv", viewConv);
   const { data, error } = await q;
@@ -2207,6 +2212,14 @@ function frameBlob(max) {
   c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
   return c;
 }
+async function camConv() {   // the Claude chat a camera question escalates into (staging makes its own)
+  if (curByModel.claude || !STAGE) return curByModel.claude || null;
+  const id = "cs" + Date.now();
+  const ins = await sb.from("conversations").insert({ id, title: "Live camera", project: curS().project || null });
+  if (ins.error) return null;
+  curByModel.claude = id; await saveCurrent(); loadConvs();
+  return id;
+}
 async function camAsk(text, route) {
   text = (text || "").trim(); if (text) camLastQ = text;
   const big = frameBlob(1600), small = route === "claude" ? null : frameBlob(768);
@@ -2220,7 +2233,7 @@ async function camAsk(text, route) {
   const up = sb.storage.from(BUCKET).upload(path, blob, { contentType: "image/jpeg" }).then((r) => r, (e) => ({ error: e }));
   const img = small ? small.toDataURL("image/jpeg", 0.8).split(",")[1] : null;
   if (!img) { const { error } = await up; if (error) { it.text = "Couldn't send the picture. Check the connection."; renderCamLog(); camDone(); return; } }
-  await putCtl("cam-req", { state: "ask", id, text, path, img, route, at: nowIso() });
+  await putCtl("cam-req", { state: "ask", id, text, path, img, route, conv: await camConv(), at: nowIso() });
   setTimeout(() => { if (!it.text && !it.claude && camItems.includes(it)) { it.text = "No answer from the computer. Is the line on?"; renderCamLog(); camDone(); } }, 25000);
 }
 function camAns(d) {
@@ -2465,7 +2478,7 @@ function subscribe() {
     .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, (p) => {
       if (p.eventType === "INSERT") maybeNotify(p.new);
       if (p.eventType === "DELETE") msgs = msgs.filter((m) => m.id !== p.old.id);
-      else if (viewConv ? (p.new.conv === viewConv || (!p.new.conv && model === "claude")) : model === "claude") {
+      else if (viewConv ? (p.new.conv === viewConv || (!p.new.conv && model === "claude" && !STAGE)) : model === "claude") {
         upsertMsg(p.new);
         if (!speakNext && !camOpen && autoRead() && !document.hidden && p.eventType === "INSERT" && p.new.sender !== "me" && ["reply", "question"].includes(p.new.kind) && p.new.text) speakText(p.new.text, p.new.id);
         if (speakNext && p.eventType === "INSERT" && p.new.sender === "claude" && !["system", "agent", "escalate", "tool"].includes(p.new.kind) && p.new.text) { speakNext = false; speakText(p.new.text); }
@@ -2803,7 +2816,7 @@ $("form").addEventListener("submit", (e) => {
 });
 async function sendMsg(text, pics, fromComposer) {
   if ((!text && !pics.length) || sending) return;
-  if (model !== "claude" && !currentConv && !(await makeConv(model === "team" ? t("teamDefault") : (text || "").slice(0, 40) || t("newChat")))) return;   // every model starts its own chat on the first message
+  if ((model !== "claude" || STAGE) && !currentConv && !(await makeConv(model === "team" ? t("teamDefault") : (text || "").slice(0, 40) || t("newChat")))) return;   // every model starts its own chat on the first message
   sending = true; syncSend(); showErr("");
   const ts = Date.now();
   const id = "m" + ts.toString(36) + Math.random().toString(36).slice(2, 6);
