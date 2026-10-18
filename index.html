@@ -256,6 +256,40 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 .screenview .smsg { padding: 28px 20px; text-align: center; display: grid; gap: 14px; justify-items: center; max-width: 420px; margin: auto; line-height: 1.5; }
 .screenview .smsg button, .screenview .smsg input { border-radius: 12px; font: inherit; padding: 10px 18px; }
 .screenview .smsg button { border: 0; background: #fff; color: #000; cursor: pointer; font-weight: 600; }
+/* live camera (rear camera + voice; fast vision model or Claude) */
+.camview { position: fixed; inset: 0; z-index: 61; background: #000; color: #fff; overflow: hidden; }
+.camview video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.camview .cflash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.camview .cflash.on { opacity: .55; transition: none; }
+.camview .ctop { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 10px; padding: calc(env(safe-area-inset-top) + 10px) 14px 24px; background: linear-gradient(rgba(0,0,0,.55), transparent); }
+.camview .ctop button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(0,0,0,.45); color: #fff; display: grid; place-items: center; cursor: pointer; }
+.camview .ctop button svg { width: 20px; height: 20px; }
+.camview .cstat { flex: 1; text-align: center; font-size: .85rem; opacity: .9; direction: ltr; }
+.camview .cstat i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #888; margin-inline-end: 6px; vertical-align: middle; }
+.camview .cstat.ok i { background: #3ecf6e; }
+.camview .cpanel { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 14px calc(env(safe-area-inset-bottom) + 16px); background: linear-gradient(transparent, rgba(0,0,0,.75) 35%); display: grid; gap: 10px; }
+.camview .clog { max-height: 32vh; overflow-y: auto; display: grid; gap: 8px; direction: ltr; text-align: left; }
+.camview .cq { font-size: .85rem; opacity: .8; }
+.camview .ca { background: rgba(20,20,20,.72); border-radius: 14px; padding: 10px 12px; line-height: 1.45; font-size: .98rem; }
+.camview .ca small { display: block; font-size: .72rem; opacity: .65; margin-top: 4px; }
+.camview .ca.wait { opacity: .8; font-style: italic; }
+.camview .cheard { min-height: 1.3em; text-align: center; font-size: 1rem; direction: ltr; opacity: .95; }
+.camview .crow { display: flex; align-items: center; justify-content: space-between; gap: 12px; direction: ltr; }
+.camview .crow .side { width: 104px; display: flex; }
+.camview .crow .side:last-child { justify-content: flex-end; }
+.camview .crow button { border: 0; cursor: pointer; font: inherit; }
+.camview .ckbd { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.18); color: #fff; display: grid; place-items: center; }
+.camview .ckbd svg { width: 22px; height: 22px; }
+.camview .cmic { width: 76px; height: 76px; border-radius: 50%; background: #fff; color: #000; display: grid; place-items: center; box-shadow: 0 0 0 4px rgba(255,255,255,.25); }
+.camview .cmic svg { width: 32px; height: 32px; }
+.camview .cmic.rec { background: #e5484d; color: #fff; animation: campulse 1.2s infinite; }
+@keyframes campulse { 0%,100% { box-shadow: 0 0 0 4px rgba(229,72,77,.45); } 50% { box-shadow: 0 0 0 14px rgba(229,72,77,0); } }
+.camview .cclaude { background: #d97757; color: #fff; border-radius: 22px; padding: 10px 14px; font-weight: 600; font-size: .85rem; white-space: nowrap; }
+.camview form { display: flex; gap: 8px; direction: ltr; }
+.camview form[hidden] { display: none; }
+.camview form input { flex: 1; min-width: 0; border-radius: 22px; border: 0; padding: 10px 14px; font: inherit; font-size: 16px; }
+.camview form button { border-radius: 22px; border: 0; padding: 10px 16px; font: inherit; font-weight: 600; background: #fff; color: #000; }
+.camview .cerr { position: absolute; inset: 0; display: grid; place-items: center; padding: 30px; text-align: center; line-height: 1.5; }
 .screenview .smsg input { border: 1px solid #444; background: #111; color: #fff; text-align: center; letter-spacing: .3em; width: 9em; }
 .screenview .skbd { display: flex; gap: 6px; padding: 8px 10px; background: #111; }
 .screenview .skbd input { flex: 1; min-width: 0; border: 1px solid #333; background: #000; color: #fff; border-radius: 10px; padding: 8px 10px; font: inherit; }
@@ -632,6 +666,7 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
   <div class="menu" id="menu" role="menu" hidden>
     <button class="mi" id="newBtn" type="button" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span data-t="newChat"></span></button>
     <button class="mi" id="screenBtn" type="button" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span data-t="mScreen"></span></button>
+    <button class="mi" id="camBtn" type="button" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l2-2h6l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg><span data-t="mCam"></span></button>
     <button class="mi" id="themeBtn" type="button" role="menuitem"></button>
     <button class="mi" id="gear" type="button" role="menuitem" aria-expanded="false" aria-controls="sheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.66 0-1.25.4-1.51 1z"/></svg><span data-t="settings"></span></button>
   </div>
@@ -699,6 +734,25 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
   <div class="sview" id="sview"></div>
   <form class="skbd" id="skbd" hidden><input id="sText" autocomplete="off"><button type="submit" id="sSend"></button></form>
   <div class="sbar" style="justify-content:center"><button type="button" id="sClose"></button></div>
+</div>
+<div class="camview" id="camView" hidden>
+  <video id="camVid" playsinline muted autoplay></video>
+  <div class="cflash" id="camFlash"></div>
+  <div class="ctop">
+    <button type="button" id="camClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <span class="cstat" id="camStat"><i></i>Connecting…</span>
+    <button type="button" id="camMute" aria-label="Voice answers"></button>
+  </div>
+  <div class="cpanel">
+    <div class="clog" id="camLog"></div>
+    <div class="cheard" id="camHeard"></div>
+    <form id="camForm" hidden><input id="camText" autocomplete="off" placeholder="Type a question" enterkeyhint="send"><button type="submit">Ask</button></form>
+    <div class="crow">
+      <div class="side"><button type="button" class="ckbd" id="camKbd" aria-label="Type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg></button></div>
+      <button type="button" class="cmic" id="camMic" aria-label="Talk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+      <div class="side"><button type="button" class="cclaude" id="camClaude">Ask Claude</button></div>
+    </div>
+  </div>
 </div>
 <footer>
   <div class="wrap">
@@ -817,7 +871,7 @@ const I18N = {
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
     deleteConv: "מחיקת שיחה", deleteAsk: "למחוק את \"%s\" לצמיתות, כולל כל ההודעות שלה?",
-    newChat: "שיחה חדשה", mMode: "מצב עבודה", md_Auto: "Claude מחליט לבד מה מותר. לא תקבל בקשות אישור.", md_Manual: "Claude שואל לפני כל שינוי. הבקשות יגיעו אליך לכאן.", "md_Accept edits": "עריכת קבצים מאושרת לבד, פקודות אחרות דורשות אישור.", md_Plan: "Claude רק מתכנן ומציג תוכנית, בלי לשנות קבצים.", "md_Bypass permissions": "כל ההגנות כבויות. אפשר לשנות את זה רק במחשב.", pcSessions: "השיחות של Claude Code במחשב", pinnedS: "מוצמדות", thisS: "מחובר לטלפון", st_Running: "עובדת", "st_Unread response": "תשובה חדשה", "st_Needs input": "מחכה לך", st_Waiting: "מחכה", st_Idle: "", st_Error: "שגיאה", permTitle: "Claude מבקש אישור", permAllow: "אשר", permDeny: "דחה", perm_sending: "שולח למחשב…", perm_allow: "אושר", perm_deny: "נדחה", perm_timeout: "לא נענה בזמן. הבקשה מחכה במחשב.", closeX: "סגור", mModel: "מודל", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", phSlash: "הקלד / לפקודות", ranStep: "", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
+    newChat: "שיחה חדשה", mMode: "מצב עבודה", md_Auto: "Claude מחליט לבד מה מותר. לא תקבל בקשות אישור.", md_Manual: "Claude שואל לפני כל שינוי. הבקשות יגיעו אליך לכאן.", "md_Accept edits": "עריכת קבצים מאושרת לבד, פקודות אחרות דורשות אישור.", md_Plan: "Claude רק מתכנן ומציג תוכנית, בלי לשנות קבצים.", "md_Bypass permissions": "כל ההגנות כבויות. אפשר לשנות את זה רק במחשב.", pcSessions: "השיחות של Claude Code במחשב", pinnedS: "מוצמדות", thisS: "מחובר לטלפון", st_Running: "עובדת", "st_Unread response": "תשובה חדשה", "st_Needs input": "מחכה לך", st_Waiting: "מחכה", st_Idle: "", st_Error: "שגיאה", permTitle: "Claude מבקש אישור", permAllow: "אשר", permDeny: "דחה", perm_sending: "שולח למחשב…", perm_allow: "אושר", perm_deny: "נדחה", perm_timeout: "לא נענה בזמן. הבקשה מחכה במחשב.", closeX: "סגור", mModel: "מודל", mEffort: "Effort", mFaster: "מהיר יותר", mSmarter: "חכם יותר", mCredits: "דורש קרדיטים", mSwitching: "מחליף במחשב…", mDone: "הוחלף.", mCost: "החלפת מודל גורמת ל-Claude לקרוא מחדש את כל השיחה, וזה צורך יותר מהמגבלה.", mAsk: "האפליקציה במחשב שואלת:", mYes: "החלף בכל זאת", mNo: "ביטול", mNoAnswer: "המחשב לא ענה. האם הקו מחובר?", mOther: "במחשב פתוחה שיחה אחרת. פתח שם את השיחה של הטלפון ונסה שוב.", mNoWin: "אפליקציית Claude לא פתוחה במחשב.", mFail: "ההחלפה לא הצליחה במחשב.", mOtherNow: "שים לב: במחשב פתוחה עכשיו שיחה אחרת.", mScreen: "מסך המחשב", mCam: "מצלמה חיה", phSlash: "הקלד / לפקודות", ranStep: "", task1: "משימה אחת רצה", tasksN: "# משימות רצות", cmdNew: "שיחה חדשה", cmdStop: "עצירת העבודה", namePrompt: "שם לשיחה החדשה (אפשר להשאיר ריק):",
     noGptConv: "ChatGPT עדיין לא חובר. הקלד $phone ב-Codex במחשב.", offlineGpt: "ChatGPT לא מחובר. הקלד $phone ב-Codex במחשב.", switchTo: "מעבר ל-",
     language: "שפת האפליקציה", pause: "השהיית הקו", resume: "המשך הקו", signOut: "התנתקות",
     placeholder: "כתוב ל-Claude…", cxCmd: "הרצת פקודה", cxPlan: "תוכנית", cxFiles: (n) => (n === 1 ? "קובץ אחד השתנה" : n + " קבצים השתנו"), cxWorkOn: "עבודה על ", cxEditing: "עורך קבצים", cxWeb: "מחפש ברשת", cxModel: "מודל", cxEffort: "רמת חשיבה", cxPerm: "הרשאות", "cx_read-only": "קריאה בלבד", "cx_workspace-write": "ברירת מחדל", "cxd_read-only": "Codex קורא קבצים ומריץ פקודות, אבל לא משנה כלום.", "cxd_workspace-write": "Codex עורך קבצים בתיקיית העבודה, בלי רשת.", cxNext: "יחול מההודעה הבאה.", cxNoCfg: "הרשימה תגיע כשהקו של ChatGPT יעלה במחשב.", msgAria: "הודעה ל-Claude", send: "שליחה", settings: "הגדרות",
@@ -864,7 +918,7 @@ const I18N = {
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
     deleteConv: "Delete conversation", deleteAsk: "Permanently delete \"%s\" and all its messages?",
-    newChat: "New chat", mMode: "Work mode", md_Auto: "Claude decides what is allowed. No permission requests.", md_Manual: "Claude asks before every change. Requests come here.", "md_Accept edits": "File edits are allowed, other commands ask.", md_Plan: "Claude only plans and shows a plan, no file changes.", "md_Bypass permissions": "All checks are off. Only the computer can change this.", pcSessions: "Claude Code sessions on the computer", pinnedS: "Pinned", thisS: "on the phone", st_Running: "working", "st_Unread response": "new reply", "st_Needs input": "needs you", st_Waiting: "waiting", st_Idle: "", st_Error: "error", permTitle: "Claude asks for permission", permAllow: "Allow", permDeny: "Deny", perm_sending: "Sending to the computer…", perm_allow: "Allowed", perm_deny: "Denied", perm_timeout: "Not answered in time. The request waits on the computer.", closeX: "Close", mModel: "Model", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
+    newChat: "New chat", mMode: "Work mode", md_Auto: "Claude decides what is allowed. No permission requests.", md_Manual: "Claude asks before every change. Requests come here.", "md_Accept edits": "File edits are allowed, other commands ask.", md_Plan: "Claude only plans and shows a plan, no file changes.", "md_Bypass permissions": "All checks are off. Only the computer can change this.", pcSessions: "Claude Code sessions on the computer", pinnedS: "Pinned", thisS: "on the phone", st_Running: "working", "st_Unread response": "new reply", "st_Needs input": "needs you", st_Waiting: "waiting", st_Idle: "", st_Error: "error", permTitle: "Claude asks for permission", permAllow: "Allow", permDeny: "Deny", perm_sending: "Sending to the computer…", perm_allow: "Allowed", perm_deny: "Denied", perm_timeout: "Not answered in time. The request waits on the computer.", closeX: "Close", mModel: "Model", mEffort: "Effort", mFaster: "Faster", mSmarter: "Smarter", mCredits: "Requires usage credits", mSwitching: "Switching on the computer…", mDone: "Switched.", mCost: "Switching models makes Claude re-read the whole conversation, which uses more of your limit.", mAsk: "The app on the computer asks:", mYes: "Switch anyway", mNo: "Cancel", mNoAnswer: "The computer didn't answer. Is the line on?", mOther: "Another session is open on the computer. Open the phone's session there and try again.", mNoWin: "The Claude app isn't open on the computer.", mFail: "The switch didn't work on the computer.", mOtherNow: "Note: another session is open on the computer right now.", mScreen: "Computer screen", mCam: "Live camera", phSlash: "Type / for commands", ranStep: "Ran ", task1: "1 running task", tasksN: "# running tasks", cmdNew: "Start a new chat", cmdStop: "Stop the current work", namePrompt: "Name for the new chat (optional):",
     noGptConv: "ChatGPT is not connected yet. Type $phone in Codex on the computer.", offlineGpt: "ChatGPT is not connected. Type $phone in Codex on the computer.", switchTo: "Switch to ",
     language: "App language", pause: "Pause the line", resume: "Resume the line", signOut: "Sign out",
     placeholder: "Message Claude…", cxCmd: "Command execution", cxPlan: "Plan", cxFiles: (n) => (n === 1 ? "1 file changed" : n + " files changed"), cxWorkOn: "Work on ", cxEditing: "Editing files", cxWeb: "Searching the web", cxModel: "Model", cxEffort: "Reasoning", cxPerm: "Permissions", "cx_read-only": "Read only", "cx_workspace-write": "Default", "cxd_read-only": "Codex reads files and runs commands but changes nothing.", "cxd_workspace-write": "Codex edits files in its work folder, no network.", cxNext: "Applies from your next message.", cxNoCfg: "The list arrives when the ChatGPT line is up on the computer.", msgAria: "Message to Claude", send: "Send", settings: "Settings",
@@ -1787,6 +1841,7 @@ function applyControl(row) {
   if (row.id === "status-gemini") statuses.gemini = row.data || {};
   if (row.id === "watcher-gemini") watchers.gemini = row.data || {};
   if (row.id === "watcher-team") watchers.team = row.data || {};
+  if (row.id === "cam-ans" && typeof camAns === "function") camAns(row.data || {});
   if (row.id === "screen") {
     const was = scr.state; scr = row.data || {};
     if (scr.state === "on") scrWasOn = true;
@@ -2037,6 +2092,137 @@ $("skbd").addEventListener("submit", (e) => { e.preventDefault(); const v = $("s
 $("sUp").onclick = () => sendInput([{ t: "scroll", x: 0.5, y: 0.5, dy: 360 }]);
 $("sDown").onclick = () => sendInput([{ t: "scroll", x: 0.5, y: 0.5, dy: -360 }]);
 
+/* ---------- live camera: rear camera + voice (English for now). The computer's cam.py answers simple questions with a
+   fast vision model and hands hard ones to Claude (control rows cam-req / cam-ans). ---------- */
+var camOpen = false;
+let camStream = null, camRec = null, camRoute = "auto", camItems = [], camReady = false, camReadyTimer = null, camLastQ = "";
+const ICON_VOL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const ICON_MUTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>';
+const camMuted = () => { try { return localStorage.getItem("aim-cam-mute") === "1"; } catch (e) { return false; } };
+function paintCamMute() { $("camMute").innerHTML = camMuted() ? ICON_MUTE : ICON_VOL; }
+function camStatus(text, ok) { const s = $("camStat"); s.className = "cstat" + (ok ? " ok" : ""); s.replaceChildren(document.createElement("i"), document.createTextNode(text)); }
+function camSay(text) {
+  if (camMuted() || !window.speechSynthesis) return;
+  try {
+    window.speechSynthesis.cancel();
+    const parts = String(text).replace(/[*_`#>\[\]]/g, "").match(/[^.!?\n]{1,220}([.!?]+|$)/g) || [text];
+    parts.forEach((p) => { if (p.trim()) { const u = new SpeechSynthesisUtterance(p.trim()); u.lang = "en-US"; window.speechSynthesis.speak(u); } });
+  } catch (e) {}
+}
+function renderCamLog() {
+  const box = $("camLog"); box.replaceChildren();
+  camItems.slice(-2).forEach((it) => {
+    if (it.q) box.append(el("div", "cq", "You: " + it.q));
+    const a = el("div", "ca" + (it.text ? "" : " wait"), it.text || it.wait || "…");
+    if (it.by && it.text) a.append(el("small", null, it.by === "claude" ? "Claude" : "Fast AI (" + it.by + ")" + (it.ms ? " · " + (it.ms / 1000).toFixed(1) + " s" : "")));
+    box.append(a);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+async function openCam() {
+  $("menu").hidden = true; $("moreBtn").setAttribute("aria-expanded", "false");
+  camOpen = true; $("camView").hidden = false; paintCamMute(); renderCamLog(); $("camHeard").textContent = "";
+  $("camMic").hidden = !SR; $("camForm").hidden = !!SR;
+  try { if (window.speechSynthesis) window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); } catch (e) {}   // iOS: unlock speech inside the tap
+  camReady = false; camStatus("Connecting to the computer…");
+  clearTimeout(camReadyTimer); camReadyTimer = setTimeout(() => { if (!camReady && camOpen) camStatus("The computer isn't answering. Is the line on?"); }, 7000);
+  putCtl("cam-req", { state: "open", at: nowIso() });
+  const old = $("camView").querySelector(".cerr"); if (old) old.remove();
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+    if (!camOpen) { camStream.getTracks().forEach((tr) => tr.stop()); camStream = null; return; }
+    $("camVid").srcObject = camStream; try { await $("camVid").play(); } catch (e) {}
+  } catch (e) {
+    $("camView").append(el("div", "cerr", "Can't open the camera. Allow camera access for this site in the browser settings, then try again."));
+  }
+}
+function closeCam() {
+  camOpen = false; $("camView").hidden = true;
+  if (camRec) { camRec.onend = null; try { camRec.abort(); } catch (e) {} camRec = null; }
+  $("camMic").classList.remove("rec");
+  if (camStream) { camStream.getTracks().forEach((tr) => tr.stop()); camStream = null; }
+  $("camVid").srcObject = null;
+  try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {}
+  putCtl("cam-req", { state: "close", at: nowIso() });
+}
+function grabFrame() {
+  const v = $("camVid");
+  if (!v.videoWidth) return Promise.resolve(null);
+  const k = Math.min(1, 1600 / Math.max(v.videoWidth, v.videoHeight));
+  const c = document.createElement("canvas"); c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k);
+  c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+  const f = $("camFlash"); f.classList.add("on"); requestAnimationFrame(() => requestAnimationFrame(() => f.classList.remove("on")));
+  return new Promise((res) => c.toBlob(res, "image/jpeg", 0.85));
+}
+function smallFrame() {   // 768 px JPEG as base64, for the fast model
+  const v = $("camVid"); if (!v.videoWidth) return null;
+  const k = Math.min(1, 768 / Math.max(v.videoWidth, v.videoHeight));
+  const c = document.createElement("canvas"); c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k);
+  c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", 0.8).split(",")[1];
+}
+async function camAsk(text, route) {
+  text = (text || "").trim(); if (text) camLastQ = text;
+  const blob = await grabFrame();
+  if (!blob) { camItems.push({ q: text, text: "The camera isn't ready yet." }); renderCamLog(); return; }
+  const ts = Date.now(), id = "m" + ts.toString(36) + Math.random().toString(36).slice(2, 6), path = "me/" + id + "/0.jpg";
+  const it = { id, q: text || "(what is this?)", wait: route === "claude" ? "Sending to Claude…" : "Looking…" };
+  camItems.push(it); renderCamLog();
+  // the full frame goes to storage (for Claude); the fast model gets a small copy inline, so it can start at once
+  const up = sb.storage.from(BUCKET).upload(path, blob, { contentType: "image/jpeg" }).then((r) => r, (e) => ({ error: e }));
+  const img = route === "claude" ? null : smallFrame();
+  if (!img) { const { error } = await up; if (error) { it.text = "Couldn't send the picture. Check the connection."; renderCamLog(); return; } }
+  await putCtl("cam-req", { state: "ask", id, text, path, img, route, at: nowIso() });
+  setTimeout(() => { if (!it.text && !it.claude && camItems.includes(it)) { it.text = "No answer from the computer. Is the line on?"; renderCamLog(); } }, 25000);
+}
+function camAns(d) {
+  if (d.state === "ready") { camReady = true; clearTimeout(camReadyTimer); if (camOpen) camStatus("Live · fast AI + Claude", true); return; }
+  if (d.state === "off") { camReady = false; if (camOpen) camStatus("The camera helper is off on the computer."); return; }
+  const it = camItems.find((x) => x.id === d.id); if (!it) return;
+  camReady = true; clearTimeout(camReadyTimer); if (camOpen) camStatus("Live · fast AI + Claude", true);
+  if (d.state === "thinking") it.wait = "Looking…";
+  else if (d.state === "claude") { it.claude = true; it.wait = "Claude is looking at it… (about 20 seconds)"; }
+  else if (d.state === "done" || d.state === "error") {
+    if (it.text === d.text) return;
+    it.text = d.text || "…"; it.by = d.by; it.ms = d.ms;
+    if (camOpen && d.text) camSay(d.text);
+  }
+  renderCamLog();
+}
+function camListen(route) {
+  if (camRec) { camRoute = route || camRoute; try { camRec.stop(); } catch (e) {} return; }
+  if (!SR) { $("camForm").hidden = false; $("camText").focus(); return; }
+  try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {}
+  camRoute = route || "auto";
+  let heard = "";
+  try {
+    camRec = new SR(); camRec.lang = "en-US"; camRec.interimResults = true; camRec.continuous = false;
+    camRec.onresult = (ev) => { heard = ""; for (let i = 0; i < ev.results.length; i++) heard += ev.results[i][0].transcript; $("camHeard").textContent = heard; };
+    camRec.onerror = (ev) => { if (ev.error === "not-allowed" || ev.error === "service-not-allowed") { $("camHeard").textContent = "Microphone blocked. Type instead."; $("camForm").hidden = false; } };
+    camRec.onend = () => {
+      camRec = null; $("camMic").classList.remove("rec");
+      const q = heard.trim();
+      if (q) { $("camHeard").textContent = ""; camAsk(q, camRoute); }
+      else if (!$("camHeard").textContent.startsWith("Microphone")) $("camHeard").textContent = "";
+    };
+    camRec.start(); $("camMic").classList.add("rec"); $("camHeard").textContent = "Listening…";
+  } catch (e) { camRec = null; $("camForm").hidden = false; }
+}
+$("camBtn").onclick = openCam;
+$("camClose").onclick = closeCam;
+$("camMute").onclick = () => { try { localStorage.setItem("aim-cam-mute", camMuted() ? "0" : "1"); } catch (e) {} paintCamMute(); if (camMuted()) try { window.speechSynthesis.cancel(); } catch (e) {} };
+$("camMic").onclick = () => camListen("auto");
+$("camKbd").onclick = () => { $("camForm").hidden = !$("camForm").hidden; if (!$("camForm").hidden) $("camText").focus(); };
+// Ask Claude: while listening, the question goes to Claude; otherwise the last question is asked again, with a fresh frame
+$("camClaude").onclick = () => {
+  if (camRec) { camListen("claude"); return; }
+  const typed = $("camText").value.trim();
+  if (typed) { $("camText").value = ""; camAsk(typed, "claude"); return; }
+  if (camItems.length) { camAsk(camLastQ, "claude"); return; }
+  camListen("claude");
+};
+$("camForm").addEventListener("submit", (e) => { e.preventDefault(); const v = $("camText").value.trim(); $("camText").value = ""; camAsk(v, "auto"); });
+
 /* ---------- team chat: who gets the next message, and who takes part ---------- */
 let target = "claude";
 try { const v = localStorage.getItem("aim-target"); if (v && /^[a-z0-9]+$/.test(v)) target = v; } catch (e) {}
@@ -2198,7 +2384,7 @@ function subscribe() {
       if (p.eventType === "DELETE") msgs = msgs.filter((m) => m.id !== p.old.id);
       else if (viewConv ? (p.new.conv === viewConv || (!p.new.conv && model === "claude")) : model === "claude") {
         upsertMsg(p.new);
-        if (!speakNext && autoRead() && !document.hidden && p.eventType === "INSERT" && p.new.sender !== "me" && ["reply", "question"].includes(p.new.kind) && p.new.text) speakText(p.new.text, p.new.id);
+        if (!speakNext && !camOpen && autoRead() && !document.hidden && p.eventType === "INSERT" && p.new.sender !== "me" && ["reply", "question"].includes(p.new.kind) && p.new.text) speakText(p.new.text, p.new.id);
         if (speakNext && p.eventType === "INSERT" && p.new.sender === "claude" && !["system", "agent", "escalate", "tool"].includes(p.new.kind) && p.new.text) { speakNext = false; speakText(p.new.text); }
       }
       renderThread(); renderTail();
