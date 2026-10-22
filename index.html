@@ -2,14 +2,17 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <title>AIM</title>
 <meta name="apple-mobile-web-app-title" content="AIM">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#262624">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=3">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@400;500;600&family=Noto+Serif+Hebrew:wght@400;600&display=swap">
 <style>
 /* Layout: a one-screen chat with Claude: slim header with live dot, flowing assistant text, user bubbles, composer docked below */
 :root {
@@ -662,414 +665,13 @@ footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
 .pcsess .sname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pcsess .sst { flex: none; font-size: .76rem; color: var(--muted); }
 .mpick .mdesc { padding: 0 12px 6px; font-size: .82rem; color: var(--muted); }
-
-/* ==========================================================================================
-   Apple look (2026-10-22): iOS 26 Liquid Glass. Two layers: the chat is the content (opaque, no glass),
-   the header, composer, menus and popovers are the functional layer and float over it as glass.
-   Rules from the apple-liquid-glass / apple-design / apple-hig skills: one tint per model, hairlines
-   instead of borders, system font, sentence case, press states, grouped settings like iOS Settings,
-   and opaque fallbacks for reduced transparency and for browsers without backdrop-filter.
-   ========================================================================================== */
-:root {
-  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Hebrew", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
-  --font-reply: var(--font-ui);
-  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
-  --spark: #D97757; --accent: #D97757; --accent-ink: #FFFFFF;
-  --me-1: #C9693F; --me-2: #B4532F;
-  --live: #34C759; --warn: #FF3B30; --link: #007AFF;
-  --ease-out: cubic-bezier(.22, 1, .36, 1); --ease-spring: cubic-bezier(.32, .72, 0, 1);
-}
-:root, :root[data-model] {
-  --bg: #FFFFFF; --ground: #F2F2F7; --surface: #FFFFFF; --surface-2: #F2F2F7;
-  --ink: #1D1D1F; --muted: #6E6E73; --line: rgba(60, 60, 67, .16); --bubble: rgba(120, 120, 128, .12);
-  --fill: rgba(120, 120, 128, .12); --fill-2: rgba(120, 120, 128, .08); --code: #F2F2F7;
-  --warn-soft: rgba(255, 59, 48, .1); --thumb: #FFFFFF; --switch-off: rgba(120, 120, 128, .16);
-  --glass: rgba(250, 250, 252, .70); --glass-thick: rgba(250, 250, 252, .94);
-  --glass-shadow: 0 8px 28px rgba(0, 0, 0, .10), 0 1px 3px rgba(0, 0, 0, .06);
-  --rim-1: rgba(255, 255, 255, .95); --rim-2: rgba(255, 255, 255, .18); --rim-3: rgba(255, 255, 255, .6);
-  --rim-in: rgba(255, 255, 255, .9); --rim-edge: rgba(0, 0, 0, .06); --sheen: .32;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]), :root[data-model]:not([data-theme="light"]) {
-    --bg: #000000; --ground: #000000; --surface: #1C1C1E; --surface-2: #2C2C2E;
-    --ink: #F5F5F7; --muted: #98989F; --line: rgba(84, 84, 88, .5); --bubble: rgba(120, 120, 128, .24);
-    --fill: rgba(120, 120, 128, .24); --fill-2: rgba(120, 120, 128, .16); --code: #1C1C1E;
-    --warn-soft: rgba(255, 69, 58, .16); --thumb: #636366; --switch-off: rgba(120, 120, 128, .32);
-    --glass: rgba(40, 40, 44, .66); --glass-thick: rgba(36, 36, 40, .95);
-    --glass-shadow: 0 10px 34px rgba(0, 0, 0, .55), 0 1px 3px rgba(0, 0, 0, .4);
-    --rim-1: rgba(255, 255, 255, .42); --rim-2: rgba(255, 255, 255, .06); --rim-3: rgba(255, 255, 255, .2);
-    --rim-in: rgba(255, 255, 255, .22); --rim-edge: rgba(0, 0, 0, .5); --sheen: .14;
-    --live: #30D158; --warn: #FF453A; --link: #0A84FF;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"], :root[data-model][data-theme="dark"] {
-  --bg: #000000; --ground: #000000; --surface: #1C1C1E; --surface-2: #2C2C2E;
-  --ink: #F5F5F7; --muted: #98989F; --line: rgba(84, 84, 88, .5); --bubble: rgba(120, 120, 128, .24);
-  --fill: rgba(120, 120, 128, .24); --fill-2: rgba(120, 120, 128, .16); --code: #1C1C1E;
-  --warn-soft: rgba(255, 69, 58, .16); --thumb: #636366; --switch-off: rgba(120, 120, 128, .32);
-  --glass: rgba(40, 40, 44, .66); --glass-thick: rgba(36, 36, 40, .95);
-  --glass-shadow: 0 10px 34px rgba(0, 0, 0, .55), 0 1px 3px rgba(0, 0, 0, .4);
-  --rim-1: rgba(255, 255, 255, .42); --rim-2: rgba(255, 255, 255, .06); --rim-3: rgba(255, 255, 255, .2);
-  --rim-in: rgba(255, 255, 255, .22); --rim-edge: rgba(0, 0, 0, .5); --sheen: .14;
-  --live: #30D158; --warn: #FF453A; --link: #0A84FF;
-  color-scheme: dark;
-}
-/* one tint per model: Claude orange, ChatGPT Apple blue, Gemini Google blue */
-:root[data-model="gpt"] { --spark: #0A84FF; --accent: #007AFF; --accent-ink: #FFFFFF; --me-1: #1A8CFF; --me-2: #0066DD; }
-:root[data-model="gemini"] { --spark: #4285F4; --accent: #1A73E8; --accent-ink: #FFFFFF; --me-1: #2A7FF0; --me-2: #1662CC; }
-
-/* ---------- base ---------- */
-body {
-  font-family: var(--font-ui); font-size: 17px; line-height: 1.47; letter-spacing: -.01em;
-  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
-  background:
-    radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 60%),
-    radial-gradient(100% 50% at 50% 115%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 60%),
-    var(--bg);
-}
-:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; }
-
-/* the header and the composer float over the chat, which scrolls underneath them (sizes come from the script) */
-#app > header { position: absolute; top: 0; inset-inline: 0; z-index: 30; background: transparent; border: 0; padding-top: env(safe-area-inset-top, 0px); }
-#app > footer { position: absolute; bottom: 0; inset-inline: 0; z-index: 20; background: transparent; padding-bottom: env(safe-area-inset-bottom, 0px); }
-body { padding-top: 0; padding-bottom: 0; }
-main { padding-top: var(--hdr-h, 64px); padding-bottom: var(--ftr-h, 96px); scroll-padding-top: var(--hdr-h, 64px); }
-/* scroll edge: content dissolves as it passes beneath the bars instead of stopping at a line */
-#app > header::before, #app > footer::before {
-  content: ""; position: absolute; inset-inline: 0; z-index: -1; pointer-events: none;
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-}
-#app > header::before {
-  top: 0; bottom: -22px;
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 94%, transparent) 0%, color-mix(in srgb, var(--bg) 80%, transparent) 60%, transparent);
-  -webkit-mask-image: linear-gradient(to bottom, #000 65%, transparent); mask-image: linear-gradient(to bottom, #000 65%, transparent);
-}
-#app > footer::before {
-  top: -26px; bottom: 0; height: auto;
-  background: linear-gradient(to top, color-mix(in srgb, var(--bg) 86%, transparent), color-mix(in srgb, var(--bg) 40%, transparent) 70%, transparent);
-  -webkit-mask-image: linear-gradient(to top, #000 50%, transparent); mask-image: linear-gradient(to top, #000 50%, transparent);
-}
-
-/* ---------- Liquid Glass primitive: tint + blur + saturate, an inset top highlight, an uneven rim, a sheen ---------- */
-.bar .icon-btn, .gcap, .box, .menu, .mpick, .slash, .fpanel, .toast, .quick button, .fchg button, .sbar2 .icon-btn, .target button {
-  isolation: isolate;
-  background: var(--glass);
-  -webkit-backdrop-filter: saturate(180%) blur(24px); backdrop-filter: saturate(180%) blur(24px);
-  border: 0;
-  box-shadow: inset 0 .5px 0 var(--rim-in), inset 0 0 0 .5px var(--rim-edge), var(--glass-shadow);
-}
-.bar .icon-btn, .gcap, .box, .mpick, .slash, .fpanel, .quick button, .fchg button, .sbar2 .icon-btn, .target button { position: relative; }
-.bar .icon-btn::before, .gcap::before, .box::before, .menu::before, .mpick::before, .slash::before, .fpanel::before, .toast::before, .quick button::before, .fchg button::before, .sbar2 .icon-btn::before, .target button::before {
-  content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; padding: 1px; pointer-events: none;
-  background: linear-gradient(135deg, var(--rim-1) 0%, var(--rim-2) 45%, var(--rim-3) 100%);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-}
-.bar .icon-btn::after, .gcap::after, .box::after, .menu::after, .mpick::after, .slash::after, .fpanel::after, .toast::after, .quick button::after, .fchg button::after, .sbar2 .icon-btn::after, .target button::after {
-  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, var(--sheen)) 0%, rgba(255, 255, 255, calc(var(--sheen) * .2)) 34%, transparent 62%);
-}
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .bar .icon-btn, .gcap, .box, .menu, .mpick, .slash, .fpanel, .toast, .quick button, .fchg button, .sbar2 .icon-btn, .target button { background: var(--glass-thick); }
-  #app > header::before, #app > footer::before { background: var(--bg); -webkit-mask-image: none; mask-image: none; }
-}
-@media (prefers-reduced-transparency: reduce) {
-  .bar .icon-btn, .gcap, .box, .menu, .mpick, .slash, .fpanel, .toast, .quick button, .fchg button, .sbar2 .icon-btn, .target button { background: var(--glass-thick); -webkit-backdrop-filter: none; backdrop-filter: none; }
-  #app > header::before, #app > footer::before { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg); -webkit-mask-image: none; mask-image: none; }
-}
-/* ---------- motion: springs (CSS linear() spring from the apple-design-motion skill) ---------- */
-:root { --spring: cubic-bezier(.34, 1.56, .64, 1); --spring-smooth: cubic-bezier(.32, .72, 0, 1); }
-@supports (animation-timing-function: linear(0, 1)) {
-  :root {
-    --spring: linear(0, .0069 1.15%, .026 2.3%, .1135 5.18%, .2229 7.78%, .5977 15.84%, .9228, .9676 28.8%, 1.0032 31.68%, 1.046 42.05%, 1.0118 61.63%, 1.0025 69.41%, .9992 99.94%);
-  }
-}
-/* glass is more present: a brighter inner edge, a soft inner glow, a faint colour fringe at the rim */
-:root, :root[data-model] { --glass: rgba(255, 255, 255, .56); --glow: .38; --chroma: .32; --glass-shadow: 0 8px 26px rgba(0, 0, 0, .12), 0 2px 6px rgba(0, 0, 0, .06); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]), :root[data-model]:not([data-theme="light"]) { --glass: rgba(52, 52, 58, .55); --glow: .07; --chroma: .2; --glass-shadow: 0 10px 34px rgba(0, 0, 0, .6), 0 1px 3px rgba(0, 0, 0, .4); } }
-:root[data-theme="dark"], :root[data-model][data-theme="dark"] { --glass: rgba(52, 52, 58, .55); --glow: .07; --chroma: .2; --glass-shadow: 0 10px 34px rgba(0, 0, 0, .6), 0 1px 3px rgba(0, 0, 0, .4); }
-.bar .icon-btn, .gcap, .box, .menu, .mpick, .slash, .fpanel, .toast, .quick button, .fchg button, .sbar2 .icon-btn, .target button {
-  box-shadow: inset 0 1px 1px var(--rim-in), inset 0 -1px 1px rgba(0, 0, 0, .05), inset 0 0 0 .5px var(--rim-edge), inset 0 0 14px rgba(255, 255, 255, var(--glow)), var(--glass-shadow);
-}
-.bar .icon-btn::before, .gcap::before, .box::before, .menu::before, .mpick::before, .slash::before, .fpanel::before, .toast::before, .quick button::before, .fchg button::before, .sbar2 .icon-btn::before, .target button::before {
-  padding: 1.25px; background: linear-gradient(135deg, var(--rim-1) 0%, var(--rim-2) 38%, rgba(165, 190, 255, var(--chroma)) 70%, var(--rim-3) 100%);
-}
-body {
-  background:
-    radial-gradient(90% 45% at 85% -8%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 62%),
-    radial-gradient(80% 40% at 0% 0%, rgba(90, 140, 255, .07), transparent 60%),
-    radial-gradient(100% 45% at 50% 112%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 62%),
-    var(--bg);
-}
-
-/* press: glass controls swell and light up where the finger is, then spring back; rows and cards sink a little.
-   The script adds .is-pressed (iOS Safari does not run :active without a touch listener). */
-button, .conv, .qopt, .toggle, summary, .gcap, .file {
-  transition: transform 560ms var(--spring), background-color 220ms var(--ease-out), color 220ms var(--ease-out), opacity 220ms var(--ease-out), box-shadow 220ms var(--ease-out);
-}
-.is-pressed { transition-duration: 140ms, 120ms, 120ms, 120ms, 120ms; transition-timing-function: var(--ease-out); }
-.bar .icon-btn.is-pressed, .sbar2 .icon-btn.is-pressed, .quick button.is-pressed, .fchg button.is-pressed, .target button.is-pressed, .box .send.is-pressed, .box .attach.is-pressed, .box .mic.is-pressed, .mchip.is-pressed, .box .shield.is-pressed { transform: scale(1.14); }
-.gcap:has(.is-pressed) { transform: scale(1.07); transition-duration: 140ms; transition-timing-function: var(--ease-out); }
-.gcap .is-pressed { transform: scale(1.08); }
-.bar .icon-btn.is-pressed::after, .sbar2 .icon-btn.is-pressed::after, .quick button.is-pressed::after, .fchg button.is-pressed::after, .target button.is-pressed::after, .gcap:has(.is-pressed)::after {
-  background: radial-gradient(circle at var(--px, 50%) var(--py, 50%), rgba(255, 255, 255, .7), rgba(255, 255, 255, .12) 55%, transparent 75%);
-}
-.box .attach.is-pressed, .mchip.is-pressed { background: var(--bubble); }
-.menu .mi.is-pressed, .mpick .mrow.is-pressed, .slash button.is-pressed { background: var(--fill); transform: scale(.98); }
-.conv.is-pressed, .qopt.is-pressed, .hit.is-pressed, .btn-main.is-pressed, .btn-plain.is-pressed, .btn-warn.is-pressed, .pb.is-pressed, .convdel.is-pressed, .convbtn.is-pressed, .pcref.is-pressed, .nudge button.is-pressed, .oldbar button.is-pressed { transform: scale(.96); opacity: .8; }
-.afoot .act.is-pressed, .uedit.is-pressed, .menu-btn.is-pressed svg { background: var(--fill); }
-.afoot .act.is-pressed, .uedit.is-pressed, .seg button.is-pressed, .tiers button.is-pressed { transform: scale(.88); }
-summary.is-pressed { opacity: .55; }
-.toggle.is-pressed input::before { width: 33px; }
-.toggle.is-pressed input:checked::before { inset-inline-start: 16px; }
-.toggle input::before { transition: inset-inline-start 420ms var(--spring), width 320ms var(--spring); }
-
-/* things open with motion instead of just appearing */
-.sheet:not([hidden]) { animation: sheetIn 560ms var(--spring-smooth) both; }
-@keyframes sheetIn { from { transform: translateY(100%); } to { transform: none; } }
-.menu:not([hidden]) { animation: menuIn 480ms var(--spring) both; }
-@keyframes menuIn { from { opacity: 0; transform: scale(.35) translateY(-10px); } 35% { opacity: 1; } to { opacity: 1; transform: none; } }
-.menu:not([hidden]) .mi { animation: itemIn 380ms var(--ease-out) both; }
-.menu .mi:nth-child(2) { animation-delay: 25ms; } .menu .mi:nth-child(3) { animation-delay: 50ms; } .menu .mi:nth-child(4) { animation-delay: 75ms; } .menu .mi:nth-child(5) { animation-delay: 100ms; } .menu .mi:nth-child(6) { animation-delay: 125ms; }
-@keyframes itemIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
-.mpick:not([hidden]), .slash:not([hidden]), .fpanel:not([hidden]) { transform-origin: 50% 100%; animation: riseIn 460ms var(--spring) both; }
-@keyframes riseIn { from { opacity: 0; transform: translateY(14px) scale(.92); } 40% { opacity: 1; } to { opacity: 1; transform: none; } }
-.box .send:not(:disabled) { animation: sendIn 460ms var(--spring); }
-@keyframes sendIn { from { transform: scale(.6); } to { transform: none; } }
-.camview:not([hidden]) { animation: fadeIn 260ms var(--ease-out) both; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-/* the aura (liquid-glass-frontend skill): glass over flat white shows nothing, so soft colour fields drift behind
-   the chat and the bars frost them. Light glass is thinner with more saturation, so the colour reads through. */
-.aura { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
-.aura i { position: absolute; display: block; border-radius: 50%; will-change: transform; }
-.aura i:nth-child(1) { width: 95vmax; height: 95vmax; top: -48vmax; inset-inline-end: -38vmax; background: radial-gradient(circle, color-mix(in srgb, var(--accent) var(--aura-a), transparent) 0%, transparent 62%); animation: drift1 24s ease-in-out infinite alternate; }
-.aura i:nth-child(2) { width: 85vmax; height: 85vmax; top: -30vmax; inset-inline-start: -45vmax; background: radial-gradient(circle, rgba(120, 140, 255, var(--aura-b)) 0%, transparent 62%); animation: drift2 30s ease-in-out infinite alternate; }
-.aura i:nth-child(3) { width: 100vmax; height: 100vmax; bottom: -62vmax; inset-inline-start: -20vmax; background: radial-gradient(circle, color-mix(in srgb, var(--spark) var(--aura-c), transparent) 0%, rgba(255, 140, 200, calc(var(--aura-b) * .6)) 35%, transparent 64%); animation: drift3 27s ease-in-out infinite alternate; }
-@keyframes drift1 { to { transform: translate(-12vmax, 10vmax) scale(1.12); } }
-@keyframes drift2 { to { transform: translate(14vmax, 8vmax) scale(.9); } }
-@keyframes drift3 { to { transform: translate(10vmax, -9vmax) scale(1.08); } }
-:root, :root[data-model] { --aura-a: 34%; --aura-b: .26; --aura-c: 26%; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]), :root[data-model]:not([data-theme="light"]) { --aura-a: 30%; --aura-b: .22; --aura-c: 22%; } }
-:root[data-theme="dark"], :root[data-model][data-theme="dark"] { --aura-a: 30%; --aura-b: .22; --aura-c: 22%; }
-body { background: var(--bg); }
-.bar .icon-btn, .gcap, .box, .quick button, .fchg button, .target button { -webkit-backdrop-filter: blur(30px) saturate(210%); backdrop-filter: blur(30px) saturate(210%); }
-:root, :root[data-model] { --glass: rgba(255, 255, 255, .34); }
-.box { background: color-mix(in srgb, var(--glass) 100%, rgba(255, 255, 255, .1)); }
-#app > header::before { background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 62%, transparent), color-mix(in srgb, var(--bg) 30%, transparent) 70%, transparent); -webkit-backdrop-filter: blur(10px) saturate(160%); backdrop-filter: blur(10px) saturate(160%); }
-#app > footer::before { background: linear-gradient(to top, color-mix(in srgb, var(--bg) 55%, transparent), color-mix(in srgb, var(--bg) 22%, transparent) 70%, transparent); -webkit-backdrop-filter: blur(10px) saturate(160%); backdrop-filter: blur(10px) saturate(160%); }
-@media (prefers-reduced-transparency: reduce) { .aura { display: none; } }
-/* feels installed, not a web page (mobile-native skill): no text selection or callout on a long press, no tap delay,
-   and hover tints only where a mouse exists, so they never stick after a tap on the phone */
-button, .conv, .qopt, .toggle, summary { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
-@media (hover: none) {
-  .bar .icon-btn:hover, .gcap .icon-btn:hover { background: inherit; }
-  .menu .mi:hover, .mpick .mrow:hover, .slash button:hover, .afoot .act:hover, .uedit:hover, .icon-btn:hover { background: transparent; }
-  .bar .icon-btn:hover { background: var(--glass); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .aura i { animation: none !important; }
-  .sheet, .menu, .menu .mi, .mpick, .slash, .fpanel, .box .send, .camview { animation: none !important; }
-  .is-pressed, .gcap:has(.is-pressed) { transform: none !important; }
-}
-
-/* ---------- header: a glass circle, the title in the middle, a glass capsule with the model logo and the menu ---------- */
-.bar { gap: 8px; padding-block: 8px; }
-.bar .icon-btn { width: 44px; height: 44px; border-radius: 50%; color: var(--ink); flex: none; }
-.bar .icon-btn:hover, .bar .icon-btn[aria-expanded="true"] { background: var(--glass); color: var(--ink); }
-.bar .icon-btn svg, .menu-btn svg { width: 22px; height: 22px; }
-.bar .who { flex: 1; min-width: 0; justify-items: center; text-align: center; padding-inline: 4px; }
-.bar .who .name { font-size: 17px; font-weight: 600; letter-spacing: -.022em; max-width: 100%; }
-.bar .sub { justify-content: center; font-size: 12px; letter-spacing: 0; max-width: 100%; }
-.dot { width: 7px; height: 7px; }
-.gcap { display: flex; align-items: center; height: 44px; padding-inline: 4px; border-radius: 999px; flex: none; }
-.gcap .icon-btn, .gcap .logo-btn { position: static; width: 36px; height: 36px; border-radius: 50%; background: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; isolation: auto; }
-.gcap .icon-btn::before, .gcap .icon-btn::after { content: none; }
-.gcap .logo-btn { display: grid; place-items: center; margin: 0; }
-.gcap .logo-btn svg, .gcap .logo-btn .duo { width: 22px; height: 22px; }
-.gcap .icon-btn:hover, .gcap .icon-btn[aria-expanded="true"] { background: var(--fill); }
-.gcap .icon-btn svg { width: 20px; height: 20px; }
-.hspin { width: 20px; height: 20px; border-width: 2.25px; border-top-color: var(--accent); margin-inline: 2px; }
-/* the ⋮ menu: a glass popover with words, so it keeps the full tint */
-.menu { top: calc(100% + 2px); inset-inline-end: 16px; min-width: 240px; padding: 6px; border-radius: 22px; transform-origin: top; animation: pop 260ms var(--ease-spring); }
-:root[dir="rtl"] .menu { transform-origin: top left; } :root[dir="ltr"] .menu { transform-origin: top right; }
-.menu .mi { height: 46px; padding-inline: 14px; border-radius: 14px; font-size: 16px; }
-.menu .mi:hover, .menu .mi:focus-visible { background: var(--fill); }
-.menu .mi svg { color: var(--ink); opacity: .85; }
-@keyframes pop { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
-.alert { border-radius: 14px; padding: 10px 14px; font-size: 15px; }
-.nudge, .oldbar { border-radius: 18px; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .05), 0 6px 20px rgba(0, 0, 0, .06); font-size: 15px; padding: 10px 12px 10px 14px; }
-.nudge .go, .oldbar button { border-radius: 999px; padding: 7px 14px; background: var(--accent); color: var(--accent-ink); font-size: 14px; }
-
-/* ---------- thread: replies flow as text, my messages are tinted bubbles like Messages ---------- */
-.thread { gap: 8px; padding-block: 12px 8px; }
-.reply { font-size: 17px; line-height: 1.55; letter-spacing: -.012em; }
-.reply h4 { font-size: 17px; font-weight: 600; letter-spacing: -.022em; }
-.reply strong { font-weight: 600; }
-.reply a { color: var(--link); text-decoration: none; }
-.reply pre { background: var(--code); border-radius: 14px; padding: 12px 14px; }
-.reply code { border-radius: 6px; }
-.row.me { margin-block: 12px 2px; }
-.ububble { max-width: 80%; padding: 9px 15px; border-radius: 20px; font-size: 17px; line-height: 1.35; letter-spacing: -.012em; color: #FFFFFF; background: linear-gradient(180deg, var(--me-1), var(--me-2)); }
-.ububble a { color: inherit; }
-.ufoot { font-size: 12px; padding-inline: 8px; letter-spacing: 0; }
-.ufoot .read { color: var(--muted); font-weight: 600; }
-.uedit:hover, .afoot .act:hover { background: var(--fill); }
-.afoot .act { border-radius: 50%; }
-.afoot .act[aria-pressed="true"] { color: var(--accent); }
-.sys { font-size: 12px; font-weight: 600; letter-spacing: 0; color: var(--muted); }
-.pics a { border-radius: 18px; background: var(--fill); }
-.file { border: 0 !important; border-radius: 14px !important; background: var(--fill) !important; }
-.who { color: var(--muted); font-size: 12px; }
-.agent { border: 0; border-radius: 16px; background: var(--fill-2); padding: 8px 12px; }
-.tool .cbox, .cbox, .cx .cbox { border: 0; border-radius: 14px; background: var(--code); }
-.cbox .chead, .cx .cbox .chead { border-bottom: .5px solid var(--line); }
-.tool pre.out { border-top: .5px solid var(--line); }
-.toolgrp .tool { border-inline-start: 2px solid var(--fill); }
-.tasks-list { border: 0; border-radius: 16px; background: var(--code); }
-.tasks-link { color: var(--link); }
-.runrow .tspark { color: var(--spark); }
-.qopt { border: 0; border-radius: 16px; background: var(--surface); box-shadow: inset 0 0 0 .5px var(--line), 0 1px 2px rgba(0, 0, 0, .04); padding: 12px 16px; }
-.qopt .ql { font-size: 16px; }
-.qopt:active, .qopt.picked { border: 0; background: var(--surface); box-shadow: inset 0 0 0 2px var(--accent); }
-.perm { border: 0; border-radius: 20px; background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--accent), 0 6px 20px rgba(0, 0, 0, .06); padding: 14px; }
-.perm .ph { color: var(--accent); }
-.pb { height: 48px; border: 0; border-radius: 14px; background: var(--fill); font-size: 16px; }
-.pb.allow { background: var(--accent); color: var(--accent-ink); }
-.fchg button { height: 40px; border-radius: 999px; font-size: 15px; background: var(--glass); }
-.fchg button[aria-expanded="true"] { background: var(--glass-thick); }
-.fpanel { border-radius: 24px; background: var(--glass-thick); }
-/* empty chat: a large title, no letter-spaced capitals */
-.empty { gap: 8px; }
-.empty .logo { width: 52px; height: 52px; }
-.empty .brand { font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; }
-.empty strong { font-family: var(--font-ui); font-size: 28px; line-height: 1.2; font-weight: 700; letter-spacing: -.028em; }
-.empty p { font-size: 15px; }
-
-/* ---------- composer: a floating glass capsule ---------- */
-.box { margin-block: 6px 10px; padding: 6px 8px 8px; border-radius: 26px; gap: 2px 6px; }
-.box textarea { font-size: 17px; min-height: 36px; padding: 7px 8px; letter-spacing: -.012em; }
-.box textarea::placeholder { color: var(--muted); }
-.box .attach { width: 36px; height: 36px; border: 0; border-radius: 50%; background: var(--fill); color: var(--ink); }
-.box .mic { width: 36px; height: 36px; border-radius: 50%; color: var(--ink); }
-.box .send { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); }
-.box .send:disabled { opacity: 1; background: var(--fill); color: var(--muted); }
-.box .send.stop, :root[data-model="gpt"] .box .send.stop { width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--ink); color: var(--bg); }
-.box .send.stop svg { width: 20px; height: 20px; }
-:root[data-model="gpt"] .box .send:not(.stop) { background: var(--accent); color: var(--accent-ink); }
-:root[data-model="gpt"] .box .send:not(.stop):disabled { opacity: 1; background: var(--fill); color: var(--muted); }
-.mchip { height: 36px; border: 0; border-radius: 999px; background: var(--fill); color: var(--ink); font-size: 14px; font-weight: 500; padding: 0 12px; }
-.mchip[aria-expanded="true"] { background: var(--fill); box-shadow: inset 0 0 0 1.5px var(--accent); }
-:root[data-model="gpt"] .mchip { background: var(--fill); padding: 0 12px; }
-.box .shield { width: 36px; height: 36px; }
-.quick { padding-block: 6px 4px; gap: 8px; }
-.quick button { height: 34px; padding: 0 14px; border-radius: 999px; font-size: 14px; font-weight: 500; color: var(--ink); background: var(--glass); }
-/* the row scrolls sideways, which clips an outer shadow into a dark band: these chips get only the glass edge */
-.quick button, .quick button.is-pressed { box-shadow: inset 0 1px 1px var(--rim-in), inset 0 0 0 .5px var(--rim-edge), inset 0 0 10px rgba(255, 255, 255, var(--glow)); }
-.quick button:active { background: var(--glass); }
-.quick .qedit { width: 34px; height: 34px; padding: 0; }
-.target button { border-radius: 999px; padding: 6px 12px 6px 10px; color: var(--ink); }
-.target button[aria-pressed="true"] { box-shadow: inset 0 0 0 1.5px var(--accent), var(--glass-shadow); }
-.thumb { border-radius: 14px; }
-/* popovers above the composer: glass with words keeps the full tint */
-.mpick, .slash { border-radius: 26px; padding: 8px; background: var(--glass-thick); }
-.mpick .mrow, .slash button { border-radius: 16px; }
-.mpick .mrow:hover, .mpick .mrow:focus-visible, .mpick .mrow[aria-pressed="true"], .slash button:hover, .slash button[aria-selected="true"] { background: var(--fill); }
-.mpick .mrow .ck { color: var(--accent); }
-.mpick .mhead { font-size: 13px; letter-spacing: 0; }
-.mpick hr { border-top: .5px solid var(--line); }
-.mpick .mstat { border-top: .5px solid var(--line); }
-.mpick .mseg button { border: 0; background: var(--fill); }
-.mpick .mseg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
-.mpick input[type=range] { accent-color: var(--accent); }
-.toast { bottom: calc(var(--ftr-h, 96px) + 10px); border-radius: 999px; padding: 10px 18px; color: var(--ink); font-size: 15px; font-weight: 500; animation: pop 260ms var(--ease-spring); }
-
-/* ---------- sheets: iOS Settings (grey grouped ground, white rounded groups, switches, segmented controls) ---------- */
-.sheet { background: var(--ground); }
-.sbar2 { padding: 8px 16px; gap: 10px; border-bottom: 0; background: color-mix(in srgb, var(--ground) 72%, transparent); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 .5px 0 var(--line); }
-.sbar2 b { font-size: 17px; font-weight: 600; letter-spacing: -.022em; }
-.sbar2 .icon-btn { width: 36px; height: 36px; border-radius: 50%; color: var(--ink); }
-.sbar2 .icon-btn svg { width: 18px; height: 18px; }
-.sheet-in { gap: 12px; padding-block: 20px 32px; }
-.lang-label, .sesh { font-size: 13px; font-weight: 400; color: var(--muted); letter-spacing: 0; }
-.field { height: 44px; border: 0; border-radius: 12px; background: var(--surface); font-size: 17px; padding-inline: 14px; box-shadow: inset 0 0 0 .5px var(--line); }
-.sheet .field { background: var(--fill); box-shadow: none; }
-.csearch .field { border-radius: 12px; height: 38px; font-size: 16px; }
-.convs { gap: 8px; }
-.conv { border: 0; border-radius: 14px; background: var(--surface); padding: 12px 14px; }
-.conv[aria-current="true"] { border: 0; box-shadow: inset 0 0 0 2px var(--accent); }
-.conv b { font-size: 16px; font-weight: 600; letter-spacing: -.012em; }
-.conv span { font-size: 13px; }
-.convdel, .convbtn { border: 0; border-radius: 14px; background: var(--surface); }
-.convdel:hover { color: var(--warn); border: 0; }
-.convbtn[aria-pressed="true"] { color: var(--accent); }
-.hit { border: 0; border-radius: 14px; background: var(--surface); }
-.pcsess { background: var(--surface); border-radius: 14px; padding: 4px; }
-.pcsess .srow:nth-child(odd) { background: transparent; }
-.pcsess .srow + .srow { box-shadow: inset 0 .5px 0 var(--line); border-radius: 0; }
-.pcsess .s-running .sdot { box-shadow: 0 0 0 3px color-mix(in srgb, var(--live) 25%, transparent); }
-.pc .tile { border: 0; border-radius: 14px; background: var(--surface); padding: 10px 12px; }
-.pc .tile b { font-size: 17px; letter-spacing: -.012em; }
-.pc .bar2 { height: 5px; border-radius: 3px; background: var(--fill); }
-.pc .bar2 i { background: var(--accent); border-radius: 3px; }
-.pcref { border: 0; background: var(--surface); }
-.meta { font-size: 13px; }
-/* toggles: grouped rows with an iOS switch at the end */
-.toggle { width: 100%; max-width: 480px; min-height: 50px; padding: 6px 16px; gap: 12px; border-radius: 14px; background: var(--surface); font-size: 17px; letter-spacing: -.012em; text-align: start; }
-.toggle span { flex: 1; }
-.toggle:has(+ .toggle) { border-end-start-radius: 0; border-end-end-radius: 0; }
-.toggle + .toggle { margin-top: -12px; border-start-start-radius: 0; border-start-end-radius: 0; box-shadow: inset 0 .5px 0 var(--line); }
-.toggle input { -webkit-appearance: none; appearance: none; order: 2; position: relative; flex: none; width: 51px; height: 31px; margin: 0; border-radius: 999px; background: var(--switch-off); cursor: pointer; transition: background-color 250ms var(--ease-out); }
-.toggle input::before { content: ""; position: absolute; top: 2px; inset-inline-start: 2px; width: 27px; height: 27px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 3px 8px rgba(0, 0, 0, .15), 0 1px 1px rgba(0, 0, 0, .16); transition: inset-inline-start 280ms var(--ease-spring); }
-.toggle input:checked { background: var(--live); }
-.toggle input:checked::before { inset-inline-start: 22px; }
-/* segmented control: filled track, raised thumb */
-.seg { padding: 2px; border: 0; border-radius: 9px; background: var(--fill); }
-.seg button { padding: 6px 20px; border-radius: 7px; font-size: 14px; font-weight: 500; color: var(--ink); }
-.seg button[aria-pressed="true"] { background: var(--thumb); color: var(--ink); font-weight: 600; box-shadow: 0 3px 8px rgba(0, 0, 0, .12), 0 3px 1px rgba(0, 0, 0, .04); }
-.tiers button { border: 0; border-radius: 10px; background: var(--fill); }
-.tiers button[aria-pressed="true"] { border: 0; background: var(--thumb); box-shadow: 0 3px 8px rgba(0, 0, 0, .12), 0 3px 1px rgba(0, 0, 0, .04); }
-.members label { border: 0; border-radius: 14px; background: var(--surface); }
-.pickall { color: var(--link); }
-/* buttons: filled capsules; destructive stays red */
-.btn-main { height: 50px; border-radius: 14px; background: var(--accent); color: var(--accent-ink); font-size: 17px; font-weight: 600; }
-.btn-plain { padding: 10px 18px; border: 0; border-radius: 999px; background: var(--surface); color: var(--link); font-size: 15px; font-weight: 500; }
-.btn-warn { padding: 10px 18px; border: 0; border-radius: 999px; background: var(--surface); color: var(--warn); font-size: 15px; font-weight: 600; }
-.qeditor textarea, .uedit-box textarea { border: 0; border-radius: 14px; box-shadow: inset 0 0 0 .5px var(--line); }
-.uedit-box textarea { box-shadow: inset 0 0 0 2px var(--accent); }
-.btn-link { color: var(--link); text-decoration: none; font-size: 15px; }
-
-/* ---------- sign in ---------- */
-.login { background: var(--ground); }
-.login-card { gap: 16px; max-width: 380px; }
-.login-card .logo { width: 64px; height: 64px; }
-.login-card h1 { font-size: 34px; line-height: 1.2; font-weight: 700; letter-spacing: -.03em; color: var(--ink); }
-.login-card p { font-size: 15px; }
-.login .field { background: var(--surface); box-shadow: none; }
-
-/* ---------- camera and voice: clear glass over the video, regular glass in voice mode ---------- */
-.camview .ctop button, .camview .ckbd {
-  position: relative; isolation: isolate; background: rgba(255, 255, 255, .16); color: #FFFFFF;
-  -webkit-backdrop-filter: saturate(160%) blur(14px); backdrop-filter: saturate(160%) blur(14px);
-  box-shadow: inset 0 .5px 0 rgba(255, 255, 255, .55), inset 0 0 0 .5px rgba(255, 255, 255, .18), 0 6px 18px rgba(0, 0, 0, .25);
-}
-.camview .ctop button { width: 44px; height: 44px; }
-.camview .ctop button[aria-pressed="true"] { background: var(--live); color: #04210F; }
-.camview .ca { background: rgba(28, 28, 30, .55); -webkit-backdrop-filter: saturate(160%) blur(20px); backdrop-filter: saturate(160%) blur(20px); border-radius: 20px; padding: 12px 14px; box-shadow: inset 0 .5px 0 rgba(255, 255, 255, .25); }
-.camview .cclaude { background: var(--accent); color: var(--accent-ink); border-radius: 999px; padding: 12px 16px; }
-.camview form input { border-radius: 999px; }
-.camview form button { border-radius: 999px; }
-.camview.voice .ctop button, .camview.voice .ckbd { background: var(--glass); color: var(--ink); box-shadow: inset 0 .5px 0 var(--rim-in), inset 0 0 0 .5px var(--rim-edge), var(--glass-shadow); }
-.camview.voice .ctop button[aria-pressed="true"] { background: var(--live); color: #FFFFFF; }
-.camview.voice .ca { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .05), 0 6px 20px rgba(0, 0, 0, .06); -webkit-backdrop-filter: none; backdrop-filter: none; }
-.vorb .vglow { background: radial-gradient(circle, color-mix(in srgb, var(--spark) 30%, transparent) 0%, transparent 68%); }
-.vorb .vmark { color: var(--spark); }
-@media (prefers-reduced-transparency: reduce) {
-  .camview .ctop button, .camview .ckbd, .camview .ca { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(28, 28, 30, .92); }
-}
-@media (prefers-reduced-motion: reduce) { .menu, .toast { animation: none; } }
+/* press feedback (the script adds .is-pressed) and no font resizing when the phone turns */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+button, .conv, .qopt, summary { -webkit-tap-highlight-color: transparent; }
+button:not(.send), .conv, .qopt { transition: transform 180ms cubic-bezier(.34, 1.56, .64, 1); }
+.is-pressed:not(.toggle):not(summary) { transform: scale(.93); transition-duration: 80ms; }
+summary.is-pressed { opacity: .6; }
+@media (prefers-reduced-motion: reduce) { .is-pressed { transform: none !important; } }
 </style>
 </head>
 <body>
@@ -1099,12 +701,10 @@ button, .conv, .qopt, .toggle, summary { -webkit-user-select: none; user-select:
       <span class="sub"><i class="dot" id="dot" data-s="off"></i><span id="sub"></span></span>
     </div>
     <span class="hspin" id="hspin" hidden></span>
-    <div class="gcap">
-      <button class="logo logo-btn" id="modelBtn" type="button"></button>
-      <button class="icon-btn" id="moreBtn" type="button" aria-expanded="false" aria-controls="menu">
-        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg>
-      </button>
-    </div>
+    <button class="logo logo-btn" id="modelBtn" type="button"></button>
+    <button class="icon-btn" id="moreBtn" type="button" aria-expanded="false" aria-controls="menu">
+      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg>
+    </button>
   </div>
   <div class="menu" id="menu" role="menu" hidden>
     <button class="mi" id="newBtn" type="button" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span data-t="newChat"></span></button>
@@ -1160,7 +760,6 @@ button, .conv, .qopt, .toggle, summary { -webkit-user-select: none; user-select:
   </div>
 </header>
 
-<div class="aura" aria-hidden="true"><i></i><i></i><i></i></div>
 <canvas id="glyphs" aria-hidden="true"></canvas>
 <main id="scroller">
   <div class="wrap">
@@ -1514,7 +1113,7 @@ function paintModel() {
   $("modelName").textContent = mname();
   document.title = mname();
   const m = document.querySelector('meta[name="theme-color"]');
-  if (m) m.content = isDark() ? "#000000" : "#ffffff";
+  if (m) m.content = isDark() ? (model === "gpt" ? "#000000" : model === "gemini" ? "#131314" : "#262624") : model === "gemini" ? "#ffffff" : "#faf9f5";
 }
 const followByModel = { claude: true, gpt: true, gemini: true, team: true };
 function switchModel() {
@@ -1547,26 +1146,11 @@ async function newChat() {
   await makeConv(asked.trim() || stamp);
 }
 $("newBtn").onclick = newChat;
-const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
-function closeSheets() {
-  const done = () => { $("sheet").hidden = true; $("convSheet").hidden = true; $("gear").setAttribute("aria-expanded", "false"); $("convBtn").setAttribute("aria-expanded", "false"); };
-  const open = [$("sheet"), $("convSheet")].filter((s) => !s.hidden);
-  if (!open.length || calm() || !open[0].animate) return done();
-  /* slide down like an iOS sheet, then hide */
-  let shut = false; const once = () => { if (!shut) { shut = true; done(); } };
-  Promise.all(open.map((s) => s.animate([{ transform: "none" }, { transform: "translateY(100%)" }], { duration: 320, easing: "cubic-bezier(.32, 0, .67, 0)" }).finished)).then(once, once);
-  setTimeout(once, 380);   // a background tab may never finish the animation
-}
+function closeSheets() { $("sheet").hidden = true; $("convSheet").hidden = true; $("gear").setAttribute("aria-expanded", "false"); $("convBtn").setAttribute("aria-expanded", "false"); }
 document.querySelectorAll(".sclose").forEach((b) => { b.onclick = closeSheets; });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheets(); });
 $("moreBtn").onclick = (e) => { e.stopPropagation(); const open = $("menu").hidden; $("menu").hidden = !open; $("moreBtn").setAttribute("aria-expanded", String(open)); };
-const closeMenu = () => {
-  const m = $("menu"); $("moreBtn").setAttribute("aria-expanded", "false");
-  if (m.hidden || calm() || !m.animate) { m.hidden = true; return; }
-  const hide = () => { m.hidden = true; };
-  m.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.6) translateY(-8px)" }], { duration: 180, easing: "cubic-bezier(.4, 0, 1, 1)" }).finished.then(hide, hide);
-  setTimeout(hide, 240);   // a background tab may never finish the animation
-};
+const closeMenu = () => { $("menu").hidden = true; $("moreBtn").setAttribute("aria-expanded", "false"); };
 $("menu").addEventListener("click", closeMenu);
 document.addEventListener("click", (e) => { if (!$("menu").hidden && !e.target.closest("#menu")) closeMenu(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
@@ -3140,41 +2724,30 @@ const MAX_PICS = 4;
     if (was) requestAnimationFrame(() => { sc.scrollTop = sc.scrollHeight; stuck = true; });
   };
   vv.addEventListener("resize", set); vv.addEventListener("scroll", set); set();
+  /* turning the phone: iOS reports the new size late and leaves the page scrolled or zoomed, so measure again a few
+     times after the turn and put the page back at the top */
+  const turned = () => { [60, 250, 600].forEach((ms) => setTimeout(() => { window.scrollTo(0, 0); set(); }, ms)); };
+  window.addEventListener("orientationchange", turned);
+  if (screen.orientation) screen.orientation.addEventListener("change", turned);
   if (window.ResizeObserver) new ResizeObserver(() => { if (stuck) sc.scrollTop = sc.scrollHeight; }).observe(sc);
 })();
-/* Liquid Glass layout: the header and composer float over the chat, so the chat is padded by their live heights */
-(function floatChrome() {
-  const hd = document.querySelector("#app > header"), ft = document.querySelector("#app > footer"), sc = $("scroller"), root = document.documentElement;
-  const set = () => {
-    const was = sc.scrollHeight - sc.scrollTop - sc.clientHeight < 140;
-    root.style.setProperty("--hdr-h", hd.offsetHeight + "px"); root.style.setProperty("--ftr-h", ft.offsetHeight + "px");
-    if (was) sc.scrollTop = sc.scrollHeight;
-  };
-  if (window.ResizeObserver) { const ro = new ResizeObserver(set); ro.observe(hd); ro.observe(ft); }
-  set();
-})();
-/* iOS press feel: Safari runs :active only with a touch listener, so presses are tracked here.
-   .is-pressed stays on for at least 130 ms so a quick tap still shows; glass controls get a light at the finger. */
+/* press feedback: Safari on iOS runs :active only with a touch listener, so presses are tracked here; a pressed
+   control sinks a little (.is-pressed stays at least 120 ms so a quick tap still shows) and every tap gives a light
+   haptic tick (Safari on iOS 18+ ticks when a switch checkbox toggles, so a hidden one is toggled; Android vibrates) */
 (function pressFeel() {
   document.addEventListener("touchstart", () => {}, { passive: true });
   const SEL = "button, .conv, .qopt, .toggle, summary, .file";
   let cur = null, at = 0;
   const up = () => {
     const b = cur; if (!b) return; cur = null;
-    setTimeout(() => b.classList.remove("is-pressed"), Math.max(0, 130 - (performance.now() - at)));
+    setTimeout(() => b.classList.remove("is-pressed"), Math.max(0, 120 - (performance.now() - at)));
   };
   document.addEventListener("pointerdown", (e) => {
     const b = e.target.closest(SEL); if (!b || b.disabled) return;
-    up(); cur = b; at = performance.now();
-    const r = b.getBoundingClientRect();
-    b.style.setProperty("--px", ((e.clientX - r.left) / r.width * 100).toFixed(1) + "%");
-    b.style.setProperty("--py", ((e.clientY - r.top) / r.height * 100).toFixed(1) + "%");
-    b.classList.add("is-pressed");
+    up(); cur = b; at = performance.now(); b.classList.add("is-pressed");
   }, { passive: true });
   ["pointerup", "pointercancel", "dragstart"].forEach((t) => document.addEventListener(t, up, { passive: true }));
   window.addEventListener("scroll", up, { passive: true, capture: true });
-  /* haptics: every tap gives a light tick (the claude-liquid-glass skill's rule). Safari on iOS 18+ ticks when a
-     switch checkbox toggles, so a hidden one is toggled; Android uses vibrate. */
   const lab = document.createElement("label"), sw = document.createElement("input");
   sw.type = "checkbox"; sw.setAttribute("switch", ""); sw.tabIndex = -1; lab.append(sw); lab.setAttribute("aria-hidden", "true");
   lab.style.cssText = "position:fixed;left:-100px;top:0;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none";
