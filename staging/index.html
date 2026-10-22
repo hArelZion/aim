@@ -935,8 +935,10 @@ summary.is-pressed { opacity: .55; }
 .mchip[aria-expanded="true"] { background: var(--fill); box-shadow: inset 0 0 0 1.5px var(--accent); }
 :root[data-model="gpt"] .mchip { background: var(--fill); padding: 0 12px; }
 .box .shield { width: 36px; height: 36px; }
-.quick { padding-block: 6px 2px; gap: 8px; }
+.quick { padding-block: 6px 4px; gap: 8px; }
 .quick button { height: 34px; padding: 0 14px; border-radius: 999px; font-size: 14px; font-weight: 500; color: var(--ink); background: var(--glass); }
+/* the row scrolls sideways, which clips an outer shadow into a dark band: these chips get only the glass edge */
+.quick button, .quick button.is-pressed { box-shadow: inset 0 1px 1px var(--rim-in), inset 0 0 0 .5px var(--rim-edge), inset 0 0 10px rgba(255, 255, 255, var(--glow)); }
 .quick button:active { background: var(--glass); }
 .quick .qedit { width: 34px; height: 34px; padding: 0; }
 .target button { border-radius: 999px; padding: 6px 12px 6px 10px; color: var(--ink); }
@@ -1521,7 +1523,9 @@ function closeSheets() {
   const open = [$("sheet"), $("convSheet")].filter((s) => !s.hidden);
   if (!open.length || calm() || !open[0].animate) return done();
   /* slide down like an iOS sheet, then hide */
-  Promise.all(open.map((s) => s.animate([{ transform: "none" }, { transform: "translateY(100%)" }], { duration: 320, easing: "cubic-bezier(.32, 0, .67, 0)" }).finished)).then(done, done);
+  let shut = false; const once = () => { if (!shut) { shut = true; done(); } };
+  Promise.all(open.map((s) => s.animate([{ transform: "none" }, { transform: "translateY(100%)" }], { duration: 320, easing: "cubic-bezier(.32, 0, .67, 0)" }).finished)).then(once, once);
+  setTimeout(once, 380);   // a background tab may never finish the animation
 }
 document.querySelectorAll(".sclose").forEach((b) => { b.onclick = closeSheets; });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheets(); });
@@ -1529,7 +1533,9 @@ $("moreBtn").onclick = (e) => { e.stopPropagation(); const open = $("menu").hidd
 const closeMenu = () => {
   const m = $("menu"); $("moreBtn").setAttribute("aria-expanded", "false");
   if (m.hidden || calm() || !m.animate) { m.hidden = true; return; }
-  m.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.6) translateY(-8px)" }], { duration: 180, easing: "cubic-bezier(.4, 0, 1, 1)" }).finished.then(() => { m.hidden = true; }, () => { m.hidden = true; });
+  const hide = () => { m.hidden = true; };
+  m.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.6) translateY(-8px)" }], { duration: 180, easing: "cubic-bezier(.4, 0, 1, 1)" }).finished.then(hide, hide);
+  setTimeout(hide, 240);   // a background tab may never finish the animation
 };
 $("menu").addEventListener("click", closeMenu);
 document.addEventListener("click", (e) => { if (!$("menu").hidden && !e.target.closest("#menu")) closeMenu(); });
@@ -3137,6 +3143,19 @@ const MAX_PICS = 4;
   }, { passive: true });
   ["pointerup", "pointercancel", "dragstart"].forEach((t) => document.addEventListener(t, up, { passive: true }));
   window.addEventListener("scroll", up, { passive: true, capture: true });
+  /* haptics: every tap gives a light tick (the claude-liquid-glass skill's rule). Safari on iOS 18+ ticks when a
+     switch checkbox toggles, so a hidden one is toggled; Android uses vibrate. */
+  const lab = document.createElement("label"), sw = document.createElement("input");
+  sw.type = "checkbox"; sw.setAttribute("switch", ""); sw.tabIndex = -1; lab.append(sw); lab.setAttribute("aria-hidden", "true");
+  lab.style.cssText = "position:fixed;left:-100px;top:0;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none";
+  document.body.append(lab);
+  let lastTick = 0;
+  document.addEventListener("click", (e) => {
+    if (e.target === lab || e.target === sw) return;
+    const b = e.target.closest(SEL); if (!b || b.disabled) return;
+    const now = performance.now(); if (now - lastTick < 60) return; lastTick = now;
+    if (navigator.vibrate) navigator.vibrate(8); else lab.click();
+  }, true);
 })();
 function fit() { ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, window.innerHeight * 0.38) + "px"; }
 /* while the model is working and nothing is typed, the send button is a pulsing stop button */
