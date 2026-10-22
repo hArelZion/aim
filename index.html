@@ -779,12 +779,71 @@ main { padding-top: var(--hdr-h, 64px); padding-bottom: var(--ftr-h, 96px); scro
   .bar .icon-btn, .gcap, .box, .menu, .mpick, .slash, .fpanel, .toast, .quick button, .fchg button, .sbar2 .icon-btn, .target button { background: var(--glass-thick); -webkit-backdrop-filter: none; backdrop-filter: none; }
   #app > header::before, #app > footer::before { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg); -webkit-mask-image: none; mask-image: none; }
 }
-/* every control answers a press */
-.icon-btn, .gcap button, .send, .attach, .mic, .mchip, .quick button, .fchg button, .btn-main, .btn-plain, .btn-warn, .pb, .qopt, .conv, .mi, .mrow, .seg button, .target button {
-  transition: transform 220ms var(--ease-spring), background-color 200ms var(--ease-out), color 200ms var(--ease-out), opacity 200ms var(--ease-out);
+/* ---------- motion: springs (CSS linear() spring from the apple-design-motion skill) ---------- */
+:root { --spring: cubic-bezier(.34, 1.56, .64, 1); --spring-smooth: cubic-bezier(.32, .72, 0, 1); }
+@supports (animation-timing-function: linear(0, 1)) {
+  :root {
+    --spring: linear(0, .0069 1.15%, .026 2.3%, .1135 5.18%, .2229 7.78%, .5977 15.84%, .9228, .9676 28.8%, 1.0032 31.68%, 1.046 42.05%, 1.0118 61.63%, 1.0025 69.41%, .9992 99.94%);
+  }
 }
-.icon-btn:active, .gcap button:active, .send:not(:disabled):active, .attach:active, .mic:active, .mchip:active, .quick button:active, .fchg button:active, .target button:active { transform: scale(.9); }
-.btn-main:active, .btn-plain:active, .btn-warn:active, .pb:active, .qopt:active, .conv:active { transform: scale(.97); }
+/* glass is more present: a brighter inner edge, a soft inner glow, a faint colour fringe at the rim */
+:root, :root[data-model] { --glass: rgba(255, 255, 255, .56); --glow: .38; --chroma: .32; --glass-shadow: 0 8px 26px rgba(0, 0, 0, .12), 0 2px 6px rgba(0, 0, 0, .06); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]), :root[data-model]:not([data-theme="light"]) { --glass: rgba(52, 52, 58, .55); --glow: .07; --chroma: .2; --glass-shadow: 0 10px 34px rgba(0, 0, 0, .6), 0 1px 3px rgba(0, 0, 0, .4); } }
+:root[data-theme="dark"], :root[data-model][data-theme="dark"] { --glass: rgba(52, 52, 58, .55); --glow: .07; --chroma: .2; --glass-shadow: 0 10px 34px rgba(0, 0, 0, .6), 0 1px 3px rgba(0, 0, 0, .4); }
+.bar .icon-btn, .gcap, .box, .menu, .mpick, .slash, .fpanel, .toast, .quick button, .fchg button, .sbar2 .icon-btn, .target button {
+  box-shadow: inset 0 1px 1px var(--rim-in), inset 0 -1px 1px rgba(0, 0, 0, .05), inset 0 0 0 .5px var(--rim-edge), inset 0 0 14px rgba(255, 255, 255, var(--glow)), var(--glass-shadow);
+}
+.bar .icon-btn::before, .gcap::before, .box::before, .menu::before, .mpick::before, .slash::before, .fpanel::before, .toast::before, .quick button::before, .fchg button::before, .sbar2 .icon-btn::before, .target button::before {
+  padding: 1.25px; background: linear-gradient(135deg, var(--rim-1) 0%, var(--rim-2) 38%, rgba(165, 190, 255, var(--chroma)) 70%, var(--rim-3) 100%);
+}
+body {
+  background:
+    radial-gradient(90% 45% at 85% -8%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 62%),
+    radial-gradient(80% 40% at 0% 0%, rgba(90, 140, 255, .07), transparent 60%),
+    radial-gradient(100% 45% at 50% 112%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 62%),
+    var(--bg);
+}
+
+/* press: glass controls swell and light up where the finger is, then spring back; rows and cards sink a little.
+   The script adds .is-pressed (iOS Safari does not run :active without a touch listener). */
+button, .conv, .qopt, .toggle, summary, .gcap, .file {
+  transition: transform 560ms var(--spring), background-color 220ms var(--ease-out), color 220ms var(--ease-out), opacity 220ms var(--ease-out), box-shadow 220ms var(--ease-out);
+}
+.is-pressed { transition-duration: 140ms, 120ms, 120ms, 120ms, 120ms; transition-timing-function: var(--ease-out); }
+.bar .icon-btn.is-pressed, .sbar2 .icon-btn.is-pressed, .quick button.is-pressed, .fchg button.is-pressed, .target button.is-pressed, .box .send.is-pressed, .box .attach.is-pressed, .box .mic.is-pressed, .mchip.is-pressed, .box .shield.is-pressed { transform: scale(1.14); }
+.gcap:has(.is-pressed) { transform: scale(1.07); transition-duration: 140ms; transition-timing-function: var(--ease-out); }
+.gcap .is-pressed { transform: scale(1.08); }
+.bar .icon-btn.is-pressed::after, .sbar2 .icon-btn.is-pressed::after, .quick button.is-pressed::after, .fchg button.is-pressed::after, .target button.is-pressed::after, .gcap:has(.is-pressed)::after {
+  background: radial-gradient(circle at var(--px, 50%) var(--py, 50%), rgba(255, 255, 255, .7), rgba(255, 255, 255, .12) 55%, transparent 75%);
+}
+.box .attach.is-pressed, .mchip.is-pressed { background: var(--bubble); }
+.menu .mi.is-pressed, .mpick .mrow.is-pressed, .slash button.is-pressed { background: var(--fill); transform: scale(.98); }
+.conv.is-pressed, .qopt.is-pressed, .hit.is-pressed, .btn-main.is-pressed, .btn-plain.is-pressed, .btn-warn.is-pressed, .pb.is-pressed, .convdel.is-pressed, .convbtn.is-pressed, .pcref.is-pressed, .nudge button.is-pressed, .oldbar button.is-pressed { transform: scale(.96); opacity: .8; }
+.afoot .act.is-pressed, .uedit.is-pressed, .menu-btn.is-pressed svg { background: var(--fill); }
+.afoot .act.is-pressed, .uedit.is-pressed, .seg button.is-pressed, .tiers button.is-pressed { transform: scale(.88); }
+summary.is-pressed { opacity: .55; }
+.toggle.is-pressed input::before { width: 33px; }
+.toggle.is-pressed input:checked::before { inset-inline-start: 16px; }
+.toggle input::before { transition: inset-inline-start 420ms var(--spring), width 320ms var(--spring); }
+
+/* things open with motion instead of just appearing */
+.sheet:not([hidden]) { animation: sheetIn 560ms var(--spring-smooth) both; }
+@keyframes sheetIn { from { transform: translateY(100%); } to { transform: none; } }
+.menu:not([hidden]) { animation: menuIn 480ms var(--spring) both; }
+@keyframes menuIn { from { opacity: 0; transform: scale(.35) translateY(-10px); } 35% { opacity: 1; } to { opacity: 1; transform: none; } }
+.menu:not([hidden]) .mi { animation: itemIn 380ms var(--ease-out) both; }
+.menu .mi:nth-child(2) { animation-delay: 25ms; } .menu .mi:nth-child(3) { animation-delay: 50ms; } .menu .mi:nth-child(4) { animation-delay: 75ms; } .menu .mi:nth-child(5) { animation-delay: 100ms; } .menu .mi:nth-child(6) { animation-delay: 125ms; }
+@keyframes itemIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.mpick:not([hidden]), .slash:not([hidden]), .fpanel:not([hidden]) { transform-origin: 50% 100%; animation: riseIn 460ms var(--spring) both; }
+@keyframes riseIn { from { opacity: 0; transform: translateY(14px) scale(.92); } 40% { opacity: 1; } to { opacity: 1; transform: none; } }
+.box .send:not(:disabled) { animation: sendIn 460ms var(--spring); }
+@keyframes sendIn { from { transform: scale(.6); } to { transform: none; } }
+.camview:not([hidden]) { animation: fadeIn 260ms var(--ease-out) both; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .sheet, .menu, .menu .mi, .mpick, .slash, .fpanel, .box .send, .camview { animation: none !important; }
+  .is-pressed, .gcap:has(.is-pressed) { transform: none !important; }
+}
 
 /* ---------- header: a glass circle, the title in the middle, a glass capsule with the model logo and the menu ---------- */
 .bar { gap: 8px; padding-block: 8px; }
@@ -1455,11 +1514,22 @@ async function newChat() {
   await makeConv(asked.trim() || stamp);
 }
 $("newBtn").onclick = newChat;
-function closeSheets() { $("sheet").hidden = true; $("convSheet").hidden = true; $("gear").setAttribute("aria-expanded", "false"); $("convBtn").setAttribute("aria-expanded", "false"); }
+const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+function closeSheets() {
+  const done = () => { $("sheet").hidden = true; $("convSheet").hidden = true; $("gear").setAttribute("aria-expanded", "false"); $("convBtn").setAttribute("aria-expanded", "false"); };
+  const open = [$("sheet"), $("convSheet")].filter((s) => !s.hidden);
+  if (!open.length || calm() || !open[0].animate) return done();
+  /* slide down like an iOS sheet, then hide */
+  Promise.all(open.map((s) => s.animate([{ transform: "none" }, { transform: "translateY(100%)" }], { duration: 320, easing: "cubic-bezier(.32, 0, .67, 0)" }).finished)).then(done, done);
+}
 document.querySelectorAll(".sclose").forEach((b) => { b.onclick = closeSheets; });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheets(); });
 $("moreBtn").onclick = (e) => { e.stopPropagation(); const open = $("menu").hidden; $("menu").hidden = !open; $("moreBtn").setAttribute("aria-expanded", String(open)); };
-const closeMenu = () => { $("menu").hidden = true; $("moreBtn").setAttribute("aria-expanded", "false"); };
+const closeMenu = () => {
+  const m = $("menu"); $("moreBtn").setAttribute("aria-expanded", "false");
+  if (m.hidden || calm() || !m.animate) { m.hidden = true; return; }
+  m.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.6) translateY(-8px)" }], { duration: 180, easing: "cubic-bezier(.4, 0, 1, 1)" }).finished.then(() => { m.hidden = true; }, () => { m.hidden = true; });
+};
 $("menu").addEventListener("click", closeMenu);
 document.addEventListener("click", (e) => { if (!$("menu").hidden && !e.target.closest("#menu")) closeMenu(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
@@ -3045,6 +3115,27 @@ const MAX_PICS = 4;
   };
   if (window.ResizeObserver) { const ro = new ResizeObserver(set); ro.observe(hd); ro.observe(ft); }
   set();
+})();
+/* iOS press feel: Safari runs :active only with a touch listener, so presses are tracked here.
+   .is-pressed stays on for at least 130 ms so a quick tap still shows; glass controls get a light at the finger. */
+(function pressFeel() {
+  document.addEventListener("touchstart", () => {}, { passive: true });
+  const SEL = "button, .conv, .qopt, .toggle, summary, .file";
+  let cur = null, at = 0;
+  const up = () => {
+    const b = cur; if (!b) return; cur = null;
+    setTimeout(() => b.classList.remove("is-pressed"), Math.max(0, 130 - (performance.now() - at)));
+  };
+  document.addEventListener("pointerdown", (e) => {
+    const b = e.target.closest(SEL); if (!b || b.disabled) return;
+    up(); cur = b; at = performance.now();
+    const r = b.getBoundingClientRect();
+    b.style.setProperty("--px", ((e.clientX - r.left) / r.width * 100).toFixed(1) + "%");
+    b.style.setProperty("--py", ((e.clientY - r.top) / r.height * 100).toFixed(1) + "%");
+    b.classList.add("is-pressed");
+  }, { passive: true });
+  ["pointerup", "pointercancel", "dragstart"].forEach((t) => document.addEventListener(t, up, { passive: true }));
+  window.addEventListener("scroll", up, { passive: true, capture: true });
 })();
 function fit() { ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, window.innerHeight * 0.38) + "px"; }
 /* while the model is working and nothing is typed, the send button is a pulsing stop button */
