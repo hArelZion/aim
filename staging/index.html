@@ -841,7 +841,37 @@ summary.is-pressed { opacity: .55; }
 @keyframes sendIn { from { transform: scale(.6); } to { transform: none; } }
 .camview:not([hidden]) { animation: fadeIn 260ms var(--ease-out) both; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+/* the aura (liquid-glass-frontend skill): glass over flat white shows nothing, so soft colour fields drift behind
+   the chat and the bars frost them. Light glass is thinner with more saturation, so the colour reads through. */
+.aura { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+.aura i { position: absolute; display: block; border-radius: 50%; will-change: transform; }
+.aura i:nth-child(1) { width: 95vmax; height: 95vmax; top: -48vmax; inset-inline-end: -38vmax; background: radial-gradient(circle, color-mix(in srgb, var(--accent) var(--aura-a), transparent) 0%, transparent 62%); animation: drift1 24s ease-in-out infinite alternate; }
+.aura i:nth-child(2) { width: 85vmax; height: 85vmax; top: -30vmax; inset-inline-start: -45vmax; background: radial-gradient(circle, rgba(120, 140, 255, var(--aura-b)) 0%, transparent 62%); animation: drift2 30s ease-in-out infinite alternate; }
+.aura i:nth-child(3) { width: 100vmax; height: 100vmax; bottom: -62vmax; inset-inline-start: -20vmax; background: radial-gradient(circle, color-mix(in srgb, var(--spark) var(--aura-c), transparent) 0%, rgba(255, 140, 200, calc(var(--aura-b) * .6)) 35%, transparent 64%); animation: drift3 27s ease-in-out infinite alternate; }
+@keyframes drift1 { to { transform: translate(-12vmax, 10vmax) scale(1.12); } }
+@keyframes drift2 { to { transform: translate(14vmax, 8vmax) scale(.9); } }
+@keyframes drift3 { to { transform: translate(10vmax, -9vmax) scale(1.08); } }
+:root, :root[data-model] { --aura-a: 34%; --aura-b: .26; --aura-c: 26%; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]), :root[data-model]:not([data-theme="light"]) { --aura-a: 30%; --aura-b: .22; --aura-c: 22%; } }
+:root[data-theme="dark"], :root[data-model][data-theme="dark"] { --aura-a: 30%; --aura-b: .22; --aura-c: 22%; }
+body { background: var(--bg); }
+.bar .icon-btn, .gcap, .box, .quick button, .fchg button, .target button { -webkit-backdrop-filter: blur(30px) saturate(210%); backdrop-filter: blur(30px) saturate(210%); }
+:root, :root[data-model] { --glass: rgba(255, 255, 255, .34); }
+.box { background: color-mix(in srgb, var(--glass) 100%, rgba(255, 255, 255, .1)); }
+#app > header::before { background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 62%, transparent), color-mix(in srgb, var(--bg) 30%, transparent) 70%, transparent); -webkit-backdrop-filter: blur(10px) saturate(160%); backdrop-filter: blur(10px) saturate(160%); }
+#app > footer::before { background: linear-gradient(to top, color-mix(in srgb, var(--bg) 55%, transparent), color-mix(in srgb, var(--bg) 22%, transparent) 70%, transparent); -webkit-backdrop-filter: blur(10px) saturate(160%); backdrop-filter: blur(10px) saturate(160%); }
+@media (prefers-reduced-transparency: reduce) { .aura { display: none; } }
+/* feels installed, not a web page (mobile-native skill): no text selection or callout on a long press, no tap delay,
+   and hover tints only where a mouse exists, so they never stick after a tap on the phone */
+button, .conv, .qopt, .toggle, summary { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+@media (hover: none) {
+  .bar .icon-btn:hover, .gcap .icon-btn:hover { background: inherit; }
+  .menu .mi:hover, .mpick .mrow:hover, .slash button:hover, .afoot .act:hover, .uedit:hover, .icon-btn:hover { background: transparent; }
+  .bar .icon-btn:hover { background: var(--glass); }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .aura i { animation: none !important; }
   .sheet, .menu, .menu .mi, .mpick, .slash, .fpanel, .box .send, .camview { animation: none !important; }
   .is-pressed, .gcap:has(.is-pressed) { transform: none !important; }
 }
@@ -1131,6 +1161,7 @@ summary.is-pressed { opacity: .55; }
   </div>
 </header>
 
+<div class="aura" aria-hidden="true"><i></i><i></i><i></i></div>
 <canvas id="glyphs" aria-hidden="true"></canvas>
 <main id="scroller">
   <div class="wrap">
