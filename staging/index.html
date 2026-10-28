@@ -559,6 +559,12 @@ main { overflow-x: hidden; touch-action: pan-y; overscroll-behavior-x: none; }
 .mpick .mseg { direction: ltr; display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 12px 10px; }
 .mpick .mseg button { min-height: 40px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-size: .95rem; }
 .mpick .mseg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
+/* a switch on the computer takes a few seconds: spinner on the chip and on the chosen button until it answers */
+.mspin { display: inline-block; flex: none; width: 13px; height: 13px; border: 2px solid currentColor; border-inline-end-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px; }
+.mchip.busy { animation: mbusy 1.4s ease-in-out infinite; }
+.mpick .mseg button.busy, .mpick .mrow.busy { display: inline-flex; align-items: center; gap: 8px; border-color: var(--ink); animation: mbusy 1.4s ease-in-out infinite; }
+.mpick .mstat.busy { display: flex; align-items: center; gap: 8px; color: var(--ink); }
+@keyframes mbusy { 50% { opacity: .5; } }
 .mpick .mstat { padding: 8px 12px 6px; border-top: 1px solid var(--line); margin-top: 6px; }
 
 /* compact composer + soft edge where the conversation scrolls under it */
@@ -2927,15 +2933,19 @@ function paintModelChip() {
     if (!$("mpick").hidden) renderModelPick();
     return;
   }
-  c.replaceChildren(document.createTextNode(mstate.model + " "));
-  if (mstate.effort) c.append(el("span", null, mstate.effort));
+  const effs = Array.isArray(mstate.efforts) ? mstate.efforts : [];
+  const wantM = mpend && mpend.model ? mpend.model : mstate.model, wantE = mpend && mpend.level != null && effs[mpend.level] ? effs[mpend.level] : mstate.effort;
+  c.classList.toggle("busy", !!mpend);
+  c.replaceChildren(document.createTextNode(wantM + " "));
+  if (wantE) c.append(el("span", null, wantE));
+  if (mpend) c.prepend(el("span", "mspin"));
   if (!$("mpick").hidden) renderModelPick();
 }
 function askModel(req) {
   mpend = Object.assign({ at: Date.now() }, req); mmsg = null;
   putCtl("model-req", mpend);
-  clearTimeout(mTimer); mTimer = setTimeout(() => { if (mpend) { mpend = null; mmsg = ["err", t("mNoAnswer")]; renderModelPick(); } }, 25000);
-  renderModelPick();
+  clearTimeout(mTimer); mTimer = setTimeout(() => { if (mpend) { mpend = null; mmsg = ["err", t("mNoAnswer")]; renderModelPick(); paintModelChip(); } }, 25000);
+  renderModelPick(); paintModelChip();
 }
 const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 function renderModelPick() {
@@ -2950,6 +2960,7 @@ function renderModelPick() {
     if (m.note === "credits") b.append(el("span", "note", t("mCredits")));
     const ck = el("span", "ck"); if (m.name === cur) ck.innerHTML = CHECK; b.append(ck);
     b.setAttribute("aria-pressed", String(m.name === cur));
+    if (mpend && mpend.model === m.name) { b.classList.add("busy"); ck.replaceChildren(el("span", "mspin")); }
     b.onclick = () => { if (m.name !== mstate.model && !mpend) askModel({ model: m.name }); };
     box.append(b);
   });
@@ -2961,6 +2972,7 @@ function renderModelPick() {
     const seg = el("div", "mseg");
     for (let k = 0; k < n; k++) {
       const b = el("button", null, names ? names[k] : String(k + 1)); b.type = "button"; b.setAttribute("aria-pressed", String(k === at));
+      if (mpend && mpend.level === k) { b.classList.add("busy"); b.prepend(el("span", "mspin")); }
       b.onclick = () => { if (k !== mstate.level && !mpend) askModel({ level: k }); };
       seg.append(b);
     }
@@ -2973,13 +2985,14 @@ function renderModelPick() {
     const seg = el("div", "mseg");
     modes.forEach((md) => {
       const b = el("button", null, md); b.type = "button"; b.setAttribute("aria-pressed", String(md === atm));
+      if (mpend && mpend.mode === md) { b.classList.add("busy"); b.prepend(el("span", "mspin")); }
       b.onclick = () => { if (md !== mstate.mode && !mpend) askModel({ mode: md }); };
       seg.append(b);
     });
     box.append(seg);
     const d = t("md_" + atm); if (d && d !== "md_" + atm) box.append(el("div", "mdesc", d));
   }
-  if (mpend) box.append(el("div", "mstat", t("mSwitching")));
+  if (mpend) { const st = el("div", "mstat busy"); st.append(el("span", "mspin"), el("span", null, t("mSwitching"))); box.append(st); }
   else if (mmsg && mmsg[0] === "ask") {
     const a = mmsg[1], q = el("div", "mstat");
     q.append(el("b", null, t("mAsk") + " " + (a.title || "")), document.createElement("br")); const qt = el("span", null, a.text || ""); qt.dir = "auto"; q.append(qt);
