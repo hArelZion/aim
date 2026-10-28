@@ -1166,7 +1166,8 @@ function conn() {
   if (isOff()) return "paused";
   const wAt = toMs(curW().at), sAt = toMs(curS().updatedAt);
   if (curS().state === "working" && sAt && now - sAt < 60 * 60000) return "working";
-  if (wAt && now - wAt < 75000) return curS().state === "waiting" ? "waiting" : "live";
+  // Claude sets the status just before it restarts the watcher, so a fresh status bridges those few seconds
+  if ((wAt && now - wAt < 75000) || (sAt && now - sAt < 90000)) return curS().state === "waiting" ? "waiting" : "live";
   return "offline";
 }
 function near() { const sc = $("scroller"); return sc.scrollHeight - sc.scrollTop - sc.clientHeight < 140; }
@@ -1216,7 +1217,7 @@ function lineState(k) {
   if (settings[mk] === "off") return "linePaused";
   const now = Date.now(), wAt = toMs(w.at), sAt = toMs(st.updatedAt);
   if (st.state === "working" && sAt && now - sAt < 3600000) return "lineWork";
-  return wAt && now - wAt < 75000 ? "lineOn" : "lineOff";
+  return (wAt && now - wAt < 75000) || (sAt && now - sAt < 90000) ? "lineOn" : "lineOff";
 }
 const curWFor = (k) => { const a = watchers.claude || {}, b = watchers.team || {}; return toMs(b.at) > toMs(a.at) ? b : a; };
 function usageTiles(k, head) {
