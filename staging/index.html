@@ -2714,7 +2714,7 @@ $("signOutBtn").onclick = async () => { await sb.auth.signOut(); location.reload
 /* ---------- composer and photos ---------- */
 const ta = $("composer");
 let picked = [];
-const MAX_PICS = 4;
+const MAX_PICS = 10;
 (function pinToViewport() {
   const vv = window.visualViewport; if (!vv) return;
   /* the keyboard (Android especially) shrinks the screen: a chat that was at the bottom stays at the bottom */
