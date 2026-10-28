@@ -963,7 +963,7 @@ const I18N = {
     autoRead: "הקראה אוטומטית של תשובות", showSteps: "הצגת הצעדים של Claude (פקודות, עריכות, חיפושים)", mic: "הקלטה קולית", micErr: "המיקרופון לא זמין. אשר גישה בהגדרות הדפדפן.",
     copy: "העתקה", copied: "הועתק", speak: "הקראה", stopSpeak: "עצור הקראה",
     searchConvs: "חיפוש בכל השיחות…", noHits: "לא נמצא כלום.", pin: "הצמדה", unpin: "ביטול הצמדה", rename: "שינוי שם", renameAsk: "שם חדש לשיחה:", share: "ייצוא ושיתוף", exported: "השיחה נשמרה כקובץ",
-    queued: "ממתין לרשת", queuedNote: "אין רשת. ההודעה תישלח לבד כשהחיבור יחזור.", fileErr: "הקובץ גדול מדי (עד 20MB).",
+    queued: "ממתין לרשת", queuedNote: "אין רשת. ההודעה תישלח לבד כשהחיבור יחזור.", fileErr: "הקובץ גדול מדי (עד 500MB).", upPart: "מעלה %s…",
     nudgeTxt: "הפעל התראות כדי לקבל רטט כשמשהו מסתיים, גם כשהאפליקציה סגורה.", nudgeGo: "הפעל",
     pcTitle: "מצב המחשב", pcRefresh: "רענון", pcRefreshing: "מרענן…", pcNoAnswer: "המחשב לא ענה. האם הקו מחובר?", pcTokNote: "את ניצול הטוקנים רק Claude יכול לקרוא, והוא מתעדכן כש-Claude עובד.", battery: "סוללה", charging: "בטעינה", cpu: "מעבד", ram: "זיכרון", use5h: "ניצול 5 שעות", useWeek: "ניצול שבועי", resetsIn: "מתאפס ", lines: "מי מחובר", lineOn: "מחובר", lineWork: "עובד", lineOff: "לא מחובר", linePaused: "מושהה", pcOld: "עודכן ",
   },
@@ -1010,7 +1010,7 @@ const I18N = {
     autoRead: "Read replies aloud automatically", showSteps: "Show Claude's steps (commands, edits, searches)", mic: "Voice input", micErr: "The microphone isn't available. Allow it in the browser settings.",
     copy: "Copy", copied: "Copied", speak: "Read aloud", stopSpeak: "Stop reading",
     searchConvs: "Search all conversations…", noHits: "Nothing found.", pin: "Pin", unpin: "Unpin", rename: "Rename", renameAsk: "New name for the conversation:", share: "Export and share", exported: "Conversation saved as a file",
-    queued: "Waiting for network", queuedNote: "No network. The message sends by itself when you're back online.", fileErr: "The file is too big (20MB max).",
+    queued: "Waiting for network", queuedNote: "No network. The message sends by itself when you're back online.", fileErr: "The file is too big (500MB max).", upPart: "Uploading %s…",
     nudgeTxt: "Turn on notifications to get a buzz when something finishes, even with the app closed.", nudgeGo: "Turn on",
     pcTitle: "Computer", pcRefresh: "Refresh", pcRefreshing: "Refreshing…", pcNoAnswer: "The computer didn't answer. Is the line on?", pcTokNote: "Only Claude can read token usage; it updates while Claude works.", battery: "Battery", charging: "charging", cpu: "CPU", ram: "Memory", use5h: "5-hour usage", useWeek: "Weekly usage", resetsIn: "resets ", lines: "Who is connected", lineOn: "online", lineWork: "working", lineOff: "offline", linePaused: "paused", pcOld: "updated ",
   },
@@ -1279,7 +1279,8 @@ async function signedUrls(paths) {
 }
 const IMG_EXT = /\.(jpe?g|png|gif|webp|heic|heif|avif|bmp)$/i;
 const ICON_FILE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>';
-const fileName = (p) => decodeURIComponent(String(p).split("/").pop()).replace(/^\d+-/, "");
+const PARTS_RE = /@parts\d+$/;   // a big file sent in parts (see PART)
+const fileName = (p) => decodeURIComponent(String(p).split("/").pop()).replace(PARTS_RE, "").replace(/^\d+-/, "");
 function picsEl(paths) {
   const g = el("div", "pics");
   paths.forEach((p) => {
@@ -2819,7 +2820,10 @@ function renderPicked() {
   });
 }
 $("attach").onclick = () => $("filePick").click();
-const MAX_FILE = 20 * 1024 * 1024;
+const MAX_FILE = 500 * 1024 * 1024;
+// Supabase's free plan takes at most 50MB per object, so a bigger file goes up in 45MB parts "<path>.part000"…; the
+// message lists "<path>@partsN" and the computer (aim.py photo-get) joins the parts, then deletes them to save space.
+const PART = 45 * 1024 * 1024;
 const safeName = (n) => (String(n || "file").normalize("NFC").replace(/[^\w.\-֐-׿]+/g, "_").replace(/^_+|_+$/g, "") || "file").slice(-80);
 $("filePick").addEventListener("change", async (e) => {
   const files = [...e.target.files].slice(0, MAX_PICS - picked.length);
@@ -3070,9 +3074,26 @@ async function sendMsg(text, pics, fromComposer) {
       for (let i = 0; i < pics.length; i++) {
         const nm = pics[i].preview && pics[i].name === "photo.jpg" ? i + ".jpg" : i + "-" + (pics[i].name || "file");
         const path = "me/" + id + "/" + nm;
-        const { error } = await sb.storage.from(BUCKET).upload(path, pics[i].blob, { contentType: pics[i].blob.type || "application/octet-stream" });
-        if (error) throw { pic: true };
-        row.images.push(path);
+        const blob = pics[i].blob;
+        if (blob.size <= PART) {
+          const { error } = await sb.storage.from(BUCKET).upload(path, blob, { contentType: blob.type || "application/octet-stream" });
+          if (error) throw { pic: true };
+          row.images.push(path);
+          continue;
+        }
+        const n = Math.ceil(blob.size / PART);
+        for (let k = 0; k < n; k++) {
+          showErr(t("upPart").replace("%s", Math.round((k / n) * 100) + "% · " + (k + 1) + "/" + n));
+          const part = blob.slice(k * PART, Math.min(blob.size, (k + 1) * PART), "application/octet-stream");
+          let error = null;
+          for (let a = 0; a < 3; a++) {   // a part that fails on a shaky connection is tried again
+            ({ error } = await sb.storage.from(BUCKET).upload(path + ".part" + String(k).padStart(3, "0"), part, { contentType: "application/octet-stream", upsert: true }));
+            if (!error) break;
+          }
+          if (error) throw { pic: true };
+        }
+        showErr("");
+        row.images.push(path + "@parts" + n);
       }
     }
     upsertMsg(Object.assign({ pending: true }, row)); renderThread(); renderTail();
