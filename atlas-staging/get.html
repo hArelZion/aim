@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Install Atlas</title>
+<meta name="theme-color" content="#07080C">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="css/app.css?v=20261030.1720">
+<style>
+  body { overflow: auto; }
+  .wrap { position: relative; z-index: 1; max-width: 520px; margin: 0 auto; padding: calc(env(safe-area-inset-top) + 24px) 16px calc(env(safe-area-inset-bottom) + 40px); }
+  .hero { text-align: center; margin-bottom: 18px; }
+  .hero img { width: 84px; height: 84px; border-radius: 22px; box-shadow: 0 10px 40px rgba(46,197,255,.35); }
+  .hero h1 { margin: 10px 0 4px; font-size: 1.9rem; letter-spacing: -.03em; }
+  .hero p { margin: 0; color: var(--muted); }
+  .step { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; }
+  .num { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; background: var(--panel-2); border: 1px solid var(--line); }
+  .step.done .num { background: var(--grad); color: #07080C; border: 0; }
+  .step h2 { margin: 6px 0 4px; font-size: 1.05rem; }
+  .step p { margin: 0 0 10px; color: var(--muted); font-size: .94rem; }
+  .note { font-size: .86rem; color: var(--muted); text-align: center; margin-top: 8px; }
+  ol.how { margin: 6px 0 0; padding-inline-start: 18px; color: var(--muted); font-size: .92rem; }
+</style>
+</head>
+<body>
+<div id="aurora" aria-hidden="true"></div>
+<main class="wrap">
+  <div class="hero">
+    <img src="icons/icon-180.png" alt="">
+    <h1 data-t="title"></h1>
+    <p data-t="lead"></p>
+  </div>
+  <form class="card" id="signin" hidden style="display:grid;gap:10px">
+    <p class="muted" style="margin:0" data-t="signin"></p>
+    <input class="field" id="email" type="email" autocomplete="username" required placeholder="email">
+    <input class="field" id="password" type="password" autocomplete="current-password" required placeholder="password">
+    <button class="btn primary wide" type="submit" data-t="signinBtn"></button>
+    <p class="hint" id="msg"></p>
+  </form>
+  <div id="steps" hidden>
+    <div class="card step" id="s1"><span class="num">1</span><div><h2 data-t="s1"></h2><p data-t="s1p"></p><a class="btn primary" id="aAtlas" data-t="add"></a></div></div>
+    <div class="card step" id="s2"><span class="num">2</span><div><h2 data-t="s2"></h2><p data-t="s2p"></p><a class="btn primary" id="aConnect" data-t="connect"></a></div></div>
+    <div class="card step" id="s3"><span class="num">3</span><div><h2 data-t="s3"></h2><p data-t="s3p"></p><a class="btn ghost" id="aTap" data-t="add"></a>
+      <ol class="how"><li data-t="bt"></li><li data-t="cc"></li><li data-t="ls"></li></ol></div></div>
+    <div class="card step" id="s4"><span class="num">4</span><div><h2 data-t="s4"></h2><p data-t="s4p"></p><a class="btn ghost" href="./" data-t="open"></a>
+      <ol class="how"><li data-t="h1"></li><li data-t="h2"></li><li data-t="h3"></li></ol></div></div>
+    <p class="note" data-t="honest"></p>
+    <p class="note" id="exp"></p>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<script>
+(function () {
+  // The one install link (PLAN 10.4): the signed shortcut files and the Connect link live in the owner-only control row
+  // atlas_install, so this public page shows them only to the signed-in owner (Safari shares AIM's session).
+  var he = (navigator.language || "he").toLowerCase().indexOf("he") === 0;
+  var T = he ? {
+    title: "התקנת Atlas", lead: "Siri חכם יותר, בעברית ובאנגלית, שבונה אתרים. ארבעה צעדים, פחות משתי דקות.",
+    signin: "התחברו עם חשבון AIM כדי לראות את קישורי ההתקנה הפרטיים.", signinBtn: "התחברות",
+    s1: "הוספת Atlas", s1p: "נפתח מסך \"הוספת קיצור דרך\" של iOS. הקישו \"הוסף\". אם כבר יש Atlas, בחרו להחליף.", add: "הוספה",
+    s2: "חיבור", s2p: "מחבר את הקיצור לחשבון שלכם (מפתח פרטי נשמר רק בטלפון). Atlas יגיד שלום.", connect: "חיבור Atlas",
+    s3: "הפעלה בהקשה (לא חובה)", s3p: "Atlas Tap מפעיל את Atlas בלי לדבר עם Siri:",
+    bt: "הקשה כפולה על גב הטלפון: הגדרות ← נגישות ← מגע ← הקשה בגב ← הקשה כפולה ← Atlas Tap",
+    cc: "מרכז הבקרה: החלקה למטה ← עריכה (+) ← הוספת פקד ← קיצורים ← Atlas Tap",
+    ls: "מסך הנעילה: לחיצה ארוכה ← התאמה ← מסך נעילה ← פקד ← קיצורים ← Atlas Tap",
+    s4: "האפליקציה", s4p: "שיחה קולית חיה, תיאטרון הקוד וכל האתרים:", open: "פתיחת Atlas",
+    h1: "בספארי: כפתור השיתוף", h2: "\"הוספה למסך הבית\"", h3: "פותחים מהאייקון ומתחברים פעם אחת",
+    honest: "iOS תמיד מבקש להקיש \"הוסף\" בעצמכם. אף אפליקציה לא יכולה לדלג על זה.",
+    exp: "הקישורים בתוקף עד ", none: "אין עדיין קישורי התקנה. בקשו מ-Claude: python atlas/tools/release.py",
+  } : {
+    title: "Install Atlas", lead: "A smarter Siri, in Hebrew and English, that builds websites. Four steps, under two minutes.",
+    signin: "Sign in with your AIM account to see your private install links.", signinBtn: "Sign in",
+    s1: "Add Atlas", s1p: "iOS opens its \"Add Shortcut\" screen. Tap Add. If Atlas is already there, choose Replace.", add: "Add",
+    s2: "Connect", s2p: "Connects the shortcut to your account (a private key stays on the phone). Atlas says hi.", connect: "Connect Atlas",
+    s3: "Start it with a tap (optional)", s3p: "Atlas Tap starts Atlas without talking to Siri:",
+    bt: "Back Tap: Settings → Accessibility → Touch → Back Tap → Double Tap → Atlas Tap",
+    cc: "Control Center: swipe down → edit (+) → Add a Control → Shortcuts → Atlas Tap",
+    ls: "Lock Screen: long-press → Customize → Lock Screen → a control → Shortcuts → Atlas Tap",
+    s4: "The app", s4p: "Live voice, the Code Theater and every site:", open: "Open Atlas",
+    h1: "In Safari: the Share button", h2: "\"Add to Home Screen\"", h3: "Open it from the icon and sign in once",
+    honest: "iOS always asks you to tap Add yourself. No app can skip that.",
+    exp: "Links valid until ", none: "No install links yet. Ask Claude: python atlas/tools/release.py",
+  };
+  document.documentElement.lang = he ? "he" : "en"; document.documentElement.dir = he ? "rtl" : "ltr";
+  document.querySelectorAll("[data-t]").forEach(function (n) { n.textContent = T[n.dataset.t] || ""; });
+  var sb = window.supabase.createClient("https://lumnwuxxcaksybrrksng.supabase.co", "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42");
+  var $ = function (id) { return document.getElementById(id); };
+  function mark(id) { $(id).classList.add("done"); }
+  async function show() {
+    var r = await sb.from("control").select("data").eq("id", "atlas_install").maybeSingle();
+    var d = r.data && r.data.data;
+    $("signin").hidden = true; $("steps").hidden = false;
+    if (!d) { $("exp").textContent = T.none; return; }
+    $("aAtlas").href = d.atlas; $("aTap").href = d.tap; $("aConnect").href = d.connect;
+    if (d.exp) $("exp").textContent = T.exp + new Date(d.exp).toLocaleDateString(he ? "he-IL" : "en-GB");
+    $("aAtlas").onclick = function () { mark("s1"); }; $("aConnect").onclick = function () { mark("s2"); }; $("aTap").onclick = function () { mark("s3"); };
+  }
+  sb.auth.getSession().then(function (x) {
+    if (x.data && x.data.session) show(); else $("signin").hidden = false;
+  });
+  $("signin").addEventListener("submit", async function (e) {
+    e.preventDefault(); $("msg").textContent = "…";
+    var res = await sb.auth.signInWithPassword({ email: $("email").value.trim(), password: $("password").value });
+    if (res.error) $("msg").textContent = res.error.message; else show();
+  });
+})();
+</script>
+</body>
+</html>

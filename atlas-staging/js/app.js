@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261030.1700";
+  const APP_VERSION = "20261030.1720";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
