@@ -95,7 +95,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .members input { margin-inline-start: auto; width: 18px; height: 18px; accent-color: var(--accent); }
 .tochip { display: inline-flex; gap: 4px; align-items: center; font-size: .72rem; opacity: .75; margin-bottom: 2px; }
 .tochip .logo { width: 12px; height: 12px; }
-.who { font-size: .74rem; font-weight: 600; color: var(--muted); line-height: 1.2; margin-bottom: 2px; }
+.author { font-size: .74rem; font-weight: 600; color: var(--muted); line-height: 1.2; margin-bottom: 2px; }
+.deepbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 10px 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); font-size: .92rem; }
+.deepbar span { flex: 1 1 160px; }
+.deepbar button { min-height: 40px; }
 .agent { align-self: stretch; margin-block: 3px; border: 1px dashed var(--line); border-radius: 12px; padding: 6px 10px; font-size: .8rem; color: var(--muted); }
 .agent summary { display: flex; gap: 8px; align-items: center; cursor: pointer; list-style: none; min-width: 0; }
 .agent summary::-webkit-details-marker { display: none; }
@@ -761,6 +764,7 @@ summary.is-pressed { opacity: .6; }
       <div class="row-btns">
         <button class="btn-plain" id="notifBtn" type="button" hidden></button>
         <button class="btn-warn" id="pauseBtn" type="button"></button>
+        <button class="btn-plain" id="siriLinkBtn" type="button"></button>
         <button class="btn-plain" id="signOutBtn" type="button" data-t="signOut"></button>
       </div>
     </div>
@@ -931,6 +935,8 @@ const I18N = {
     ago: (m) => m < 1 ? "עכשיו" : m === 1 ? "לפני דקה" : m < 60 ? "לפני " + m + " דק'" : (Math.round(m / 60) === 1 ? "לפני שעה" : "לפני " + Math.round(m / 60) + " שעות"),
     connecting: "מתחבר…", paused: "מושהה", offline: "המחשב לא מחובר",
     working: "מחובר · חושב…", waiting: "מחובר · מחכה לתשובה שלך", live: "מחובר · עונה תוך שניות",
+    stuck: "לא עונה", stuckAlert: "המחשב הפסיק לענות באמצע עבודה (לפני %s). אפשר לשלוח הודעה כדי להעיר אותו, או להקליד /phone במחשב.",
+    deepAsk: "הודעה מקישור. לשלוח אותה למחשב?", deepDiscard: "בטל", siriLink: "העתק קישור Siri", siriLinkDone: "הקישור הועתק. הדבק אותו בקיצור הדרך של Siri.",
     offlineAlert: "המחשב לא מאזין עכשיו. הודעות שתשלח יחכו עד שתקליד /phone בשיחה במחשב.",
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
@@ -978,6 +984,8 @@ const I18N = {
     ago: (m) => m < 1 ? "just now" : m < 60 ? m + " min ago" : (Math.round(m / 60) === 1 ? "an hour ago" : Math.round(m / 60) + " hours ago"),
     connecting: "Connecting…", paused: "Paused", offline: "Computer offline",
     working: "Online · thinking…", waiting: "Online · waiting for your answer", live: "Online · replies within seconds",
+    stuck: "not answering", stuckAlert: "The computer stopped answering in the middle of a task (%s ago). Send a message to wake it, or type /phone on the computer.",
+    deepAsk: "Message from a link. Send it to the computer?", deepDiscard: "Discard", siriLink: "Copy Siri link", siriLinkDone: "Link copied. Paste it into your Siri shortcut.",
     offlineAlert: "The computer isn't listening right now. Messages you send wait until you type /phone on the computer.",
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
@@ -1056,6 +1064,8 @@ function applyLang() {
   $("lang-he").setAttribute("aria-pressed", String(lang === "he"));
   $("lang-en").setAttribute("aria-pressed", String(lang === "en"));
   paintThemeBtn(); paintModel(); paintTarget(); renderHeader(); if (typeof renderQuick === "function" && $("quick")) renderQuick(); $("mic").setAttribute("aria-label", t("mic")); if (!firstLoad) renderThread(); renderTail();
+  if ($("siriLinkBtn")) $("siriLinkBtn").textContent = t("siriLink");
+  for (const f of ["renderSessions", "renderPc", "renderMembers"]) { try { if (typeof window[f] === "function") window[f](); } catch (e) {} }
 }
 async function setLang(l, save) {
   if (l !== "he" && l !== "en") return;
@@ -1166,7 +1176,12 @@ function conn() {
   const now = Date.now();
   if (isOff()) return "paused";
   const wAt = toMs(curW().at), sAt = toMs(curS().updatedAt);
-  if (curS().state === "working" && sAt && now - sAt < 60 * 60000) return "working";
+  if (curS().state === "working" && sAt) {
+    // the hooks refresh `step` on every tool call: 10 minutes with no sign of life means the session died mid-task
+    const alive = Math.max(sAt, toMs(curS().stepAt) || 0, model === "claude" || model === "team" ? toMs(step.at) || 0 : 0);
+    if (now - alive < 10 * 60000) return "working";
+    if (now - alive < 60 * 60000) return "stuck";
+  }
   // Claude sets the status just before it restarts the watcher, so a fresh status bridges those few seconds
   if ((wAt && now - wAt < 75000) || (sAt && now - sAt < 90000)) return curS().state === "waiting" ? "waiting" : "live";
   return "offline";
@@ -1188,6 +1203,7 @@ function renderHeader() {
   $("hspin").hidden = c !== "working";
   const alert = $("alert"); alert.hidden = true;
   if (c === "offline") { fillText(alert, model === "gpt" ? t("offlineGpt") : model === "gemini" ? t("offlineGemini") : t("offlineAlert")); alert.hidden = false; }
+  else if (c === "stuck") { fillText(alert, t("stuckAlert").replace("%s", ago(Date.now() - Math.max(toMs(curS().updatedAt), toMs(step.at) || 0)))); alert.hidden = false; }
   else if (c === "paused") { fillText(alert, t("pausedAlert").replace("Claude", mname())); alert.hidden = false; }
   const meta = $("meta"); meta.replaceChildren();
   if (curS().project) { const s = el("span", null, t("project")); s.append(el("b", null, curS().project)); meta.append(s); }
@@ -1277,12 +1293,15 @@ function renderPc() {
 
 /* ---------- photos ---------- */
 async function signedUrls(paths) {
-  const need = paths.filter((p) => !urlCache.has(p));
+  // signed links die after an hour, and the app stays open for days: renew any link with less than 5 minutes left
+  const fresh = (p) => { const c = urlCache.get(p); return c && c.exp - Date.now() > 300000; };
+  const need = paths.filter((p) => !fresh(p));
   if (need.length) {
+    const exp = Date.now() + 3600 * 1000;
     const { data } = await sb.storage.from(BUCKET).createSignedUrls(need, 3600);
-    (data || []).forEach((d) => { if (d.signedUrl) urlCache.set(d.path, d.signedUrl); });
+    (data || []).forEach((d) => { if (d.signedUrl) urlCache.set(d.path, { url: d.signedUrl, exp }); });
   }
-  return paths.map((p) => urlCache.get(p));
+  return paths.map((p) => (urlCache.get(p) || {}).url);
 }
 const IMG_EXT = /\.(jpe?g|png|gif|webp|heic|heif|avif|bmp)$/i;
 const ICON_FILE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>';
@@ -1455,7 +1474,7 @@ function renderThread() {
     if (team) row.append(logoEl(au));
     lastAiRow = row;
     const body = el("div", "reply");
-    if (team && !(prevAi && prevAu === au)) body.append(el("div", "who", AUTHORS[au].name));
+    if (team && !(prevAi && prevAu === au)) body.append(el("div", "author", AUTHORS[au].name));
     body.insertAdjacentHTML("beforeend", md(m.text)); body.querySelectorAll("p, li, h4").forEach((n) => { n.dir = "auto"; }); row.append(body);
     if (imgs.length) row.append(picsEl(imgs));
     if (openQ) { const qo = questionOptions(m); if (qo) row.append(qo); }
@@ -1895,6 +1914,7 @@ function applyControl(row) {
     if (typeof paintFastOnly === "function") paintFastOnly();
   }
   if (row.id === "step") step = row.data || {};
+  if (row.id === "presence") presenceRow = row.data || {};
   if (row.id === "gpt-models" || row.id === "gpt-pick") {
     if (row.id === "gpt-models") gcfg = row.data || {}; else gpick = row.data || {};
     if (typeof paintModelChip === "function" && ta) { paintModelChip(); paintPlaceholder(); }
@@ -2049,6 +2069,15 @@ async function renderHits() {
 }
 async function deleteConv(cv) {
   if (!window.confirm(t("deleteAsk").replace("%s", cv.title || t("untitled")))) return;
+  // photos and files of the chat go too (the free plan has 1 GB): every message keeps its files under me/<id>/
+  const withFiles = await sb.from("messages").select("id,images").eq("conv", cv.id).not("images", "is", null);
+  for (const r of (withFiles.data || []).filter((x) => Array.isArray(x.images) && x.images.length)) {
+    const dir = String(r.images[0]).split("/").slice(0, -1).join("/");
+    if (!/^me\/[\w.-]+$/.test(dir)) continue;
+    const ls = await sb.storage.from(BUCKET).list(dir, { limit: 1000 });
+    const names = (ls.data || []).map((f) => dir + "/" + f.name);
+    if (names.length) await sb.storage.from(BUCKET).remove(names);
+  }
   const m = await sb.from("messages").delete().eq("conv", cv.id);
   const c = m.error ? m : await sb.from("conversations").delete().eq("id", cv.id);
   if (c.error) { showErr(t("sendErr")); return; }
@@ -2697,8 +2726,13 @@ function subscribe() {
       if (p.new) applyControl(p.new);
       renderHeader(); renderTail();
     })
-    .subscribe();
+    .subscribe((st) => {
+      // after a silent reconnect (network switch, sleep) the events of the gap are lost: reload once it is back
+      if (st === "SUBSCRIBED" && chanBroken) { chanBroken = false; loadAll(); }
+      if (st === "CHANNEL_ERROR" || st === "TIMED_OUT" || st === "CLOSED") chanBroken = true;
+    });
 }
+let chanBroken = false;
 async function saveSettings(patch) {
   settings = Object.assign({}, settings, patch);
   renderHeader();
@@ -3160,9 +3194,27 @@ $("signUpBtn").onclick = async () => {
 const DEEP = (() => {
   try {
     const q = new URLSearchParams(location.search), say = (q.get("say") || "").trim();
-    return say ? { say: say.slice(0, 2000), to: q.get("to"), speak: q.get("speak") !== "0" } : null;
+    return say ? { say: say.slice(0, 2000), to: q.get("to"), speak: q.get("speak") !== "0", k: q.get("k") || "" } : null;
   } catch (e) { return null; }
 })();
+// Only a link that carries this phone's own key sends by itself (the Siri link in Settings has it); any other ?say= link
+// only fills the composer and asks first, so a link from a web page or a message can never command the computer.
+const DEEP_KEY = (() => {
+  try {
+    let k = localStorage.getItem("aim-deep-key");
+    if (!k) { k = [...crypto.getRandomValues(new Uint8Array(12))].map((b) => b.toString(16).padStart(2, "0")).join(""); localStorage.setItem("aim-deep-key", k); }
+    return k;
+  } catch (e) { return ""; }
+})();
+function deepConfirm() {
+  const bar = el("div", "deepbar");
+  const ok = el("button", "btn-main", t("send")), no = el("button", "btn-plain", t("deepDiscard"));
+  ok.type = no.type = "button";
+  ok.onclick = () => { bar.remove(); $("form").requestSubmit(); };
+  no.onclick = () => { bar.remove(); ta.value = ""; fit(); syncSend(); speakNext = false; };
+  bar.append(el("span", null, t("deepAsk")), ok, no);
+  document.querySelector("footer").prepend(bar);
+}
 let speakNext = false;
 function speakText(text, id) {   // reads a reply aloud; long replies are read in sentence-sized pieces (iOS cuts long utterances)
   try {
@@ -3194,7 +3246,7 @@ async function runDeepLink() {
   if (!ta) return;
   ta.value = d.say; fit(); syncSend();
   speakNext = d.speak;
-  $("form").requestSubmit();
+  if (DEEP_KEY && d.k === DEEP_KEY) $("form").requestSubmit(); else deepConfirm();
 }
 /* Android's back button (and the back swipe) closes the open sheet, panel or menu instead of leaving the app */
 (function backLayer() {
@@ -3218,6 +3270,13 @@ async function runDeepLink() {
     pushed = false; closeAll();
   });
 })();
+$("siriLinkBtn").onclick = async () => {
+  // the "Hey Siri" shortcut opens this link + its words: only this phone's key makes it send without asking
+  const url = location.origin + location.pathname + "?k=" + DEEP_KEY + "&say=";
+  try { await navigator.clipboard.writeText(url); showErr(t("siriLinkDone")); } catch (e) { window.prompt(t("siriLink"), url); }
+};
+$("signUpBtn").hidden = !/[?&]setup=1\b/.test(location.search);   // one owner: sign-up only for the first setup
+window.addEventListener("online", () => { if (signedIn) loadAll(); });   // messages that arrived while the network was gone
 let deepDone = false;
 function showApp(on) {
   $("login").hidden = on; $("app").hidden = !on;
@@ -3230,11 +3289,20 @@ applyLang(); renderQuick(); fit(); syncSend();
 sb.auth.getSession().then(({ data }) => showApp(!!(data && data.session)));
 setInterval(() => { renderHeader(); renderTail(); }, 30000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden && signedIn) loadAll(); });
-/* presence: tells the computer whether the app is on screen, so it skips the push banner while you are looking at it */
+/* presence: tells the computer which device has the app on screen, so only that device skips the push banner
+   (a tab left open on the PC must not silence the phone). `ep` = the end of this device's push endpoint. */
+const DEVICE_ID = (() => {
+  try { let d = localStorage.getItem("aim-device"); if (!d) { d = Math.random().toString(36).slice(2, 10); localStorage.setItem("aim-device", d); } return d; } catch (e) { return "x"; }
+})();
+let presenceRow = {}, pushTail = "";
+try { navigator.serviceWorker.ready.then((r) => r.pushManager && r.pushManager.getSubscription()).then((s) => { pushTail = s ? s.endpoint.slice(-40) : ""; }, () => {}); } catch (e) {}
 function pingPresence() {
   if (!signedIn) return;
-  const visible = !document.hidden;
-  sb.from("control").upsert({ id: "presence", data: { visible, ts: Date.now() }, updated_at: new Date().toISOString() }).then(() => {}, () => {});
+  const visible = !document.hidden, now = Date.now();
+  const devices = Object.fromEntries(Object.entries(presenceRow.devices || {}).filter(([, v]) => v && now - (v.ts || 0) < 86400000));
+  devices[DEVICE_ID] = { visible, ts: now, ep: pushTail };
+  presenceRow = { visible: Object.values(devices).some((v) => v.visible && now - v.ts < 50000), ts: now, devices };
+  sb.from("control").upsert({ id: "presence", data: presenceRow, updated_at: new Date().toISOString() }).then(() => {}, () => {});
 }
 setInterval(() => { if (!document.hidden) pingPresence(); }, 20000);
 document.addEventListener("visibilitychange", pingPresence);
