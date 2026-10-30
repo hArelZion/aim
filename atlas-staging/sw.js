@@ -1,8 +1,8 @@
 /* Atlas service worker: the app shell offline (network first for pages, stale-while-revalidate for css/js/fonts),
    and notifications that always show something (iOS drops subscriptions after silent pushes). */
-const CACHE = "atlas-20261030.1739";
-const SHELL = ["./", "index.html", "css/app.css?v=20261030.1739", "js/app.js?v=20261030.1739", "js/live.js?v=20261030.1739", "js/theater.js?v=20261030.1739",
-  "js/highlight.js?v=20261030.1739", "js/orb.js?v=20261030.1739", "worklets/mic.js", "worklets/player.js", "icons/icon-192.png", "manifest.webmanifest"];
+const CACHE = "atlas-20261030.1740";
+const SHELL = ["./", "index.html", "css/app.css?v=20261030.1740", "js/app.js?v=20261030.1740", "js/live.js?v=20261030.1740", "js/theater.js?v=20261030.1740",
+  "js/highlight.js?v=20261030.1740", "js/orb.js?v=20261030.1740", "worklets/mic.js", "worklets/player.js", "icons/icon-192.png", "manifest.webmanifest"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).catch(() => {})); self.skipWaiting(); });
 self.addEventListener("activate", (e) => e.waitUntil((async () => {
   for (const k of await caches.keys()) if (k !== CACHE) await caches.delete(k);

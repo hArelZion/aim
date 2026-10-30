@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261030.1739";
+  const APP_VERSION = "20261030.1740";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -20,6 +20,7 @@
       talk: "דברו עם Atlas", keyboard: "מקלדת", vision: "מצלמה", send: "שליחה", flip: "החלפת מצלמה", typePh: "כתבו ל-Atlas…",
       sIdle: "הקישו על המיקרופון כדי לדבר", sConnecting: "מתחבר…", sListening: "מקשיב…", sThinking: "חושב…", sSpeaking: "מדבר…", sError: "החיבור נפל. נסו שוב.",
       q1: "תבנה לי אתר", q2: "מה מזג האוויר?", q3: "מה אתה יודע עליי?", q4: "מה קורה במחשב?", q5: "תספר לי משהו מעניין",
+      audioMode: "מצב שמע (אם הקול נשמע חלש)", audioA: "רגיל", audioB: "רמקול",
       qTr: "🌐 מתרגם חי", sTranslating: "מתרגם: מדברים עברית או אנגלית", classicOn: "הקול החי לא זמין, עובר לקול רגיל", micEmpty: "לא שמעתי. נסו שוב.",
       buildQ: "מה לבנות?", buildPh: "למשל: אתר למסעדת סושי בתל אביב, עם תפריט אומקסה והזמנת מקום", build: "בנה", gallery: "הגלריה", sites: "אתרים",
       idea1: "דף נחיתה לבית קפה", idea2: "פורטפוליו לצלמת", idea3: "משחק זיכרון צבעוני", idea4: "אתר חתונה",
@@ -45,6 +46,7 @@
       talk: "Talk to Atlas", keyboard: "Keyboard", vision: "Camera", send: "Send", flip: "Flip camera", typePh: "Message Atlas…",
       sIdle: "Tap the mic to talk", sConnecting: "Connecting…", sListening: "Listening…", sThinking: "Thinking…", sSpeaking: "Speaking…", sError: "Connection lost. Try again.",
       q1: "Build me a website", q2: "What's the weather?", q3: "What do you know about me?", q4: "What's my computer doing?", q5: "Tell me something interesting",
+      audioMode: "Audio mode (if the voice is quiet)", audioA: "Normal", audioB: "Speaker",
       qTr: "🌐 Live interpreter", sTranslating: "Interpreting: speak Hebrew or English", classicOn: "Live voice is unavailable, using classic voice", micEmpty: "I didn't hear anything. Try again.",
       buildQ: "What should I build?", buildPh: "e.g. a site for a sushi bar in Tel Aviv with an omakase menu and reservations", build: "Build", gallery: "Gallery", sites: "sites",
       idea1: "Coffee shop landing page", idea2: "Photographer portfolio", idea3: "Colorful memory game", idea4: "Wedding website",
@@ -175,7 +177,16 @@
     $("micBtn").classList.toggle("live", !!live);
     window.Orb && window.Orb.set(state === "connecting" ? "thinking" : state === "error" ? "idle" : state);
   }
-  function setState(s) { state = s; paintState(); }
+  // the screen stays on while a live session runs (a sleeping iPhone would cut the conversation mid-demo)
+  let wakeLock = null;
+  async function keepAwake(on) {
+    try {
+      if (on && !wakeLock && navigator.wakeLock) { wakeLock = await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release", () => { wakeLock = null; }); }
+      if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
+    } catch (e) { wakeLock = null; }
+  }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && live) keepAwake(true); });
+  function setState(s) { state = s; paintState(); keepAwake(!!live && s !== "idle" && s !== "error"); }
   function caption(who, text, final) {
     const last = caps[caps.length - 1];
     if (last && last.who === who && !last.final) { last.text = text; last.final = final; }
@@ -588,6 +599,8 @@
     seg($("segLang"), [["auto", t("auto")], ["he", "עברית"], ["en", "English"]], s.lang || "auto", (v) => setCloud({ lang: v }));
     seg($("segAddr"), [["m", t("male")], ["f", t("female")], ["plural", t("plural")]], s.address || "plural", (v) => setCloud({ address: v }));
     seg($("segModel"), [["", t("auto")], ["gemini-3.8-live", "3.8"], ["gemini-3.1-flash-live-preview", t("fast")]], s.live_model || "", (v) => setCloud({ live_model: v }));
+    // iPhone: with the mic open, some iOS versions play voice from the earpiece; the other audio-session mode fixes it
+    seg($("segAudio"), [["auto", t("audioA")], ["default", t("audioB")]], store.get("atlas-audiosession", "auto"), (v) => { store.set("atlas-audiosession", v); renderSettings(); });
     seg($("segTheme"), [["auto", t("auto")], ["dark", t("dark")], ["light", t("light")]], store.get("atlas-theme", "auto"), (v) => { store.set("atlas-theme", v); applyTheme(); renderSettings(); });
     seg($("segUi"), [["he", "עברית"], ["en", "English"]], ui, (v) => { ui = v; store.set("atlas-ui", v); applyLang(); });
     renderSiri(); renderAbout();
