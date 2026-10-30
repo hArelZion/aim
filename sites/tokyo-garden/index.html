@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tokyo Garden - An intimate modern Japanese omakase experience in the heart of Tel Aviv. Reserve your seat at the chef's counter.">
+  <meta name="atlas-build" content="tukzisqj9ijrkypy7kxk">
+  <title>Tokyo Garden | Modern Japanese Omakase in Tel Aviv</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,700;1,300&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-primary: #121212;
+      --bg-secondary: #1a1a1a;
+      --bg-card: #222222;
+      --text-main: #f5f5f5;
+      --text-muted: #a0a0a0;
+      --dark-gray: #2c2c2c;
+      --accent-coral: #d84315;
+      --accent-amber: #ffb300;
+      --accent-gold-glow: rgba(255, 179, 0, 0.15);
+      
+      --font-display: 'Poppins', sans-serif;
+      --font-body: 'Roboto', sans-serif;
+      
+      --nav-height: 70px;
+      --transition-fast: 0.25s ease;
+      --transition-smooth: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Reset & Base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      color-scheme: dark;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4, .font-display {
+      font-family: var(--font-display);
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    /* Utilities & Layout */
+    .container {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .section-padding {
+      padding: clamp(4rem, 8vw, 7.5rem) 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 650px;
+      margin: 0 auto 3.5rem auto;
+    }
+
+    .subtitle {
+      color: var(--accent-amber);
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 0.5rem;
+      display: block;
+      font-weight: 600;
+    }
+
+    .title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--text-main);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.9rem 2rem;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      border-radius: 2px;
+      transition: all var(--transition-fast);
+      cursor: pointer;
+      border: 1px solid transparent;
+      outline: none;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--accent-amber);
+      outline-offset: 4px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-coral) 0%, #b71c1c 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 20px rgba(216, 67, 21, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(216, 67, 21, 0.5);
+      background: linear-gradient(135deg, #e64a19 0%, #c62828 100%);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-color: var(--accent-amber);
+      color: var(--accent-amber);
+    }
+
+    .btn-outline:hover {
+      background: var(--accent-amber);
+      color: var(--bg-primary);
+      transform: translateY(-2px);
+    }
+
+    /* Header / Nav */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--nav-height);
+      z-index: 1000;
+      background: rgba(18, 18, 18, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background var(--transition-fast);
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo-kanji {
+      color: var(--accent-coral);
+      font-size: 1.1rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      transition: color var(--transition-fast);
+    }
+
+    .nav-link:hover, .nav-link:focus {
+      color: var(--accent-amber);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: var(--nav-height);
+      background: 
+        radial-gradient(circle at 70% 30%, rgba(216, 67, 21, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(255, 179, 0, 0.08) 0%, transparent 40%),
+        linear-gradient(to bottom, rgba(18,18,18,0.4), var(--bg-primary));
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .hero-content {
+      z-index: 2;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.8rem;
+      background: rgba(255, 179, 0, 0.1);
+      border: 1px solid rgba(255, 179, 0, 0.3);
+      border-radius: 20px;
+      color: var(--accent-amber);
+      font-size: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 5vw, 4.2rem);
+      margin-bottom: 1.5rem;
+      color: #fff;
+    }
+
+    .hero-title span {
+      color: var(--accent-coral);
+      font-style: italic;
+    }
+
+    .hero-desc {
+      font-size: 1.1rem;
+      margin-bottom: 2.5rem;
+      max-width: 480px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-art {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hero-art-svg {
+      width: 100%;
+      max-width: 450px;
+      height: auto;
+      filter: drop-shadow(0 20px 30px rgba(0,0,0,0.7));
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    /* Chef Section */
+    .chef {
+      background-color: var(--bg-secondary);
+      position: relative;
+    }
+
+    .chef-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .chef-image-container {
+      position: relative;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+      background: var(--dark-gray);
+    }
+
+    .chef-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .chef-experience-badge {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: rgba(18, 18, 18, 0.9);
+      border: 1px solid var(--accent-amber);
+      padding: 1rem 1.2rem;
+      text-align: center;
+      border-radius: 2px;
+      backdrop-filter: blur(5px);
+    }
+
+    .chef-experience-num {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent-amber);
+      line-height: 1;
+    }
+
+    .chef-experience-text {
+      font-size: 0.75rem;
+      color: var(--text-main);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 0.2rem;
+    }
+
+    .chef-quote {
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--text-main);
+      border-left: 3px solid var(--accent-coral);
+      padding-left: 1.2rem;
+      margin: 1.5rem 0;
+      line-height: 1.5;
+    }
+
+    /* Omakase Section */
+    .omakase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .menu-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      padding: 2rem;
+      position: relative;
+      transition: transform var(--transition-fast), border-color var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 179, 0, 0.3);
+    }
+
+    .menu-card-tag {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(216, 67, 21, 0.2);
+      color: var(--accent-coral);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .menu-card-header {
+      margin-bottom: 1rem;
+    }
+
+    .menu-card-title {
+      font-size: 1.3rem;
+      color: #fff;
+      margin-bottom: 0.3rem;
+    }
+
+    .menu-card-price {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--accent-amber);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .menu-card-desc {
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+
+    .menu-items-list {
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      padding-top: 1rem;
+    }
+
+    .menu-item-single {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+
+    .menu-item-single span:last-child {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Reservation Section */
+    .reservation {
+      background: 
+        linear-gradient(to rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.95)),
+        radial-gradient(circle at 50% 50%, rgba(216, 67, 21, 0.1), transparent 70%);
+      position: relative;
+    }
+
+    .reservation-container {
+      max-width: 800px;
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 179, 0, 0.2);
+      border-radius: 4px;
+      padding: clamp(2rem, 5vw, 3.5rem);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-main);
+      letter-spacing: 0.05em;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      transition: border-color var(--transition-fast);
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--accent-amber);
+      box-shadow: 0 0 8px var(--accent-gold-glow);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Contact & Map Section */
+    .contact {
+      background-color: var(--bg-secondary);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .info-item {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+    }
+
+    .info-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 179, 0, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-amber);
+      flex-shrink: 0;
+    }
+
+    .info-text h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+      color: #fff;
+    }
+
+    .info-text p, .info-text a {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .info-text a:hover {
+      color: var(--accent-amber);
+    }
+
+    .map-placeholder {
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .map-svg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.6;
+    }
+
+    .map-pin-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .map-pin-icon {
+      animation: pulsePin 2s infinite;
+    }
+
+    @keyframes pulsePin {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    /* Footer */
+    .footer {
+      background: #0a0a0a;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 3rem 0 2rem 0;
+      text-align: center;
+    }
+
+    .footer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .social-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: all var(--transition-fast);
+    }
+
+    .social-btn:hover {
+      color: var(--accent-amber);
+      background: rgba(255, 179, 0, 0.1);
+      transform: translateY(-3px);
+    }
+
+    .copyright {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Motion / Intersection Observer */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Accessibility feature for motion reduction */
+    @media (prefers-reduced-motion: reduce) {
+      *, .hero-art-svg, .map-pin-icon {
+        animation: none !important;
+        transition: none !important;
+      }
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 900px) {
+      .hero-grid, .chef-grid, .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .hero {
+        text-align: center;
+        padding-top: calc(var(--nav-height) + 2rem);
+      }
+
+      .hero-desc {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-actions {
+        justify-content: center;
+      }
+
+      .chef-image-container {
+        max-width: 500px;
+        margin: 0 auto;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .nav-links {
+        display: none;
+      }
+
+      .nav-links.mobile-active {
+        display: flex;
+        position: absolute;
+        top: var(--nav-height);
+        left: 0;
+        width: 100%;
+        background: var(--bg-secondary);
+        flex-direction: column;
+        padding: 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group.full-width {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header class="header">
+    <div class="container nav-container">
+      <a href="#hero" class="logo" aria-label="Tokyo Garden Homepage">
+        <span class="logo-kanji">東京</span> TOKYO GARDEN
+      </a>
+      
+      <button class="mobile-menu-btn" id="mobileMenuToggle" aria-label="Toggle navigation menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#chef" class="nav-link">Chef's Story</a></li>
+          <li><a href="#omakase" class="nav-link">Omakase Menu</a></li>
+          <li><a href="#reservation" class="nav-link">Reservations</a></li>
+          <li><a href="#contact" class="nav-link">Location</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+      <div class="container hero-grid">
+        <div class="hero-content reveal">
+          <span class="hero-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+            Tel Aviv • Rothschild Blvd
+          </span>
+          <h1 class="hero-title">Precision Meets <span>Passion</span>.</h1>
+          <p class="hero-desc">An intimate 12-seat omakase bar blending traditional Edomae sushi craftsmanship with vibrant Mediterranean ocean elements.</p>
+          <div class="hero-actions">
+            <a href="#reservation" class="btn btn-primary">Reserve Your Seat</a>
+            <a href="#omakase" class="btn btn-outline">Explore Menu</a>
+          </div>
+        </div>
+        <div class="hero-art reveal">
+          <!-- Stylized Inline SVG Art for Sushi/Nigiri Concept -->
+          <svg class="hero-art-svg" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="200" cy="200" r="160" fill="#2C2C2C" opacity="0.4"/>
+            <circle cx="200" cy="200" r="130" stroke="#FFB300" stroke-width="1" stroke-dasharray="4 6" opacity="0.6"/>
+            <!-- Slate Plate -->
+            <rect x="80" y="160" width="240" height="120" rx="12" fill="#1A1A1A" stroke="#333333" stroke-width="2"/>
+            <!-- Nigiri Rice Base -->
+            <path d="M 130 200 C 130 185, 270 185, 270 200 C 270 220, 130 220, 130 200 Z" fill="#E0E0E0"/>
+            <!-- Fish Topping (Salmon/Tuna gradient) -->
+            <path d="M 115 190 C 120 165, 280 165, 285 190 C 285 205, 115 205, 115 190 Z" fill="url(#fishGrad)"/>
+            <!-- Nori Strip -->
+            <rect x="190" y="172" width="20" height="38" rx="2" fill="#111111"/>
+            <!-- Brush Glow / Accent -->
+            <path d="M 125 178 Q 200 168 275 178" stroke="#FFB300" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+            <!-- Gold Flake accents -->
+            <circle cx="160" cy="180" r="2" fill="#FFB300"/>
+            <circle cx="220" cy="175" r="3" fill="#FFB300"/>
+            <circle cx="240" cy="182" r="1.5" fill="#FFB300"/>
+            <defs>
+              <linearGradient id="fishGrad" x1="115" y1="165" x2="285" y2="205" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#D84315"/>
+                <stop offset="1" stop-color="#FF7043"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chef's Story Section -->
+    <section id="chef" class="chef section-padding">
+      <div class="container chef-grid">
+        <div class="chef-image-container reveal">
+          <!-- Stylized Inline SVG Portrait Graphic -->
+          <svg class="chef-svg" viewBox="0 0 400 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="500" fill="#1A1A1A"/>
+            <path d="M0 0L400 500H0V0Z" fill="#222222" opacity="0.5"/>
+            <!-- Minimalist Chef Silhouette -->
+            <circle cx="200" cy="180" r="65" fill="#2C2C2C"/>
+            <path d="M110 420 C110 300, 290 300, 290 420 Z" fill="#2C2C2C"/>
+            <path d="M130 420 L200 320 L270 420 Z" fill="#D84315" opacity="0.8"/>
+            <!-- Apron Detail -->
+            <path d="M160 340 L240 340 L230 500 L170 500 Z" fill="#121212"/>
+            <!-- Stylized Knife Accent -->
+            <rect x="290" y="180" width="8" height="200" rx="4" fill="#333333" transform="rotate(15 290 180)"/>
+            <path d="M294 180 L302 200 L294 320 Z" fill="#AAAAAA" transform="rotate(15 290 180)"/>
+          </svg>
+          <div class="chef-experience-badge">
+            <div class="chef-experience-num">18+</div>
+            <div class="chef-experience-text">Years Mastery</div>
+          </div>
+        </div>
+
+        <div class="chef-content reveal">
+          <span class="subtitle">Master Culinary Artist</span>
+          <h2 class="title">Chef Kenji Sato</h2>
+          <blockquote class="chef-quote">
+            "Omakase is a dialogue without words. It is an agreement of ultimate trust between the chef and the guest."
+          </blockquote>
+          <p>Trained in Ginza, Tokyo, for over a decade, Chef Kenji relocated to Tel Aviv driven by a passion for the vibrant fresh catches of the Levantine coast. At Tokyo Garden, he marries austere Japanese technique with the extraordinary quality of local Mediterranean seafood.</p>
+          <br>
+          <p>Every piece of nigiri is served at precise body temperature, lightly brushed with aged house-brewed soy sauce, and prepared directly in front of your eyes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Omakase Menu Section -->
+    <section id="omakase" class="omakase section-padding">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="subtitle">Curated Tasting Journeys</span>
+          <h2 class="title">The Omakase Experience</h2>
+          <p>Menu offerings change daily based on the morning's fresh catch from local fishermen and air-shipped selections from Tokyo’s Toyosu Market.</p>
+        </div>
+
+        <div class="omakase-grid">
+          <!-- Course 1 -->
+          <article class="menu-card reveal">
+            <span class="menu-card-tag">Signature</span>
+            <div class="menu-card-header">
+              <h3 class="menu-card-title">Kisetsu Experience</h3>
+              <div class="menu-card-price">₪ 480</div>
+            </div>
+            <p class="menu-card-desc">A complete 14-course journey showcasing seasonal highlights, warm seasonal appetizers, and hand-selected nigiri.</p>
+            <div class="menu-items-list">
+              <div class="menu-item-single"><span>3 Seasonal Appetizers</span><span>Zensai</span></div>
+              <div class="menu-item-single"><span>9 Premium Nigiri Pieces</span><span>Seasonal</span></div>
+              <div class="menu-item-single"><span>Hand-rolled Temaki & Miso</span><span>Finishing</span></div>
+              <div class="menu-item-single"><span>Matcha & Yuzu Dessert</span><span>Sweet</span></div>
+            </div>
+          </article>
+
+          <!-- Course 2 -->
+          <article class="menu-card reveal">
+            <span class="menu-card-tag">Grand Tasting</span>
+            <div class="menu-card-header">
+              <h3 class="menu-card-title">Tokyo Garden Reserve</h3>
+              <div class="menu-card-price">₪ 650</div>
+            </div>
+            <p class="menu-card-desc">An elevated 18-course exploration featuring rare delicacies, wild-caught Otoro, fresh Uni, and Japanese A5 Wagyu.</p>
+            <div class="menu-items-list">
+              <div class="menu-item-single"><span>4 Sashimi & Otsumami</span><span>Starters</span></div>
+              <div class="menu-item-single"><span>11 Rare Cut Nigiri Pieces</span><span>Chef's Choice</span></div>
+              <div class="menu-item-single"><span>A5 Wagyu & Caviar Bite</span><span>Specialty</span></div>
+              <div class="menu-item-single"><span>Artisanal Tea & Dessert</span><span>Sweet</span></div>
+            </div>
+          </article>
+
+          <!-- Course 3 -->
+          <article class="menu-card reveal">
+            <div class="menu-card-header">
+              <h3 class="menu-card-title">Sunset Early Counter</h3>
+              <div class="menu-card-price">₪ 360</div>
+            </div>
+            <p class="menu-card-desc">Designed for early diners. A refined 10-course tasting focusing purely on essential nigiri craftsmanship and speed.</p>
+            <div class="menu-items-list">
+              <div class="menu-item-single"><span>Red Miso Soup</span><span>Warm Up</span></div>
+              <div class="menu-item-single"><span>8 Essential Nigiri Pieces</span><span>Classic</span></div>
+              <div class="menu-item-single"><span>Chef's Daily Special Roll</span><span>Signature</span></div>
+              <div class="menu-item-single"><span>House Sorbet</span><span>Cleanser</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reservation Section -->
+    <section id="reservation" class="reservation section-padding">
+      <div class="container flex-center">
+        <div class="reservation-container reveal">
+          <div class="section-header" style="margin-bottom: 2rem;">
+            <span class="subtitle">Intimate 12-Seat Counter</span>
+            <h2 class="title">Reserve Your Counter Seat</h2>
+            <p>Due to limited seating, reservations open 30 days in advance. Credit card guarantee required.</p>
+          </div>
+
+          <form id="bookingForm" onsubmit="handleFormSubmit(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="name" class="form-label">Full Name</label>
+                <input type="text" id="name" class="form-input" placeholder="e.g. Yael Cohen" required>
+              </div>
+
+              <div class="form-group">
+                <label for="guests" class="form-label">Number of Guests</label>
+                <select id="guests" class="form-select" required>
+                  <option value="1">1 Person</option>
+                  <option value="2" selected>2 People</option>
+                  <option value="3">3 People</option>
+                  <option value="4">4 People (Max Group)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="date" class="form-label">Date</label>
+                <input type="date" id="date" class="form-input" required>
+              </div>
+
+              <div class="form-group">
+                <label for="time" class="form-label">Seating Session</label>
+                <select id="time" class="form-select" required>
+                  <option value="18:00">18:00 (Early Session)</option>
+                  <option value="20:30">20:30 (Main Session)</option>
+                </select>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="notes" class="form-label">Dietary Restrictions / Special Requests</label>
+                <textarea id="notes" class="form-textarea" placeholder="Please let us know of any severe fish allergies or dietary requirements..."></textarea>
+              </div>
+
+              <div class="form-group full-width" style="margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Confirm Reservation Request</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact & Map Section -->
+    <section id="contact" class="contact section-padding">
+      <div class="container">
+        <div class="contact-grid">
+          <div class="contact-info reveal">
+            <div>
+              <span class="subtitle">Find Us</span>
+              <h2 class="title">Location & Hours</h2>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div class="info-text">
+                <h3>Address</h3>
+                <p>48 Rothschild Boulevard, Tel Aviv-Yafo, Israel</p>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="info-text">
+                <h3>Opening Hours</h3>
+                <p>Tuesday – Sunday: 18:00 – 23:00</p>
+                <p>Closed on Mondays</p>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <div class="info-text">
+                <h3>Direct Inquiries</h3>
+                <p><a href="tel:+97235550192">+972 3-555-0192</a></p>
+                <p><a href="mailto:concierge@tokyogarden-tlv.com">concierge@tokyogarden-tlv.com</a></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-placeholder reveal" aria-label="Interactive Map Location">
+            <!-- Stylized Map Vector -->
+            <svg class="map-svg" viewBox="0 0 600 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="600" height="400" fill="#1C1C1C"/>
+              <!-- Grid Roads -->
+              <path d="M0 100 H600 M0 250 H600 M0 320 H600" stroke="#2C2C2C" stroke-width="12"/>
+              <path d="M150 0 V400 M380 0 V400 M500 0 V400" stroke="#2C2C2C" stroke-width="16"/>
+              <!-- Rothschild Blvd Accent Line -->
+              <path d="M-50 350 L450 -50" stroke="#333333" stroke-width="28"/>
+              <path d="M-50 350 L450 -50" stroke="#444444" stroke-width="2"/>
+            </svg>
+            <div class="map-pin-overlay">
+              <svg class="map-pin-icon" width="48" height="48" viewBox="0 0 24 24" fill="#D84315" stroke="#FFB300" stroke-width="1.5">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+              <div style="background: rgba(18,18,18,0.9); padding: 0.3rem 0.8rem; border-radius: 3px; border: 1px solid var(--accent-amber); font-size: 0.8rem; color: #fff; margin-top: 0.3rem;">
+                Tokyo Garden TLV
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="logo">
+        <span class="logo-kanji">東京</span> TOKYO GARDEN
+      </div>
+
+      <div class="social-links">
+        <a href="#" class="social-btn" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="#" class="social-btn" aria-label="Facebook">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+
+      <p class="copyright">© <span id="year"></span> Tokyo Garden Tel Aviv. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Set Current Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Set Default Booking Date (Tomorrow)
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      dateInput.value = tomorrow.toISOString().split('T')[0];
+      dateInput.min = new Date().toISOString().split('T')[0];
+    }
+
+    // Mobile Navigation Toggle
+    const mobileBtn = document.getElementById('mobileMenuToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    mobileBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('mobile-active');
+    });
+
+    // Close mobile nav when link is clicked
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('mobile-active');
+      });
+    });
+
+    // Scroll Reveal Observer
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.15
+    };
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => {
+      revealObserver.observe(el);
+    });
+
+    // Reservation Form Handling
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const guests = document.getElementById('guests').value;
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+
+      alert(`Thank you, ${name}. Your reservation request for ${guests} guest(s) on ${date} at ${time} has been received. We will contact you shortly to confirm.`);
+      document.getElementById('bookingForm').reset();
+    }
+  </script>
+</body>
+</html>
