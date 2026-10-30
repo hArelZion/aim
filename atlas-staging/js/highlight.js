@@ -5,7 +5,22 @@
   const KW = /^(const|let|var|function|return|if|else|for|while|of|in|new|class|extends|import|from|export|default|async|await|try|catch|finally|throw|switch|case|break|continue|this|true|false|null|undefined|typeof|instanceof|document|window)$/;
   const sp = (c, s) => `<span class="hl-${c}">${esc(s)}</span>`;
 
+  // A closing </style> or </script> anywhere on the line hands the rest back to HTML (indented closers included).
   function js(line, st) {
+    const end = line.search(/<\/script/i);
+    if (end < 0) return jsCore(line, st);
+    const before = jsCore(line.slice(0, end), st);
+    st.mode = "html"; st.jsCom = false;
+    return before + html(line.slice(end), st);
+  }
+  function css(line, st) {
+    const end = line.search(/<\/style/i);
+    if (end < 0) return cssCore(line, st);
+    const before = cssCore(line.slice(0, end), st);
+    st.mode = "html"; st.cssCom = false; st.depth = 0;
+    return before + html(line.slice(end), st);
+  }
+  function jsCore(line, st) {
     let out = "", i = 0;
     while (i < line.length) {
       if (st.jsCom) {
@@ -15,7 +30,6 @@
       }
       const rest = line.slice(i);
       let m;
-      if (rest.startsWith("</script")) { st.mode = "html"; return out + html(rest, st); }
       if (rest.startsWith("//")) { out += sp("com", rest); return out; }
       if (rest.startsWith("/*")) { st.jsCom = true; continue; }
       if ((m = rest.match(/^(["'`])(?:\\.|(?!\1).)*\1?/))) { out += sp("str", m[0]); i += m[0].length; continue; }
@@ -25,7 +39,7 @@
     }
     return out;
   }
-  function css(line, st) {
+  function cssCore(line, st) {
     let out = "", i = 0;
     while (i < line.length) {
       if (st.cssCom) {
@@ -35,7 +49,6 @@
       }
       const rest = line.slice(i);
       let m;
-      if (rest.startsWith("</style")) { st.mode = "html"; return out + html(rest, st); }
       if (rest.startsWith("/*")) { st.cssCom = true; continue; }
       if (st.depth > 0 && (m = rest.match(/^([\w-]+)(\s*:)/)) && !/^[\d.]/.test(m[1])) { out += sp("prop", m[1]) + esc(m[2]); i += m[0].length; continue; }
       if ((m = rest.match(/^(["'])(?:\\.|(?!\1).)*\1?/))) { out += sp("str", m[0]); i += m[0].length; continue; }
@@ -58,11 +71,11 @@
         out += sp("com", line.slice(i, e + 3)); i = e + 3; st.htmlCom = false; continue;
       }
       const rest = line.slice(i);
-      let m;
-      if (rest.startsWith("<!--")) { st.htmlCom = true; continue; }
-      if ((m = rest.match(/^<\/?[A-Za-z!][\w-]*/))) {
-        const name = m[0].replace(/[<\/!]/g, "").toLowerCase();
-        out += sp("tag", m[0]); i += m[0].length;
+      let m, name = "", closing = false;
+      if (!st.tag && rest.startsWith("<!--")) { st.htmlCom = true; continue; }
+      if (st.tag || (m = rest.match(/^<\/?[A-Za-z!][\w-]*/))) {
+        if (st.tag) { name = st.tag; closing = false; }   // a tag whose attributes run over several lines
+        else { name = m[0].replace(/[<\/!]/g, "").toLowerCase(); closing = m[0].startsWith("</"); out += sp("tag", m[0]); i += m[0].length; }
         // attributes up to the end of the tag (or the line)
         let am;
         while (i < line.length && line[i] !== ">") {
@@ -73,10 +86,10 @@
           out += esc(line[i]); i++;
         }
         if (line[i] === ">") {
-          out += sp("tag", ">"); i++;
-          if (!m[0].startsWith("</") && name === "style") st.mode = "css";
-          if (!m[0].startsWith("</") && name === "script") st.mode = "js";
-        }
+          out += sp("tag", ">"); i++; st.tag = "";
+          if (!closing && name === "style") st.mode = "css";
+          if (!closing && name === "script") st.mode = "js";
+        } else st.tag = name;
         continue;
       }
       const next = rest.search(/<|$/);

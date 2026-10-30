@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261030.1720";
+  const APP_VERSION = "20261030.1724";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -383,6 +383,7 @@
     const justDone = a.state === "live" && a.started && Date.now() - a.started < 5 * 60000;
     const theaterUp = !$("theater").hidden;
     pill.hidden = theaterUp || !(running || justDone);
+    document.body.classList.toggle("pill-on", !pill.hidden);   // the Talk screen's controls move up above the pill
     pill.classList.toggle("done", !running);
     $("buildPillText").textContent = running ? `${t("building")} ${a.title || "…"} · ${t("tapWatch")}` : `${t("built")}${a.title || ""}`;
     pill.onclick = () => {
