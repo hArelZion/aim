@@ -3,7 +3,7 @@
 <head>
 <base href="../">
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <title>AIM staging</title>
 <meta name="apple-mobile-web-app-title" content="AIM">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -96,6 +96,28 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .tochip { display: inline-flex; gap: 4px; align-items: center; font-size: .72rem; opacity: .75; margin-bottom: 2px; }
 .tochip .logo { width: 12px; height: 12px; }
 .author { font-size: .74rem; font-weight: 600; color: var(--muted); line-height: 1.2; margin-bottom: 2px; }
+.tbl { overflow-x: auto; margin: .5em 0; -webkit-overflow-scrolling: touch; }
+.tbl table { border-collapse: collapse; font-size: .9em; min-width: 100%; }
+.tbl th, .tbl td { border: 1px solid var(--line); padding: 6px 10px; text-align: start; vertical-align: top; }
+.tbl th { background: var(--code); font-weight: 600; }
+.codeblk { position: relative; }
+.copy-code { position: absolute; top: 6px; inset-inline-end: 6px; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: 16px; line-height: 1; z-index: 1; }
+.copy-code.done { color: var(--live); }
+.nextcard { margin: 6px 0 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.nextcard .nr { color: var(--ink); line-height: 1.5; }
+.nextcard .nq { margin-top: 8px; font-weight: 600; }
+.nextcard .nb { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.nextcard .nb button { min-height: 40px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; font-weight: 600; }
+.nextcard .nb button:first-child { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.nextcard .nb button:disabled { opacity: .5; }
+.planbox { margin: 0 10px 6px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); font-size: .88rem; overflow: hidden; }
+.planbox summary { list-style: none; cursor: pointer; padding: 9px 12px; display: flex; gap: 8px; align-items: center; font-weight: 600; }
+.planbox summary::-webkit-details-marker { display: none; }
+.planbox ol { margin: 0; padding: 0 12px 10px; list-style: none; display: grid; gap: 4px; max-height: 30vh; overflow-y: auto; }
+.planbox li { display: flex; gap: 8px; align-items: flex-start; color: var(--muted); }
+.planbox li.in_progress { color: var(--ink); font-weight: 600; }
+.planbox li.completed { text-decoration: line-through; }
+.planbox .pi { flex: none; width: 16px; text-align: center; }
 .deepbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 10px 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); font-size: .92rem; }
 .deepbar span { flex: 1 1 160px; }
 .deepbar button { min-height: 40px; }
@@ -721,6 +743,8 @@ summary.is-pressed { opacity: .6; }
     <button class="mi" id="screenBtn" type="button" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span data-t="mScreen"></span></button>
     <button class="mi" id="camBtn" type="button" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l2-2h6l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg><span data-t="mCam"></span></button>
     <button class="mi" id="voiceBtn" type="button" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></svg><span data-t="mVoice"></span></button>
+    <a class="mi" id="atlasBtn" href="/aim/atlas-staging/" target="_blank" rel="noopener" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(-28 12 12)"/></svg><span>Atlas</span></a>
+    <button class="mi" id="installBtn" type="button" role="menuitem" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span data-t="install"></span></button>
     <button class="mi" id="themeBtn" type="button" role="menuitem"></button>
     <button class="mi" id="gear" type="button" role="menuitem" aria-expanded="false" aria-controls="sheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.66 0-1.25.4-1.51 1z"/></svg><span data-t="settings"></span></button>
   </div>
@@ -937,6 +961,7 @@ const I18N = {
     working: "מחובר · חושב…", waiting: "מחובר · מחכה לתשובה שלך", live: "מחובר · עונה תוך שניות",
     stuck: "לא עונה", stuckAlert: "המחשב הפסיק לענות באמצע עבודה (לפני %s). אפשר לשלוח הודעה כדי להעיר אותו, או להקליד /phone במחשב.",
     deepAsk: "הודעה מקישור. לשלוח אותה למחשב?", deepDiscard: "בטל", siriLink: "העתק קישור Siri", siriLinkDone: "הקישור הועתק. הדבק אותו בקיצור הדרך של Siri.",
+    install: "התקנת האפליקציה", onPc: "הכפתור הזה עובד רק במחשב",
     offlineAlert: "המחשב לא מאזין עכשיו. הודעות שתשלח יחכו עד שתקליד /phone בשיחה במחשב.",
     pausedAlert: "הקו מושהה. Claude לא יקבל הודעות עד שתמשיך אותו כאן או תקליד /phone במחשב.",
     project: "פרויקט ", lastSeen: (a) => "המחשב נראה " + a,
@@ -986,6 +1011,7 @@ const I18N = {
     working: "Online · thinking…", waiting: "Online · waiting for your answer", live: "Online · replies within seconds",
     stuck: "not answering", stuckAlert: "The computer stopped answering in the middle of a task (%s ago). Send a message to wake it, or type /phone on the computer.",
     deepAsk: "Message from a link. Send it to the computer?", deepDiscard: "Discard", siriLink: "Copy Siri link", siriLinkDone: "Link copied. Paste it into your Siri shortcut.",
+    install: "Install the app", onPc: "This button works on the computer only",
     offlineAlert: "The computer isn't listening right now. Messages you send wait until you type /phone on the computer.",
     pausedAlert: "The line is paused. Claude gets no messages until you resume it here or type /phone on the computer.",
     project: "Project ", lastSeen: (a) => "Computer seen " + a,
@@ -1107,7 +1133,18 @@ function md(src) {
     if (/^\s*```/.test(l)) {
       flushP(); flushL(); const buf = []; i++;
       while (i < lines.length && !/^\s*```/.test(lines[i])) buf.push(lines[i++]);
-      i++; out.push("<pre><code>" + esc(buf.join("\n")) + "</code></pre>"); continue;
+      i++; out.push('<div class="codeblk"><button class="copy-code" type="button" aria-label="copy">⧉</button><pre><code>' + esc(buf.join("\n")) + "</code></pre></div>"); continue;
+    }
+    // GFM tables: a header row, a |---|---| row, then body rows (scrolls sideways on a phone)
+    if (/\|/.test(l) && i + 1 < lines.length && /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?\s*$/.test(lines[i + 1])) {
+      flushP(); flushL();
+      const cells = (row) => row.trim().replace(/^\||\|$/g, "").split("|").map((x) => inline(esc(x.trim())));
+      const head = cells(l); i += 2;
+      const body = [];
+      while (i < lines.length && /\|/.test(lines[i]) && lines[i].trim()) body.push(cells(lines[i++]));
+      out.push('<div class="tbl"><table><thead><tr>' + head.map((h) => "<th>" + h + "</th>").join("") + "</tr></thead><tbody>" +
+        body.map((r) => "<tr>" + r.map((c) => "<td>" + c + "</td>").join("") + "</tr>").join("") + "</tbody></table></div>");
+      continue;
     }
     if ((m = l.match(/^\s*[-*•]\s+(.*)/))) { flushP(); if (!list || list.t !== "ul") { flushL(); list = { t: "ul", items: [] }; } list.items.push(m[1]); i++; continue; }
     if ((m = l.match(/^\s*\d+[.)]\s+(.*)/))) { flushP(); if (!list || list.t !== "ol") { flushL(); list = { t: "ol", items: [] }; } list.items.push(m[1]); i++; continue; }
@@ -1195,7 +1232,7 @@ function renderHeader() {
   const cvNow = convs.find((x) => x.id === (viewConv || currentConv));
   $("modelName").textContent = (cvNow && cvNow.title) || mname(); $("modelName").dir = "auto";
   const proj = (cvNow && cvNow.project) || curS().project;
-  $("sub").textContent = (proj ? proj + " \u00b7 " : "") + t(c);
+  $("sub").textContent = t(c) + (proj ? " \u00b7 " + proj : "");   // the state first: on a phone the end of the line is cut
   if (model === "gpt" && gcfg.host && c !== "offline" && c !== "paused") {   // Codex remote: work folder and computer
     const w = (icon, s) => { const x = el("span", "cxw"); x.innerHTML = icon; const b2 = document.createElement("bdi"); b2.textContent = s; x.append(b2); return x; };
     $("sub").replaceChildren(w(ICON_FOLDER, gcfg.dir || ""), w(ICON_LAPTOP, gcfg.host));
@@ -1209,7 +1246,7 @@ function renderHeader() {
   if (curS().project) { const s = el("span", null, t("project")); s.append(el("b", null, curS().project)); meta.append(s); }
   if (curW().at) meta.append(el("span", null, t("lastSeen", ago(Date.now() - toMs(curW().at)))));
   $("pauseBtn").textContent = isOff() ? t("resume") : t("pause");
-  paintNotif(); paintNudge(); renderPc();
+  paintNotif(); paintNudge(); renderPc(); renderPlan();
 }
 function paintNudge() {
   let hide = true;
@@ -1467,6 +1504,7 @@ function renderThread() {
     }
     grp = null;
     if (m.kind === "perm") { thread.append(permEl(m)); prevAi = false; continue; }
+    if (m.kind === "next") { thread.append(nextEl(m)); prevAi = false; continue; }
     const openQ = m.kind === "question" && !msgs.some((x) => x.sender === "me" && x.ts > m.ts), cont = team && prevAi && prevAu === au;
     const sig = [m.text, m.kind, team, cont, au, openQ, speakingId === m.id, lang, imgs.join(",")].join("|"), c = nodeCache.get(m.id);
     if (c && c.sig === sig) { c.node.classList.remove("last"); lastAiRow = c.node; thread.append(c.node); prevAi = true; prevAu = au; continue; }
@@ -1583,6 +1621,57 @@ function permEl(m) {
   } else box.append(el("div", "pst " + st, t("perm_" + st)));
   return box;
 }
+/* the computer's next-step card (wrap_up hook in ~/.aim/aim_tool.py): the recap, one question, and buttons that
+   answer it as if typed. Buttons for app actions (commit, PR...) only work on the computer. */
+function nextEl(m) {
+  let c = {}; try { c = JSON.parse(m.text); } catch (e) {}
+  const box = el("div", "nextcard");
+  const r = el("div", "nr", c.recap || ""); r.dir = "auto"; box.append(r);
+  if (c.ask) { const q = el("div", "nq", c.ask); q.dir = "auto"; box.append(q); }
+  const answered = msgs.some((x) => x.sender === "me" && x.ts > m.ts);
+  const acts = (c.actions || []).filter((a) => a && (a.label || a.message || a.action));
+  if (acts.length) {
+    const row = el("div", "nb");
+    acts.forEach((a) => {
+      const text = a.message || a.label || "";
+      const b = el("button", null, a.label || a.action || text); b.type = "button"; b.dir = "auto";
+      if (a.action && !a.message) { b.disabled = true; b.title = t("onPc"); }
+      else if (answered) b.disabled = true;
+      else b.onclick = () => { if (sending) return; row.querySelectorAll("button").forEach((x) => { x.disabled = true; }); ta.value = text; fit(); syncSend(); $("form").requestSubmit(); };
+      row.append(b);
+    });
+    box.append(row);
+  }
+  return box;
+}
+/* the live task list of the run on the computer (update_plan hook -> control row "plan"), pinned above the composer */
+let planRow = {}, planSig = "";
+function renderPlan() {
+  const p = planRow || {}, items = Array.isArray(p.items) ? p.items : [];
+  const show = p.at && Date.now() - p.at < 45 * 60000 && !p.done && items.length && (!p.conv || p.conv === (viewConv || currentConv)) && (model === "claude" || model === "team");
+  let box = $("planBox");
+  if (!show) { if (box) box.hidden = true; planSig = ""; return; }
+  const sig = JSON.stringify([p.at, items, lang]);
+  if (box && sig === planSig) { box.hidden = false; return; }
+  planSig = sig;
+  if (!box) { box = document.createElement("details"); box.id = "planBox"; box.className = "planbox"; box.open = true; document.querySelector("footer").prepend(box); }
+  box.hidden = false;
+  const done = items.filter((x) => x.status === "completed").length, cur = items.find((x) => x.status === "in_progress");
+  const sum = el("summary"); sum.append(el("span", null, "☑ " + done + "/" + items.length));
+  if (cur) { const s = el("span", null, cur.content); s.dir = "auto"; s.style.cssText = "flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500"; sum.append(s); }
+  const ol = el("ol");
+  items.forEach((x) => {
+    const li = el("li", x.status || "pending");
+    li.append(el("span", "pi", x.status === "completed" ? "✓" : x.status === "in_progress" ? "◉" : "○"));
+    const s = el("span", null, x.content); s.dir = "auto"; li.append(s); ol.append(li);
+  });
+  const open = box.open; box.replaceChildren(sum, ol); box.open = open;
+}
+document.addEventListener("click", (e) => {   // copy button on code blocks
+  const b = e.target.closest(".copy-code"); if (!b) return;
+  const code = b.parentElement.querySelector("code");
+  try { navigator.clipboard.writeText(code ? code.textContent : ""); b.classList.add("done"); b.textContent = "✓"; setTimeout(() => { b.classList.remove("done"); b.textContent = "⧉"; }, 1500); } catch (er) {}
+});
 /* a question of mine with a numbered list: every item becomes a button that answers with that item */
 function questionOptions(m) {
   const items = [];
@@ -1915,6 +2004,7 @@ function applyControl(row) {
   }
   if (row.id === "step") step = row.data || {};
   if (row.id === "presence") presenceRow = row.data || {};
+  if (row.id === "plan") { planRow = row.data || {}; if (typeof renderPlan === "function") renderPlan(); }
   if (row.id === "gpt-models" || row.id === "gpt-pick") {
     if (row.id === "gpt-models") gcfg = row.data || {}; else gpick = row.data || {};
     if (typeof paintModelChip === "function" && ta) { paintModelChip(); paintPlaceholder(); }
@@ -2891,7 +2981,7 @@ $("mic").onclick = () => {
       let fin = "", tmp = "";
       for (let i = 0; i < ev.results.length; i++) { const r = ev.results[i]; if (r.isFinal) fin += r[0].transcript; else tmp += r[0].transcript; }
       ta.value = recBase + fin + tmp; fit(); syncSend();
-      try { localStorage.setItem("aim-draft", ta.value); } catch (e) {}
+      try { localStorage.setItem(draftKey(), ta.value); } catch (e) {}
     };
     rec.onerror = (ev) => { if (ev.error === "not-allowed" || ev.error === "service-not-allowed") showErr(t("micErr")); };
     rec.onend = () => { rec = null; $("mic").setAttribute("aria-pressed", "false"); };
@@ -2951,7 +3041,16 @@ async function flushOutbox() {
 window.addEventListener("online", flushOutbox);
 setInterval(flushOutbox, 15000);
 const isNetErr = (err) => !navigator.onLine || (err && (err.name === "TypeError" || /fetch|network|load failed/i.test(String(err.message || err))));
-try { ta.value = localStorage.getItem("aim-draft") || ""; } catch (e) {}
+/* drafts per conversation (one global draft followed you into every chat); the old global draft is used once */
+const draftKey = () => "aim-draft:" + (viewConv || currentConv || model);
+try { ta.value = localStorage.getItem("aim-draft") || ""; localStorage.removeItem("aim-draft"); } catch (e) {}
+let draftAt = null;
+setInterval(() => {
+  const k = draftKey();
+  if (k === draftAt) return;
+  const first = draftAt === null; draftAt = k;
+  try { const v = localStorage.getItem(k) || ""; if (!first || !ta.value) { ta.value = v; fit(); syncSend(); } } catch (e) {}
+}, 400);
 /* model picker: the computer presses the real Model / Effort buttons of the Claude app (aim_model.py via the watcher) */
 const mErr = (e) => ({ "other-session": t("mOther"), window: t("mNoWin") }[e] || t("mFail"));
 /* work modes: the user approved this button on the computer on 2026-10-14; "Bypass permissions" is never offered */
@@ -3086,7 +3185,7 @@ ta.addEventListener("keydown", (e) => {
   else if (e.key === "Enter" || e.key === "Tab") { e.preventDefault(); e.stopImmediatePropagation(); pickSlash(items[slashSel]); }
   else if (e.key === "Escape") { $("slash").hidden = true; }
 });
-ta.addEventListener("input", () => { fit(); syncSend(); try { localStorage.setItem("aim-draft", ta.value); } catch (e) {} });
+ta.addEventListener("input", () => { fit(); syncSend(); try { localStorage.setItem(draftKey(), ta.value); } catch (e) {} });
 ta.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey && window.matchMedia("(hover: hover) and (pointer: fine)").matches) { e.preventDefault(); $("form").requestSubmit(); }
 });
@@ -3113,7 +3212,7 @@ async function sendMsg(text, pics, fromComposer) {
     if (!fromComposer) return;
     ta.value = ""; fit(); toBottom();
     pics.forEach((p) => { if (p.preview) URL.revokeObjectURL(p.preview); }); picked = []; renderPicked();
-    try { localStorage.removeItem("aim-draft"); } catch (e2) {}
+    try { localStorage.removeItem(draftKey()); } catch (e2) {}
   };
   try {
     if (pics.length) {
@@ -3277,10 +3376,21 @@ $("siriLinkBtn").onclick = async () => {
 };
 $("signUpBtn").hidden = !/[?&]setup=1\b/.test(location.search);   // one owner: sign-up only for the first setup
 window.addEventListener("online", () => { if (signedIn) loadAll(); });   // messages that arrived while the network was gone
+let installEvt = null;   // Android: "Install app" in the menu
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installEvt = e; $("installBtn").hidden = false; });
+$("installBtn").onclick = () => { if (!installEvt) return; installEvt.prompt(); installEvt = null; $("installBtn").hidden = true; };
 let deepDone = false;
 function showApp(on) {
   $("login").hidden = on; $("app").hidden = !on;
-  if (on && !signedIn) { signedIn = true; loadAll().then(() => { flushOutbox(); paintNudge(); if (!deepDone) { deepDone = true; runDeepLink(); } }); subscribe(); }
+  if (on && !signedIn) {
+    signedIn = true;
+    loadAll().then(() => {
+      flushOutbox(); paintNudge(); if (!deepDone) { deepDone = true; runDeepLink(); }
+      const op = new URLSearchParams(location.search).get("open");   // home-screen shortcuts (manifest)
+      if (op === "voice" || op === "cam") { try { history.replaceState(null, "", location.pathname); } catch (e) {} openCam(op); }
+    });
+    subscribe();
+  }
 }
 sb.auth.onAuthStateChange((_ev, session) => showApp(!!session));
 
