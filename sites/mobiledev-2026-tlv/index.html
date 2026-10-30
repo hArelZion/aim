@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="כנס מפתחי מובייל MobileDev 2026 בתל אביב - לוח זמנים, דוברים, סדנאות מעשיות והרשמה מוקדמת.">
+  <meta name="atlas-build" content="224nwe4pi2xyixv2zitm">
+  <title>MobileDev 2026 | כנס מפתחי מובייל תל אביב</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-main: #0a0a0a;
+      --bg-card: #141414;
+      --bg-card-hover: #1f1f1f;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --neon-cyan: #00ffea;
+      --neon-magenta: #ff00c8;
+      --neon-cyan-glow: rgba(0, 255, 234, 0.35);
+      --neon-magenta-glow: rgba(255, 0, 200, 0.35);
+      --border-glow: rgba(255, 255, 255, 0.1);
+      --font-display: 'Heebo', sans-serif;
+      --font-body: 'Assistant', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+      line-height: 1.6;
+      background: radial-gradient(circle at 50% 0%, #1a0033 0%, #0a0a0a 70%);
+      background-attachment: fixed;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4 {
+      font-family: var(--font-display);
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .neon-text-cyan {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px var(--neon-cyan-glow), 0 0 20px var(--neon-cyan-glow);
+    }
+
+    .neon-text-magenta {
+      color: var(--neon-magenta);
+      text-shadow: 0 0 10px var(--neon-magenta-glow), 0 0 20px var(--neon-magenta-glow);
+    }
+
+    /* Layout Components */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    section {
+      padding: 5rem 0;
+      position: relative;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+      display: table;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+      box-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    /* Header & Nav */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-glow);
+      transition: all 0.3s ease;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo span {
+      color: var(--neon-cyan);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover {
+      color: var(--neon-cyan);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem 1.8rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      outline: none;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: transparent;
+      color: var(--neon-cyan);
+      border: 2px solid var(--neon-cyan);
+      box-shadow: 0 0 15px var(--neon-cyan-glow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: 0 0 25px var(--neon-cyan);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--neon-magenta);
+      border: 2px solid var(--neon-magenta);
+      box-shadow: 0 0 15px var(--neon-magenta-glow);
+    }
+
+    .btn-secondary:hover {
+      background: var(--neon-magenta);
+      color: #fff;
+      box-shadow: 0 0 25px var(--neon-magenta);
+    }
+
+    /* Hero Section */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 100px;
+      position: relative;
+      background: radial-gradient(circle at center, rgba(0,255,234,0.05) 0%, transparent 70%);
+    }
+
+    .hero-content h1 {
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto 2rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      border: 1px solid var(--border-glow);
+      font-weight: 600;
+    }
+
+    /* Schedule Section */
+    .schedule-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glow);
+      color: var(--text-main);
+      padding: 0.5rem 1.2rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: var(--font-body);
+      font-weight: 600;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      box-shadow: 0 0 10px var(--neon-cyan-glow);
+    }
+
+    .schedule-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .schedule-card {
+      background: var(--bg-card);
+      border-radius: 8px;
+      padding: 1.5rem;
+      border: 1px solid var(--border-glow);
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 1.5rem;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .schedule-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--neon-cyan);
+    }
+
+    .schedule-time {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--neon-cyan);
+    }
+
+    .schedule-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: rgba(255, 0, 200, 0.15);
+      color: var(--neon-magenta);
+      margin-top: 0.5rem;
+      font-weight: 700;
+    }
+
+    /* Speakers Section */
+    .speakers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .speaker-card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-glow);
+      text-align: center;
+      padding: 2rem 1.5rem;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .speaker-card:hover {
+      border-color: var(--neon-magenta);
+      box-shadow: 0 0 20px var(--neon-magenta-glow);
+      transform: translateY(-5px);
+    }
+
+    .speaker-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      background: #2a2a2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--neon-cyan);
+      box-shadow: 0 0 15px var(--neon-cyan-glow);
+    }
+
+    .speaker-avatar svg {
+      width: 60px;
+      height: 60px;
+      fill: var(--text-muted);
+    }
+
+    .speaker-role {
+      color: var(--neon-cyan);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .speaker-bio {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .speaker-link {
+      color: var(--neon-magenta);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .speaker-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Workshops Section */
+    .workshops-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .workshop-card {
+      background: var(--bg-card);
+      border-radius: 8px;
+      padding: 2rem;
+      border: 1px solid var(--border-glow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .workshop-badge {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: rgba(0, 255, 234, 0.1);
+      color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+
+    .seats-left {
+      font-size: 0.85rem;
+      color: #ff4a4a;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+
+    /* Registration Section */
+    .reg-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      padding: 2.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid var(--border-glow);
+      border-radius: 4px;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 8px var(--neon-cyan-glow);
+    }
+
+    .price-calculator {
+      background: rgba(255,255,255,0.03);
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+    }
+
+    .price-amount {
+      font-size: 1.5rem;
+      color: var(--neon-cyan);
+    }
+
+    /* Footer */
+    footer {
+      background: #050505;
+      border-top: 1px solid var(--border-glow);
+      padding: 3rem 0 1.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-col h4 {
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .social-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-decoration: none;
+      border: 1px solid var(--border-glow);
+      transition: all 0.3s;
+    }
+
+    .social-icon:hover {
+      border-color: var(--neon-magenta);
+      color: var(--neon-magenta);
+      box-shadow: 0 0 10px var(--neon-magenta-glow);
+    }
+
+    .copyright {
+      text-align: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Accessibility Toolbar */
+    .accessibility-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--neon-cyan);
+      color: #000;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 0 15px var(--neon-cyan-glow);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .schedule-card { grid-template-columns: 1fr; gap: 0.5rem; }
+      .hero-meta { flex-direction: column; gap: 0.5rem; }
+    }
+
+    /* Animations */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fade-in { transition: none; }
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-container">
+      <a href="#" class="logo">MobileDev<span>2026</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#hero">ראשי</a></li>
+          <li><a href="#schedule">לוח זמנים</a></li>
+          <li><a href="#speakers">דוברים</a></li>
+          <li><a href="#workshops">סדנאות</a></li>
+          <li><a href="#registration">הרשמה</a></li>
+        </ul>
+      </nav>
+      <a href="#registration" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">כרטיסים</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section id="hero">
+      <div class="container hero-content fade-in">
+        <h1 class="neon-text-cyan">עתיד הפיתוח במובייל כבר כאן</h1>
+        <p class="hero-subtitle">כנס פיתוח המובייל הגדול בישראל. יומיים של חדשנות, AI במובייל, Flutter, Swift, React Native וארכיטקטורת מתקדמת.</p>
+        
+        <div class="hero-meta">
+          <div class="meta-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            18-19 במאי, 2026
+          </div>
+          <div class="meta-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            מרכז הכנסים, תל אביב
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a href="#registration" class="btn btn-primary">הבטח את מקומך</a>
+          <a href="#schedule" class="btn btn-secondary">ללוח הזמנים</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Schedule Section -->
+    <section id="schedule">
+      <div class="container">
+        <h2 class="section-title neon-text-magenta">לוח זמנים</h2>
+        
+        <div class="schedule-controls">
+          <button class="filter-btn active" data-filter="all">הכל</button>
+          <button class="filter-btn" data-filter="ios">iOS & Swift</button>
+          <button class="filter-btn" data-filter="android">Android & Kotlin</button>
+          <button class="filter-btn" data-filter="cross">Cross-Platform</button>
+        </div>
+
+        <div class="schedule-timeline">
+          <div class="schedule-card fade-in" data-track="cross">
+            <div class="schedule-time">09:00 - 10:00</div>
+            <div>
+              <h3>הרצאת פתיחה: AI במערכות הפעלה לניידים</h3>
+              <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.3rem;">איך בינה מלאכותית מבוססת חומרה משנה את האופן שבו אנו מבנים אפליקציות.</p>
+              <span class="schedule-tag">Cross-Platform</span>
+            </div>
+          </div>
+
+          <div class="schedule-card fade-in" data-track="ios">
+            <div class="schedule-time">10:15 - 11:00</div>
+            <div>
+              <h3>SwiftUI Advanced Animations & Performance</h3>
+              <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.3rem;">טכניקות מתקדמות לרנדור מהיר וביצועים חלקים ב-60fps.</p>
+              <span class="schedule-tag">iOS & Swift</span>
+            </div>
+          </div>
+
+          <div class="schedule-card fade-in" data-track="android">
+            <div class="schedule-time">11:15 - 12:00</div>
+            <div>
+              <h3>Jetpack Compose Internals</h3>
+              <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.3rem;">צלילה לעומק מנגנון ה-Reposition והאופטימיזציה של גוגל.</p>
+              <span class="schedule-tag">Android & Kotlin</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Speakers Section -->
+    <section id="speakers">
+      <div class="container">
+        <h2 class="section-title neon-text-cyan">דוברים ראשיים</h2>
+        
+        <div class="speakers-grid">
+          <div class="speaker-card fade-in">
+            <div class="speaker-avatar">
+              <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </div>
+            <h3>דנה לוי</h3>
+            <div class="speaker-role">VP Mobile @ TechCorp</div>
+            <p class="speaker-bio">מובילה צוותי ארכיטקטורה, מומחית בסינכרון מידע בזמן אמת ובניית אפליקציות בקנה מידה ענקי.</p>
+            <a href="#" class="speaker-link">לצפייה בהרצאה הקודמת &larr;</a>
+          </div>
+
+          <div class="speaker-card fade-in">
+            <div class="speaker-avatar">
+              <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </div>
+            <h3>אלון מזרחי</h3>
+            <div class="speaker-role">Principal Android Engineer</div>
+            <p class="speaker-bio">תורם קוד פתוח מוביל בקהילת ה-Kotlin, מתמחה ב-Performance ואבטחת מידע במובייל.</p>
+            <a href="#" class="speaker-link">לצפייה בהרצאה הקודמת &larr;</a>
+          </div>
+
+          <div class="speaker-card fade-in">
+            <div class="speaker-avatar">
+              <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </div>
+            <h3>מיכל גולן</h3>
+            <div class="speaker-role">Flutter Expert & Consultant</div>
+            <p class="speaker-bio">עוזרת לחברות הייטק להעביר מערכות ליבה ל-Cross Platform במהירות ויעילות.</p>
+            <a href="#" class="speaker-link">לצפייה בהרצאה הקודמת &larr;</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Workshops Section -->
+    <section id="workshops">
+      <div class="container">
+        <h2 class="section-title neon-text-magenta">סדנאות מעשיות</h2>
+        
+        <div class="workshops-grid">
+          <div class="workshop-card fade-in">
+            <span class="workshop-badge">מתקדם</span>
+            <div style="margin-top: 1rem;">
+              <h3>בניית LLM המורץ מקומית על המכשיר</h3>
+              <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem;">סדנה מעשית של 3 שעות בה נממש מודל שפה רץ On-Device ללא תלות ברשת.</p>
+            </div>
+            <div>
+              <div class="seats-left">נותרו 5 מקומות בלבד!</div>
+              <button class="btn btn-secondary add-to-cart-btn" style="width: 100%; margin-top: 1rem;" data-workshop="LLM On-Device">הוסף לסל הרשמה</button>
+            </div>
+          </div>
+
+          <div class="workshop-card fade-in">
+            <span class="workshop-badge">בינוני</span>
+            <div style="margin-top: 1rem;">
+              <h3>Reverse Engineering של אפליקציות</h3>
+              <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem;">למדו איך להגן על האפליקציה שלכם על ידי הבנת שיטות התקיפה והנדסה לאחור.</p>
+            </div>
+            <div>
+              <div class="seats-left">נותרו 12 מקומות</div>
+              <button class="btn btn-secondary add-to-cart-btn" style="width: 100%; margin-top: 1rem;" data-workshop="Reverse Engineering">הוסף לסל הרשמה</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Registration Section -->
+    <section id="registration">
+      <div class="container">
+        <h2 class="section-title neon-text-cyan">הרשמה לכנס</h2>
+        
+        <div class="reg-container fade-in">
+          <form id="regForm" onsubmit="handleRegister(event)">
+            <div class="form-group">
+              <label for="name">שם מלא</label>
+              <input type="text" id="name" class="form-control" required placeholder="ישראל ישראלי">
+            </div>
+
+            <div class="form-group">
+              <label for="email">דוא"ל מקצועי</label>
+              <input type="email" id="email" class="form-control" required placeholder="you@company.com">
+            </div>
+
+            <div class="form-group">
+              <label for="ticketType">סוג כרטיס</label>
+              <select id="ticketType" class="form-control" onchange="updatePrice()">
+                <option value="standard">כרטיס רגיל - יומיים (₪450)</option>
+                <option value="vip">כרטיס VIP כולל סדנאות (₪850)</option>
+                <option value="student">כרטיס סטודנט (₪250)</option>
+              </select>
+            </div>
+
+            <div class="price-calculator">
+              <span>סה"כ לתשלום:</span>
+              <span class="price-amount" id="totalPrice">₪450</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">המשך לתשלום מאובטח</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>MobileDev 2026</h4>
+          <p>האירוע המרכזי לקהילת פיתוח המובייל בישראל. נפגשים בתל אביב.</p>
+        </div>
+        <div class="footer-col">
+          <h4>ניווט מהיר</h4>
+          <p><a href="#schedule" style="color: inherit; text-decoration: none;">לוח זמנים</a></p>
+          <p><a href="#speakers" style="color: inherit; text-decoration: none;">דוברים</a></p>
+          <p><a href="#workshops" style="color: inherit; text-decoration: none;">סדנאות</a></p>
+        </div>
+        <div class="footer-col">
+          <h4>עקבו אחרינו</h4>
+          <div class="social-links">
+            <a href="#" class="social-icon" aria-label="X (Twitter)">X</a>
+            <a href="#" class="social-icon" aria-label="LinkedIn">in</a>
+            <a href="#" class="social-icon" aria-label="GitHub">git</a>
+          </div>
+        </div>
+      </div>
+      <div class="copyright">
+        &copy; 2026 MobileDev Conference. כל הזכויות שמורות.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Accessibility Toggle Button -->
+  <button class="accessibility-btn" onclick="toggleHighContrast()" aria-label="שינוי ניגודיות למצב נגיש">♿</button>
+
+  <script>
+    // Scroll Reveal Observer
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Schedule Filter functionality
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const scheduleCards = document.querySelectorAll('.schedule-card');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const filter = btn.getAttribute('data-filter');
+        
+        scheduleCards.forEach(card => {
+          if (filter === 'all' || card.getAttribute('data-track') === filter) {
+            card.style.display = 'grid';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Dynamic Price Update
+    function updatePrice() {
+      const ticketType = document.getElementById('ticketType').value;
+      const priceDisplay = document.getElementById('totalPrice');
+      
+      let price = 450;
+      if (ticketType === 'vip') price = 850;
+      if (ticketType === 'student') price = 250;
+      
+      priceDisplay.textContent = `₪${price}`;
+    }
+
+    // Form Handle
+    function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      alert(`תודה ${name}! הרשמתך נקלטה בהצלחה. אישור וכרטיסים שנשלחו לדוא"ל.`);
+    }
+
+    // Workshop Add to Cart
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const workshopName = e.target.getAttribute('data-workshop');
+        alert(`הסדנה "${workshopName}" הוספה לסל ההרשמה שלך.`);
+        e.target.textContent = 'תווסף לסל ✓';
+        e.target.disabled = true;
+        e.target.style.opacity = '0.6';
+      });
+    });
+
+    // High Contrast Accessibility Mode Toggle
+    let highContrast = false;
+    function toggleHighContrast() {
+      highContrast = !highContrast;
+      if (highContrast) {
+        document.documentElement.style.setProperty('--bg-main', '#000000');
+        document.documentElement.style.setProperty('--bg-card', '#111111');
+        document.documentElement.style.setProperty('--text-main', '#ffffff');
+        document.documentElement.style.setProperty('--neon-cyan', '#ffff00');
+      } else {
+        document.documentElement.style.setProperty('--bg-main', '#0a0a0a');
+        document.documentElement.style.setProperty('--bg-card', '#141414');
+        document.documentElement.style.setProperty('--text-main', '#e0e0e0');
+        document.documentElement.style.setProperty('--neon-cyan', '#00ffea');
+      }
+    }
+  </script>
+</body>
+</html>
