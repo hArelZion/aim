@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261030.1724";
+  const APP_VERSION = "20261030.1739";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -20,6 +20,7 @@
       talk: "דברו עם Atlas", keyboard: "מקלדת", vision: "מצלמה", send: "שליחה", flip: "החלפת מצלמה", typePh: "כתבו ל-Atlas…",
       sIdle: "הקישו על המיקרופון כדי לדבר", sConnecting: "מתחבר…", sListening: "מקשיב…", sThinking: "חושב…", sSpeaking: "מדבר…", sError: "החיבור נפל. נסו שוב.",
       q1: "תבנה לי אתר", q2: "מה מזג האוויר?", q3: "מה אתה יודע עליי?", q4: "מה קורה במחשב?", q5: "תספר לי משהו מעניין",
+      qTr: "🌐 מתרגם חי", sTranslating: "מתרגם: מדברים עברית או אנגלית", classicOn: "הקול החי לא זמין, עובר לקול רגיל", micEmpty: "לא שמעתי. נסו שוב.",
       buildQ: "מה לבנות?", buildPh: "למשל: אתר למסעדת סושי בתל אביב, עם תפריט אומקסה והזמנת מקום", build: "בנה", gallery: "הגלריה", sites: "אתרים",
       idea1: "דף נחיתה לבית קפה", idea2: "פורטפוליו לצלמת", idea3: "משחק זיכרון צבעוני", idea4: "אתר חתונה",
       aboutYou: "עליך", places: "מקומות", recent: "השיחה האחרונה", add: "הוספה", clear: "ניקוי", noFacts: "Atlas עוד לא יודע עליך כלום. אמרו לו \"תזכור ש…\".",
@@ -44,6 +45,7 @@
       talk: "Talk to Atlas", keyboard: "Keyboard", vision: "Camera", send: "Send", flip: "Flip camera", typePh: "Message Atlas…",
       sIdle: "Tap the mic to talk", sConnecting: "Connecting…", sListening: "Listening…", sThinking: "Thinking…", sSpeaking: "Speaking…", sError: "Connection lost. Try again.",
       q1: "Build me a website", q2: "What's the weather?", q3: "What do you know about me?", q4: "What's my computer doing?", q5: "Tell me something interesting",
+      qTr: "🌐 Live interpreter", sTranslating: "Interpreting: speak Hebrew or English", classicOn: "Live voice is unavailable, using classic voice", micEmpty: "I didn't hear anything. Try again.",
       buildQ: "What should I build?", buildPh: "e.g. a site for a sushi bar in Tel Aviv with an omakase menu and reservations", build: "Build", gallery: "Gallery", sites: "sites",
       idea1: "Coffee shop landing page", idea2: "Photographer portfolio", idea3: "Colorful memory game", idea4: "Wedding website",
       aboutYou: "About you", places: "Places", recent: "Recent conversation", add: "Add", clear: "Clear", noFacts: "Atlas doesn't know anything about you yet. Say \"remember that…\".",
@@ -186,35 +188,94 @@
   const recent = () => caps.filter((c) => c.final).slice(-8).map((c) => (c.who === "u" ? "User: " : "Atlas: ") + c.text);
   function renderQuick() {
     const box = $("quick"); if (!box) return; box.replaceChildren();
-    ["q1", "q2", "q3", "q4", "q5"].forEach((k) => {
+    ["q1", "qTr", "q2", "q3", "q4", "q5"].forEach((k) => {
       const b = el("button", "chip", t(k)); b.type = "button";
-      b.onclick = () => (k === "q1" ? (go("builds"), $("buildInput").focus()) : ask(t(k)));
+      b.onclick = () => (k === "q1" ? (go("builds"), $("buildInput").focus()) : k === "qTr" ? startLive("translate") : ask(t(k)));
       box.append(b);
     });
   }
   const settingsRow = () => rows.atlas_settings || {};
   function voiceLang() { const l = settingsRow().lang || "auto"; return l === "auto" ? ui : l; }
-  $("micBtn").addEventListener("click", async () => {
+  let liveMode = "talk", classic = false, classicBusy = false;
+  $("micBtn").addEventListener("click", () => {
     if (live) { live.stop(); live = null; setState("idle"); return; }
+    if (classic) { classicTurn(); return; }
+    startLive("talk");
+  });
+  async function startLive(mode) {
+    if (live) { live.stop(); live = null; }
+    liveMode = mode;
     live = new window.Live({
-      api, lang: voiceLang(), voice: settingsRow().voice || "Charon", model: settingsRow().live_model || "", recent,
+      api, mode, lang: voiceLang(), voice: settingsRow().voice || "Charon", model: settingsRow().live_model || "", recent,
       audioSession: store.get("atlas-audiosession", "auto"),
-      onState: (s) => { if (live || s === "idle") setState(s); },
+      onState: (s) => { if (live || s === "idle") setState(s); if (live && mode === "translate" && s === "listening") $("stateLabel").textContent = t("sTranslating"); },
       onCaption: caption,
       onLevel: (mic, out) => { if (mic != null) { window.Orb && window.Orb.mic(mic); $("micBtn").querySelector(".mic-ring").style.transform = `scale(${1 + Math.min(0.35, mic * 4)})`; } if (out != null) window.Orb && window.Orb.out(out); },
       onTool: runTool,
-      onError: (e) => { console.warn("live", e); toast(t("liveFail"), 4000); live = null; setState("error"); setTimeout(() => state === "error" && setState("idle"), 3000); },
+      onError: (e) => { console.warn("live", e); live = null; useClassic(); },
     });
     try {
       await live.start();
       if (camStream && live) live.setVision($("camVideo"));
     } catch (e) {
       console.warn(e);
-      toast(/Permission|NotAllowed|denied/i.test(String(e && (e.name + e.message))) ? t("micDenied") : t("liveFail"), 4000);
       try { live && live.stop(); } catch (er) {}
       live = null; setState("idle");
+      if (/Permission|NotAllowed|denied/i.test(String(e && (e.name + e.message)))) toast(t("micDenied"), 4000);
+      else if (mode === "talk") { useClassic(); classicTurn(); }
+      else toast(t("liveFail"), 4000);
     }
-  });
+  }
+  // Classic voice (PLAN 7.4): when Gemini Live is down or over quota, the mic still works: one utterance is recorded
+  // until a short silence, Whisper (op stt) writes it down, one cloud turn answers, and the browser voice reads it.
+  function useClassic() {
+    if (!classic) { classic = true; toast(t("classicOn"), 3500); setTimeout(() => { classic = false; }, 180000); }   // try Live again later
+    setState("idle");
+  }
+  async function classicTurn() {
+    if (classicBusy) return;
+    classicBusy = true;
+    let stream = null, ctx = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const an = ctx.createAnalyser(); an.fftSize = 1024; ctx.createMediaStreamSource(stream).connect(an);
+      const mime = window.MediaRecorder && MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/mp4";
+      const rec = new MediaRecorder(stream, { mimeType: mime }), chunks = [];
+      rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.start(250);
+      setState("listening"); $("micBtn").classList.add("live");
+      const buf = new Float32Array(an.fftSize), t0 = Date.now();
+      let spoke = false, quietAt = 0;
+      await new Promise((done) => {
+        const iv = setInterval(() => {
+          an.getFloatTimeDomainData(buf);
+          let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
+          const rms = Math.sqrt(s / buf.length); window.Orb && window.Orb.mic(rms);
+          if (rms > 0.02) { spoke = true; quietAt = 0; } else if (spoke && !quietAt) quietAt = Date.now();
+          if ((spoke && quietAt && Date.now() - quietAt > 900) || Date.now() - t0 > 15000 || (!spoke && Date.now() - t0 > 6000)) { clearInterval(iv); done(); }
+        }, 60);
+      });
+      await new Promise((r) => { rec.onstop = r; rec.stop(); });
+      $("micBtn").classList.remove("live");
+      if (!spoke || !chunks.length) { toast(t("micEmpty")); setState("idle"); return; }
+      setState("thinking");
+      const blob = new Blob(chunks, { type: mime });
+      const b64 = await new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(",")[1] || ""); fr.readAsDataURL(blob); });
+      const s = await api({ op: "stt", audio: b64, mime, lang: settingsRow().lang === "en" || settingsRow().lang === "he" ? settingsRow().lang : "" });
+      if (!s.text) { toast(t("micEmpty")); setState("idle"); return; }
+      await ask(s.text);
+    } catch (e) {
+      console.warn("classic", e);
+      toast(/Permission|NotAllowed|denied/i.test(String(e && (e.name + e.message))) ? t("micDenied") : String(e.message || e), 4000);
+      setState("idle");
+    } finally {
+      try { stream && stream.getTracks().forEach((x) => x.stop()); } catch (e) {}
+      try { ctx && ctx.close(); } catch (e) {}
+      $("micBtn").classList.remove("live");
+      classicBusy = false;
+    }
+  }
   $("kbBtn").addEventListener("click", () => { $("typebar").hidden = !$("typebar").hidden; $("kbBtn").classList.toggle("on", !$("typebar").hidden); if (!$("typebar").hidden) $("typeInput").focus(); });
   $("typebar").addEventListener("submit", (e) => { e.preventDefault(); const v = $("typeInput").value.trim(); if (!v) return; $("typeInput").value = ""; ask(v); });
 

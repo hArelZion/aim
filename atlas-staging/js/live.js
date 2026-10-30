@@ -64,7 +64,7 @@
 
     async connect() {
       const model = MODELS[this.modelIdx] || MODELS[0];
-      const tok = await this.o.api({ op: "live-token", lang: this.o.lang, voice: this.o.voice, model, tz: Intl.DateTimeFormat().resolvedOptions().timeZone, recent: this.o.recent ? this.o.recent() : [], city: this.o.city || "" });
+      const tok = await this.o.api({ op: "live-token", mode: this.o.mode || "talk", lang: this.o.lang, voice: this.o.voice, model, tz: Intl.DateTimeFormat().resolvedOptions().timeZone, recent: this.o.recent ? this.o.recent() : [], city: this.o.city || "" });
       if (!tok || !tok.ws) throw new Error((tok && (tok.error || tok.say)) || "no token");
       if (this.stopped) return;
       this.model = tok.model;
