@@ -118,6 +118,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .planbox li.in_progress { color: var(--ink); font-weight: 600; }
 .planbox li.completed { text-decoration: line-through; }
 .planbox .pi { flex: none; width: 16px; text-align: center; }
+.lightbox { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.92); display: grid; place-items: center; touch-action: pinch-zoom; }
+.lightbox img { max-width: 100vw; max-height: 100vh; object-fit: contain; }
+.lightbox button { position: absolute; width: 48px; height: 48px; border-radius: 50%; border: 0; background: rgba(255,255,255,.14); color: #fff; font-size: 26px; line-height: 1; }
+.lightbox .lb-x { top: calc(env(safe-area-inset-top) + 12px); inset-inline-end: 12px; font-size: 20px; }
+.lightbox .lb-p { left: 10px; top: 50%; transform: translateY(-50%); }
+.lightbox .lb-n { right: 10px; top: 50%; transform: translateY(-50%); }
+#mic.holding { color: var(--warn); }
 .deepbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 10px 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); font-size: .92rem; }
 .deepbar span { flex: 1 1 160px; }
 .deepbar button { min-height: 40px; }
@@ -1364,8 +1371,29 @@ function picsEl(paths) {
     const a = g.children[i]; a.href = u;
     if (a.className === "file") return;
     const im = document.createElement("img"); im.src = u; im.alt = ""; im.loading = "lazy"; a.append(im);
+    a.onclick = (e) => { e.preventDefault(); openLightbox(urls.filter((x, k) => x && IMG_EXT.test(paths[k])), urls.filter((x, k) => x && IMG_EXT.test(paths[k])).indexOf(u)); };
   }));
   return g;
+}
+/* photos open full screen inside the app: swipe or arrows between the message's photos, pinch to zoom, Esc / back closes */
+function openLightbox(urls, at) {
+  let box = $("lightbox");
+  if (!box) {
+    box = el("div"); box.id = "lightbox"; box.className = "lightbox";
+    box.innerHTML = '<img alt=""><button class="lb-x" type="button" aria-label="close">✕</button><button class="lb-p" type="button" aria-label="previous">‹</button><button class="lb-n" type="button" aria-label="next">›</button>';
+    document.body.append(box);
+  }
+  let i = Math.max(0, at), x0 = null;
+  const show = () => { box.querySelector("img").src = urls[i]; box.querySelector(".lb-p").hidden = i <= 0; box.querySelector(".lb-n").hidden = i >= urls.length - 1; };
+  const go = (d) => { const j = i + d; if (j >= 0 && j < urls.length) { i = j; show(); } };
+  box.querySelector(".lb-x").onclick = () => { box.hidden = true; };
+  box.querySelector(".lb-p").onclick = (e) => { e.stopPropagation(); go(-1); };
+  box.querySelector(".lb-n").onclick = (e) => { e.stopPropagation(); go(1); };
+  box.onclick = (e) => { if (e.target === box) box.hidden = true; };
+  box.ontouchstart = (e) => { x0 = e.touches.length === 1 ? e.touches[0].clientX : null; };
+  box.ontouchend = (e) => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 50) go((dx < 0) === (document.dir !== "rtl") ? 1 : -1); x0 = null; };
+  document.onkeydown = (e) => { if (box.hidden) return; if (e.key === "Escape") box.hidden = true; if (e.key === "ArrowRight") go(1); if (e.key === "ArrowLeft") go(-1); };
+  show(); box.hidden = false;
 }
 
 /* ---------- empty-chat background: drifting characters ---------- */
@@ -3002,6 +3030,51 @@ $("filePick").addEventListener("change", async (e) => {
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, recBase = "";
 if (SR) $("mic").hidden = false;
+/* hold the mic to talk: the recording is written down by Whisper (Atlas's cloud brain, strong Hebrew), steadier than
+   the browser's speech recognition on iPhones; a short tap keeps the live dictation above */
+(function holdToTalk() {
+  const mic = $("mic");
+  if (!window.MediaRecorder || !navigator.mediaDevices) return;
+  mic.hidden = false;
+  const ATLAS = SUPABASE_URL + "/functions/v1/atlas-staging";
+  let timer = 0, hrec = null, chunks = [], stream = null, held = false;
+  mic.addEventListener("pointerdown", () => {
+    held = false;
+    timer = setTimeout(async () => {
+      held = true;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+        const mime = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/mp4";
+        hrec = new MediaRecorder(stream, { mimeType: mime }); chunks = [];
+        hrec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+        hrec.start(250); mic.setAttribute("aria-pressed", "true"); mic.classList.add("holding");
+      } catch (e) { showErr(t("micErr")); }
+    }, 350);
+  });
+  const end = async () => {
+    clearTimeout(timer);
+    if (!held || !hrec) return;
+    const r = hrec; hrec = null;
+    mic.setAttribute("aria-pressed", "false"); mic.classList.remove("holding");
+    await new Promise((ok) => { r.onstop = ok; r.stop(); });
+    try { stream.getTracks().forEach((x) => x.stop()); } catch (e) {}
+    const blob = new Blob(chunks, { type: r.mimeType });
+    if (blob.size < 2000) return;
+    const b64 = await new Promise((ok) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(",")[1] || ""); fr.readAsDataURL(blob); });
+    const { data } = await sb.auth.getSession();
+    const tok = data && data.session && data.session.access_token;
+    if (!tok) return;
+    showErr("…");
+    try {
+      const res = await (await fetch(ATLAS, { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + tok }, body: JSON.stringify({ op: "stt", audio: b64, mime: r.mimeType }) })).json();
+      showErr("");
+      if (res.text) { ta.value = (ta.value ? ta.value.replace(/\s*$/, " ") : "") + res.text; fit(); syncSend(); try { localStorage.setItem(draftKey(), ta.value); } catch (e) {} ta.focus(); }
+    } catch (e) { showErr(t("micErr")); }
+  };
+  ["pointerup", "pointercancel", "pointerleave"].forEach((ev) => mic.addEventListener(ev, end));
+  // the click that ends a hold must not start the live dictation as well
+  mic.addEventListener("click", (e) => { if (held) { e.stopImmediatePropagation(); e.preventDefault(); held = false; } }, true);
+})();
 function stopMic() { if (rec) { try { rec.stop(); } catch (e) {} } }
 $("mic").onclick = () => {
   if (rec) { stopMic(); return; }
@@ -3381,11 +3454,12 @@ async function runDeepLink() {
 }
 /* Android's back button (and the back swipe) closes the open sheet, panel or menu instead of leaving the app */
 (function backLayer() {
-  const ids = ["sheet", "convSheet", "screenView", "mpick", "fpanel", "menu"];
+  const ids = ["sheet", "convSheet", "screenView", "mpick", "fpanel", "menu", "lightbox"];
   let pushed = false, skip = false;
   const anyOpen = () => ids.some((id) => $(id) && !$(id).hidden);
   const closeAll = () => {
     closeSheets(); closeMenu(); if (scrOpen) closeScreen();
+    if ($("lightbox")) $("lightbox").hidden = true;
     $("mpick").hidden = true; $("mchip").setAttribute("aria-expanded", "false"); $("permBtn").setAttribute("aria-expanded", "false");
     document.querySelector("footer").classList.remove("mpicking");
     if (filesOpen) { filesOpen = false; renderFiles(); }
