@@ -1193,11 +1193,19 @@ async function makeConv(title) {
   loadConvs(); loadMessages();
   return id;
 }
+/* a new chat needs no name (like the Claude app): it starts with the time, and the first message you send names it */
+let autoTitleConv = null;
 async function newChat() {
   const stamp = new Date().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).replace(",", "");
-  const asked = window.prompt(t("namePrompt"), "");
-  if (asked === null) return;
-  await makeConv(asked.trim() || stamp);
+  const id = await makeConv(stamp);
+  if (id) autoTitleConv = id;
+}
+function autoTitle(row) {
+  if (!autoTitleConv || row.conv !== autoTitleConv || row.sender !== "me") return;
+  const id = autoTitleConv; autoTitleConv = null;
+  const title = String(row.text || "").replace(/^@\w+\n/, "").replace(/\s+/g, " ").trim().slice(0, 48);
+  if (!title || title.startsWith("/")) return;
+  sb.from("conversations").update({ title }).eq("id", id).then(() => loadConvs(), () => {});
 }
 $("newBtn").onclick = newChat;
 function closeSheets() { $("sheet").hidden = true; $("convSheet").hidden = true; $("gear").setAttribute("aria-expanded", "false"); $("convBtn").setAttribute("aria-expanded", "false"); }
@@ -3248,6 +3256,7 @@ async function sendMsg(text, pics, fromComposer) {
     if (error) throw error;
     upsertMsg(row);
     done();
+    autoTitle(row);
   } catch (err) {
     if (!(err && err.pic) && isNetErr(err)) {   // no network: keep it and send later
       writeOutbox(readOutbox().concat([row]));
