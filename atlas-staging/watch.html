@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Atlas · watch a build</title>
+<meta name="theme-color" content="#0B0E14">
+<style>html,body{margin:0;height:100%;background:#0B0E14;color:#E6EDF3;font:16px -apple-system,Segoe UI,Roboto,sans-serif;display:grid;place-items:center}</style>
+</head>
+<body>
+<p>Opening the build…</p>
+<script>
+  // Links from Siri and notifications: watch.html#<build id> opens the app's Code Theater on that build.
+  var id = (location.hash || "").replace(/^#(build=)?/, "").replace(/[^a-z0-9]/gi, "");
+  location.replace("./" + (id ? "?build=" + id : ""));
+</script>
+</body>
+</html>

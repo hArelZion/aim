@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="he" dir="rtl" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<title>Atlas</title>
+<meta name="description" content="Atlas: your AI assistant. Talk live in Hebrew or English, and watch it build websites in real code.">
+<meta name="theme-color" content="#07080C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Atlas">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css?v=20261030.1657">
+</head>
+<body>
+<div id="aurora" aria-hidden="true"></div>
+
+<!-- sign in -->
+<section id="signin" class="screen-full" hidden>
+  <div class="signin-card">
+    <div class="mark" aria-hidden="true"><svg viewBox="0 0 64 64"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset=".55" stop-color="#2EC5FF"/><stop offset="1" stop-color="#3DFFB5"/></linearGradient></defs><ellipse cx="32" cy="32" rx="26" ry="11" fill="none" stroke="url(#mg)" stroke-width="4" transform="rotate(-28 32 32)"/><circle cx="32" cy="32" r="9" fill="url(#mg)"/><circle cx="54" cy="21" r="3.6" fill="#3DFFB5"/></svg></div>
+    <h1>Atlas</h1>
+    <p data-t="signinLead"></p>
+    <form id="signinForm">
+      <input class="field" id="email" type="email" autocomplete="username" required data-ph="email">
+      <input class="field" id="password" type="password" autocomplete="current-password" required minlength="6" data-ph="password">
+      <button class="btn primary wide" type="submit" data-t="signIn"></button>
+      <p class="hint" id="signinMsg" role="status"></p>
+    </form>
+  </div>
+</section>
+
+<!-- the app -->
+<div id="app" hidden>
+  <header class="top">
+    <div class="brand"><span class="mini-mark" aria-hidden="true"></span><b>Atlas</b></div>
+    <div class="pills">
+      <span class="pill" id="pcPill" hidden><i class="dot"></i><span data-t="pcOnline"></span></span>
+      <span class="pill warn" id="netPill" hidden data-t="offline"></span>
+    </div>
+  </header>
+
+  <main id="views">
+    <!-- Talk -->
+    <section class="view" id="view-talk" data-view="talk">
+      <div class="orb-wrap">
+        <canvas id="orb" aria-hidden="true"></canvas>
+        <div class="cam-card" id="camCard" hidden><video id="camVideo" playsinline muted autoplay></video><button class="icon-btn small" id="camFlip" type="button" data-t-aria="flip"><svg viewBox="0 0 24 24"><path d="M4 7h11l-3-3M20 17H9l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      </div>
+      <div class="state" id="stateLabel" aria-live="polite"></div>
+      <div class="captions" id="captions" aria-live="polite"></div>
+      <div class="chips-row" id="toolChips"></div>
+      <div class="quick" id="quick"></div>
+      <form class="typebar" id="typebar" hidden>
+        <input class="field" id="typeInput" autocomplete="off" enterkeyhint="send" data-ph="typePh">
+        <button class="icon-btn accent" type="submit" data-t-aria="send"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </form>
+      <div class="controls">
+        <button class="icon-btn" id="kbBtn" type="button" data-t-aria="keyboard"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <button class="mic" id="micBtn" type="button" data-t-aria="talk"><span class="mic-ring"></span><svg class="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2.5" fill="currentColor"/></svg></button>
+        <button class="icon-btn" id="camBtn" type="button" data-t-aria="vision"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+      </div>
+    </section>
+
+    <!-- Builds -->
+    <section class="view" id="view-builds" data-view="builds" hidden>
+      <form class="composer card" id="buildForm">
+        <label for="buildInput" class="h2" data-t="buildQ"></label>
+        <textarea class="field" id="buildInput" rows="3" data-ph="buildPh"></textarea>
+        <div class="row-between">
+          <div class="ideas" id="ideas"></div>
+          <button class="btn primary" type="submit" id="buildGo"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 3l2.2 5.6L20 11l-5.8 2.4L12 19l-2.2-5.6L4 11l5.8-2.4z" fill="currentColor"/></svg><span data-t="build"></span></button>
+        </div>
+      </form>
+      <div class="row-between gallery-head"><h2 class="h2" data-t="gallery"></h2><span class="muted" id="siteCount"></span></div>
+      <div class="gallery" id="gallery"></div>
+    </section>
+
+    <!-- Memory -->
+    <section class="view" id="view-memory" data-view="memory" hidden>
+      <div class="card">
+        <div class="row-between"><h2 class="h2" data-t="aboutYou"></h2><button class="btn ghost small" id="addFact" type="button" data-t="add"></button></div>
+        <ul class="list" id="facts"></ul>
+      </div>
+      <div class="card"><h2 class="h2" data-t="places"></h2><ul class="list" id="places"></ul></div>
+      <div class="card">
+        <div class="row-between"><h2 class="h2" data-t="recent"></h2><button class="btn ghost small" id="clearHist" type="button" data-t="clear"></button></div>
+        <ul class="list convo" id="hist"></ul>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section class="view" id="view-settings" data-view="settings" hidden>
+      <div class="card group">
+        <h2 class="h2" data-t="voice"></h2>
+        <div class="voices" id="voices"></div>
+        <div class="set-row"><span data-t="language"></span><div class="seg" id="segLang"></div></div>
+        <div class="set-row"><span data-t="address"></span><div class="seg" id="segAddr"></div></div>
+        <div class="set-row"><span data-t="liveModel"></span><div class="seg" id="segModel"></div></div>
+      </div>
+      <div class="card group">
+        <h2 class="h2" data-t="appearance"></h2>
+        <div class="set-row"><span data-t="theme"></span><div class="seg" id="segTheme"></div></div>
+        <div class="set-row"><span data-t="uiLang"></span><div class="seg" id="segUi"></div></div>
+      </div>
+      <div class="card group">
+        <h2 class="h2" data-t="siriTitle"></h2>
+        <p class="muted" id="siriInfo"></p>
+        <p class="muted" data-t="siriHow"></p>
+      </div>
+      <div class="card group">
+        <h2 class="h2" data-t="computer"></h2>
+        <p class="muted" id="pcInfo"></p>
+      </div>
+      <div class="card group">
+        <h2 class="h2" data-t="about"></h2>
+        <p class="muted" id="aboutInfo"></p>
+        <div class="row-btns"><button class="btn ghost" id="installBtn" type="button" hidden data-t="install"></button><button class="btn ghost" id="signOut" type="button" data-t="signOut"></button></div>
+      </div>
+    </section>
+  </main>
+
+  <button class="build-pill" id="buildPill" type="button" hidden><i class="spinner"></i><span id="buildPillText"></span></button>
+
+  <nav class="tabs" id="tabs">
+    <button type="button" data-tab="talk" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><ellipse cx="12" cy="12" rx="9.5" ry="4.2" fill="none" stroke="currentColor" stroke-width="1.6" transform="rotate(-28 12 12)"/></svg><span data-t="tTalk"></span></button>
+    <button type="button" data-tab="builds"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="4" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16.5 13.5v6M13.5 16.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span data-t="tBuilds"></span></button>
+    <button type="button" data-tab="memory"><svg viewBox="0 0 24 24"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V5a3 3 0 0 0-3-1zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span data-t="tMemory"></span></button>
+    <button type="button" data-tab="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span data-t="tSettings"></span></button>
+  </nav>
+</div>
+
+<!-- Code Theater -->
+<section id="theater" class="theater" hidden aria-modal="true" role="dialog">
+  <header class="th-top">
+    <i class="th-dot"></i>
+    <b id="thTitle"></b>
+    <span class="th-time" id="thTime">00:00</span>
+    <button class="icon-btn small" id="thMin" type="button" data-t-aria="minimize"><svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(180 12 12)"/></svg></button>
+    <button class="icon-btn small" id="thClose" type="button" data-t-aria="close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+  </header>
+  <div class="th-steps" id="thSteps"></div>
+  <div class="th-tabs"><button type="button" class="on" data-pane="code">index.html</button><button type="button" data-pane="preview" data-t="preview"></button><span class="th-stats" id="thStats"></span></div>
+  <div class="th-body">
+    <div class="th-code" id="thCode" dir="ltr"></div>
+    <div class="th-preview" id="thPreview" hidden><div class="phone"><iframe id="thFrame" title="preview" sandbox="allow-scripts allow-same-origin"></iframe></div></div>
+  </div>
+  <div class="th-log" id="thLog" dir="ltr"></div>
+  <div class="th-done" id="thDone" hidden>
+    <div class="phone big"><iframe id="thLive" title="site" loading="lazy"></iframe></div>
+    <div class="th-actions">
+      <a class="btn primary" id="thOpen" target="_blank" rel="noopener" data-t="open"></a>
+      <button class="btn ghost" id="thShare" type="button" data-t="share"></button>
+      <button class="btn ghost" id="thEdit" type="button" data-t="editVoice"></button>
+      <button class="btn ghost" id="thReplay" type="button" data-t="replay"></button>
+    </div>
+  </div>
+</section>
+
+<!-- Site sheet -->
+<section id="sheet" class="sheet" hidden role="dialog" aria-modal="true">
+  <div class="sheet-card">
+    <div class="sheet-grip"></div>
+    <div class="row-between"><h2 class="h2" id="shTitle"></h2><button class="icon-btn small" id="shClose" type="button" data-t-aria="close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button></div>
+    <p class="muted" id="shMeta"></p>
+    <div class="phone"><iframe id="shFrame" title="site" loading="lazy"></iframe></div>
+    <form class="edit-row" id="shEditForm"><input class="field" id="shEdit" data-ph="editPh" autocomplete="off"><button class="btn primary" type="submit" data-t="apply"></button></form>
+    <div class="th-actions">
+      <a class="btn ghost" id="shOpen" target="_blank" rel="noopener" data-t="open"></a>
+      <button class="btn ghost" id="shShare" type="button" data-t="share"></button>
+      <button class="btn ghost" id="shReplay" type="button" data-t="replay"></button>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<script src="js/orb.js?v=20261030.1657"></script>
+<script src="js/highlight.js?v=20261030.1657"></script>
+<script src="js/theater.js?v=20261030.1657"></script>
+<script src="js/live.js?v=20261030.1657"></script>
+<script src="js/app.js?v=20261030.1657"></script>
+</body>
+</html>
