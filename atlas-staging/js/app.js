@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261030.1657";
+  const APP_VERSION = "20261030.1700";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -413,8 +413,8 @@
     thumbIO = new IntersectionObserver((ents) => ents.forEach((en) => {
       if (!en.isIntersecting) return;
       const th = en.target; thumbIO.unobserve(th);
-      const f = document.createElement("iframe"); f.loading = "lazy"; f.tabIndex = -1; f.setAttribute("aria-hidden", "true"); f.src = th.dataset.src;
-      f.onload = () => { const g = th.querySelector(".glyph"); if (g) g.remove(); };
+      const f = document.createElement("iframe"); f.tabIndex = -1; f.setAttribute("aria-hidden", "true"); f.setAttribute("scrolling", "no"); f.src = th.dataset.src;
+      f.onload = () => { setTimeout(() => { f.classList.add("ready"); const g = th.querySelector(".glyph"); if (g) g.remove(); }, 400); };
       th.prepend(f);
     }), { rootMargin: "200px" });
     list.forEach((s, i) => {
@@ -494,7 +494,7 @@
   $("clearHist").onclick = () => saveRow("atlas_hist", { at: 0, msgs: [] }).then(renderMemory);
 
   // ------------------------------------------------------------------ settings
-  const VOICES = [["Charon", "deep"], ["Puck", "bright"], ["Kore", "firm"], ["Fenrir", "warm"], ["Aoede", "breezy"], ["Orus", "calm"], ["Leda", "youthful"], ["Zephyr", "light"]];
+  const VOICES = [["Charon", "deep", "עמוק"], ["Puck", "bright", "שמח"], ["Kore", "firm", "יציב"], ["Fenrir", "warm", "חם"], ["Aoede", "breezy", "קליל"], ["Orus", "calm", "רגוע"], ["Leda", "youthful", "צעיר"], ["Zephyr", "light", "אוורירי"]];
   function seg(box, options, value, onPick) {
     box.replaceChildren();
     options.forEach(([v, label]) => { const b = el("button", null, label); b.type = "button"; b.setAttribute("aria-pressed", String(v === value)); b.onclick = () => onPick(v); box.append(b); });
@@ -517,9 +517,9 @@
     const vbox = $("voices"); if (!vbox) return;
     const s = settingsRow();
     vbox.replaceChildren();
-    VOICES.forEach(([v, d]) => {
+    VOICES.forEach(([v, d, dh]) => {
       const b = el("button"); b.type = "button"; b.setAttribute("aria-pressed", String((s.voice || "Charon") === v));
-      b.append(el("span", null, v), el("small", null, d));
+      b.append(el("span", null, v), el("small", null, ui === "he" ? dh : d));
       b.onclick = () => { if (sampleCtx) sampleCtx.resume(); setCloud({ voice: v }); playSample(v); };
       vbox.append(b);
     });
