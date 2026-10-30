@@ -605,6 +605,10 @@ footer::before { content: ""; position: absolute; inset-inline: 0; bottom: 100%;
 .quick { padding-top: 4px; gap: 5px; }
 .quick button { padding: 3px 10px; font-size: .78rem; }
 .quick .qedit { width: 26px; height: 26px; }
+/* bigger invisible hit areas for the small buttons (the logo switches models), same look */
+.bar .logo-btn, .quick button { position: relative; }
+.bar .logo-btn::after { content: ""; position: absolute; inset: -10px; }
+.quick button::after { content: ""; position: absolute; inset: -8px -2px -4px; }
 footer:has(#composer:not(:placeholder-shown)) .quick { display: none; }
 /* ---------- ChatGPT chats look like Codex in the ChatGPT app (Codex remote) ---------- */
 :root[data-model="gpt"] { --font-reply: var(--font-ui); }
