@@ -2063,10 +2063,33 @@ async function loadMessages() {
   const { data, error } = await q;
   if (!error) {
     msgs = (data || []).reverse(); firstLoad = true;
+    moreOlder = (data || []).length === 300;
     readOutbox().filter((r) => (r.conv || null) === (viewConv || null) && !msgs.some((m) => m.id === r.id)).forEach((r) => upsertMsg(Object.assign({ pending: true, queued: true }, r)));
   }
   renderAll(); renderOldBar();
 }
+/* older messages: scrolling to the top of a long chat loads the 200 before, and the view stays where it was */
+let moreOlder = false, loadingOlder = false;
+$("scroller").addEventListener("scroll", async () => {
+  const sc = $("scroller");
+  if (sc.scrollTop > 120 || !moreOlder || loadingOlder || !msgs.length) return;
+  loadingOlder = true;
+  const conv = viewConv, first = msgs.find((m) => !m.pending) || msgs[0];
+  let q = sb.from("messages").select("*").order("ts", { ascending: false }).lt("ts", first.ts).limit(200);
+  if (conv) q = q.eq("conv", conv);
+  const { data, error } = await q;
+  if (!error && conv === viewConv) {
+    moreOlder = (data || []).length === 200;
+    const older = (data || []).reverse().filter((m) => !msgs.some((x) => x.id === m.id));
+    if (older.length) {
+      const h = sc.scrollHeight, top = sc.scrollTop;
+      msgs = older.concat(msgs);
+      renderThread();
+      sc.scrollTop = sc.scrollHeight - h + top;
+    }
+  }
+  loadingOlder = false;
+}, { passive: true });
 async function loadAll() {
   booting = true;
   const c = await sb.from("control").select("*");
