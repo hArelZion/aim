@@ -75,7 +75,9 @@ textarea.field { resize: none; line-height: 1.45; }
 /* ---------- shell ---------- */
 /* --app-h: the full screen height. On an iPhone home-screen app the layout viewport can end well above the screen's
    bottom (the tab bar floated with an empty band under it); app.js measures the real height. */
-#app { position: fixed; top: 0; left: 0; right: 0; height: var(--app-h, 100%); display: flex; flex-direction: column; z-index: 1; }
+#app { position: fixed; top: 0; left: 0; right: 0; height: var(--app-h, 100%); display: flex; flex-direction: column; z-index: 1;
+  background: radial-gradient(60% 40% at 18% 8%, rgba(124,92,255,.22), transparent 70%), radial-gradient(50% 35% at 88% 22%, rgba(46,197,255,.13), transparent 70%), radial-gradient(70% 45% at 50% 100%, rgba(61,255,181,.08), transparent 70%), var(--night); }
+body:not([data-skin="atlas"]) #app { background: radial-gradient(120% 70% at 50% 18%, var(--bg-a) 0%, var(--bg-b) 45%, var(--bg) 85%); }
 .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: calc(env(safe-area-inset-top) + 10px) 16px 6px; }
 .brand { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; letter-spacing: -.02em; }
 /* the same top bar as Jarvis: a letter-spaced mark in the skin's display face */
@@ -103,7 +105,7 @@ body:not([data-skin="atlas"]) .h2, body:not([data-skin="atlas"]) .tabs button, b
 
 /* the tab bar floats like Jarvis's (iOS glass): nothing painted under it, so no band at the bottom of the screen.
    A glass lens marks the current tab; a long press lifts it, and dragging it moves between tabs. */
-.tabs { position: absolute; inset-inline: 12px; bottom: calc(env(safe-area-inset-bottom) + 6px); z-index: 4; display: grid; grid-template-columns: repeat(4, 1fr); padding: 5px; border-radius: 30px;
+.tabs { position: absolute; inset-inline: 12px; bottom: calc(env(safe-area-inset-bottom) + 8px); z-index: 4; display: grid; grid-template-columns: repeat(4, 1fr); padding: 5px; border-radius: 30px;
   background: color-mix(in srgb, var(--night) 62%, transparent); border: 1px solid var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 12px 34px rgba(0,0,0,.4);
   backdrop-filter: blur(24px) saturate(1.6); -webkit-backdrop-filter: blur(24px) saturate(1.6); touch-action: none; user-select: none; -webkit-user-select: none; }
 .tabs .lens { position: absolute; top: 5px; bottom: 5px; left: 0; width: 0; border-radius: 25px; pointer-events: none; z-index: 0;
@@ -250,18 +252,17 @@ body.pill-on #view-talk { padding-bottom: calc(var(--tabs-h) + env(safe-area-ins
 
 .wardrobe-btn { display: flex; margin: 4px auto 14px; color: var(--muted); }
 
-/* ---------- glass (iOS-style, like Jarvis): cards, buttons, chips and the segmented controls ---------- */
-:root { --glass: rgba(255,255,255,.06); --glass-hi: rgba(255,255,255,.16); --glass-edge: rgba(255,255,255,.12); }
-body.light, :root[data-theme="light"] { --glass: rgba(255,255,255,.55); --glass-hi: rgba(255,255,255,.9); --glass-edge: rgba(0,0,0,.08); }
-.card { background: var(--glass); border-color: var(--glass-edge); box-shadow: inset 0 1px 0 var(--glass-hi), 0 10px 30px rgba(0,0,0,.18); backdrop-filter: blur(22px) saturate(1.5); -webkit-backdrop-filter: blur(22px) saturate(1.5); }
-.btn:not(.primary), .icon-btn, .chip, .voices button, .list li { background: var(--glass); border-color: var(--glass-edge); box-shadow: inset 0 1px 0 var(--glass-hi); backdrop-filter: blur(16px) saturate(1.5); -webkit-backdrop-filter: blur(16px) saturate(1.5); }
-.btn.primary, .mic, .icon-btn.accent { box-shadow: inset 0 1px 0 rgba(255,255,255,.45), inset 0 -2px 6px rgba(0,0,0,.12), 0 10px 30px rgba(46,197,255,.28); }
+/* ---------- glass (iOS-style, like Jarvis). Only the tab bar blurs what is behind it: a blur on dozens of controls
+   made every tap lag on an iPhone 11, so the rest is translucent fill + a top highlight (looks the same, costs nothing). */
+:root { --glass: rgba(255,255,255,.06); --glass-hi: rgba(255,255,255,.14); --glass-edge: rgba(255,255,255,.11); }
+body.light, :root[data-theme="light"] { --glass: rgba(255,255,255,.6); --glass-hi: rgba(255,255,255,.95); --glass-edge: rgba(0,0,0,.08); }
+.card { background: var(--glass); border-color: var(--glass-edge); box-shadow: inset 0 1px 0 var(--glass-hi); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.btn:not(.primary), .icon-btn, .chip, .voices button, .list li { background: var(--glass); border-color: var(--glass-edge); box-shadow: inset 0 1px 0 var(--glass-hi); }
+.btn.primary, .mic, .icon-btn.accent { box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 8px 24px rgba(46,197,255,.25); }
 .seg { position: relative; background: var(--glass); border-color: var(--glass-edge); box-shadow: inset 0 1px 0 var(--glass-hi); touch-action: pan-y; user-select: none; -webkit-user-select: none; }
-.seg button { position: relative; z-index: 1; }
+.seg button { position: relative; z-index: 1; transition: color .2s; }
 .seg button[aria-pressed="true"] { background: transparent; color: var(--ink); }
-.seg .lens, .voices .lens { position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none; border-radius: 999px; background: rgba(255,255,255,.16);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 2px 10px rgba(0,0,0,.18); transition: transform .35s cubic-bezier(.3,1.35,.5,1), width .3s, height .3s; }
-.seg .lens.lift { transition: width .2s, height .2s; background: rgba(255,255,255,.24); box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 10px 26px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.2); }
+.seg .lens { position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none; border-radius: 999px; background: rgba(255,255,255,.17);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4); transition: transform .28s cubic-bezier(.3,1.3,.5,1), width .2s; will-change: transform; }
+.seg .lens.lift { transition: width .15s; background: rgba(255,255,255,.26); box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 8px 20px rgba(0,0,0,.3); }
 body.light .seg .lens { background: rgba(255,255,255,.95); }
-/* the tab bar sits close to the bottom: no dead band under it (the home bar floats over its lower edge, as in iOS) */
-.tabs { bottom: max(4px, calc(env(safe-area-inset-bottom) - 22px)); }

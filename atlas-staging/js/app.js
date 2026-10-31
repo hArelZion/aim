@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.1915";
+  const APP_VERSION = "20261031.1921";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -213,7 +213,9 @@
   }
   function onRow(r) {
     if (!r || !r.id) return;
+    const same = JSON.stringify(rows[r.id]) === JSON.stringify(r.data || {});   // our own save coming back: nothing to redraw
     rows[r.id] = r.data || {};
+    if (same && r.id === "atlas_settings") return;
     (listeners.get(r.id) || []).forEach((cb) => { try { cb(rows[r.id]); } catch (e) {} });
     if (r.id === "atlas_sites" || r.id === "jarvis_projects") renderGallery();
     if (r.id === "atlas_mem" || r.id === "atlas_hist") renderMemory();
@@ -709,8 +711,13 @@
   const VOICES = [["Charon", "deep", "עמוק"], ["Puck", "bright", "שמח"], ["Kore", "firm", "יציב"], ["Fenrir", "warm", "חם"], ["Aoede", "breezy", "קליל"], ["Orus", "calm", "רגוע"], ["Leda", "youthful", "צעיר"], ["Zephyr", "light", "אוורירי"]];
   function seg(box, options, value, onPick) {
     box.replaceChildren();
-    options.forEach(([v, label]) => { const b = el("button", null, label); b.type = "button"; b.dataset.v = v; b.setAttribute("aria-pressed", String(v === value)); b.onclick = () => { if (box._dragged) { box._dragged = false; return; } onPick(v); }; box.append(b); });
-    glassLens(box, onPick);
+    options.forEach(([v, label]) => { const b = el("button", null, label); b.type = "button"; b.dataset.v = v; b.setAttribute("aria-pressed", String(v === value)); b.onclick = () => { if (box._dragged) { box._dragged = false; return; } pick(v); }; box.append(b); });
+    const pick = (v) => {   // show the choice at once, then save
+      box.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.v === String(v))));
+      if (box._place) box._place();
+      setTimeout(() => onPick(v), 0);
+    };
+    glassLens(box, pick);
   }
   /* the glass lens on a segmented control: it sits on the chosen option; a long press lifts it, and it follows the
      finger; letting go on an option picks it (the same gesture as the tab bar) */
@@ -723,6 +730,7 @@
       const left = x == null ? cur.offsetLeft : Math.max(0, Math.min(br.width - cur.offsetWidth, x - br.left - cur.offsetWidth / 2));
       Object.assign(lens.style, { width: cur.offsetWidth + "px", height: cur.offsetHeight + "px", transform: `translate(${left}px, ${cur.offsetTop}px)` });
     };
+    box._place = () => place();
     requestAnimationFrame(() => place());
     let t = 0, drag = false;
     box.onpointerdown = (e) => { const x = e.clientX; t = setTimeout(() => { drag = true; lens.classList.add("lift"); place(x); try { navigator.vibrate && navigator.vibrate(8); } catch (er) {} }, 380); };
@@ -736,7 +744,7 @@
     };
     box.oncontextmenu = (e) => e.preventDefault();
   }
-  function setCloud(patch) { saveRow("atlas_settings", { ...settingsRow(), ...patch }).then(renderSettings); }
+  function setCloud(patch) { saveRow("atlas_settings", { ...settingsRow(), ...patch }); }   // the control already shows the choice
   let sampleCtx = null;
   async function playSample(voice) {
     try {
