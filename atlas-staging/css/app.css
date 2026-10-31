@@ -15,7 +15,9 @@
 :root[data-theme="light"] { --night: #F6F7FB; --panel: #FFFFFF; --panel-2: #F0F2F7; --line: #E3E6EE; --ink: #0B0D12; --muted: #5E6475; color-scheme: light; }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; height: 100%; background: radial-gradient(70% 45% at 50% 100%, rgba(61,255,181,.08), transparent 70%), var(--night); color: var(--ink); font: 16px/1.5 var(--font); }
+/* one flat colour behind everything: an iPhone home-screen app shows the page's background colour below the layout
+   viewport (the bottom ~48 px), so any glow that ends at the viewport's edge reads as a band there */
+html, body { margin: 0; height: 100%; background: var(--night); color: var(--ink); font: 16px/1.5 var(--font); }
 body { overflow: hidden; overscroll-behavior: none; }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
@@ -76,7 +78,7 @@ textarea.field { resize: none; line-height: 1.45; }
 /* --app-h: the full screen height. On an iPhone home-screen app the layout viewport can end well above the screen's
    bottom (the tab bar floated with an empty band under it); app.js measures the real height. */
 #app { position: fixed; top: 0; left: 0; right: 0; height: var(--app-h, 100%); display: flex; flex-direction: column; z-index: 1;
-  background: radial-gradient(60% 40% at 18% 8%, rgba(124,92,255,.22), transparent 70%), radial-gradient(50% 35% at 88% 22%, rgba(46,197,255,.13), transparent 70%), radial-gradient(70% 45% at 50% 100%, rgba(61,255,181,.08), transparent 70%), var(--night); }
+  background: radial-gradient(60% 40% at 18% 8%, rgba(124,92,255,.22), transparent 70%), radial-gradient(50% 35% at 88% 22%, rgba(46,197,255,.13), transparent 70%), var(--night); }
 body:not([data-skin="atlas"]) #app { background: radial-gradient(120% 70% at 50% 18%, var(--bg-a) 0%, var(--bg-b) 45%, var(--bg) 85%); }
 .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: calc(env(safe-area-inset-top) + 10px) 16px 6px; }
 .brand { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; letter-spacing: -.02em; }
