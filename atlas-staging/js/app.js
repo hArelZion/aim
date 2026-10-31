@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.2019";
+  const APP_VERSION = "20261031.2024";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -633,6 +633,9 @@
     const box = $("gallery"); if (!box || tab !== "builds" && box.childElementCount) return;
     const list = allSites();
     $("siteCount").textContent = list.length ? `${list.length} ${t("sites")}` : "";
+    const key = ui + JSON.stringify(list.map((s) => [s.url, s.updated, s.version, s.title]));
+    if (key === box._key && box.childElementCount) return;   // same sites: keep the loaded previews instead of reloading them
+    box._key = key;
     box.replaceChildren();
     if (!list.length) { box.append(el("div", "empty", t("noSites"))); return; }
     if (thumbIO) thumbIO.disconnect();
