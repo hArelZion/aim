@@ -15,7 +15,7 @@
 :root[data-theme="light"] { --night: #F6F7FB; --panel: #FFFFFF; --panel-2: #F0F2F7; --line: #E3E6EE; --ink: #0B0D12; --muted: #5E6475; color-scheme: light; }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; height: 100%; background: var(--night); color: var(--ink); font: 16px/1.5 var(--font); }
+html, body { margin: 0; height: 100%; background: radial-gradient(70% 45% at 50% 100%, rgba(61,255,181,.08), transparent 70%), var(--night); color: var(--ink); font: 16px/1.5 var(--font); }
 body { overflow: hidden; overscroll-behavior: none; }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }

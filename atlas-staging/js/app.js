@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.1922";
+  const APP_VERSION = "20261031.1929";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -99,6 +99,21 @@
     document.documentElement.style.setProperty("--app-h", h + "px");
   }
   fitHeight();
+  setTimeout(() => {   // what the iPhone really gives the app (to fix the band at the bottom of the home-screen app)
+    try {
+      const probe = document.createElement("div");
+      probe.style.cssText = "position:fixed;left:0;bottom:0;width:1px;height:env(safe-area-inset-bottom);top:env(safe-area-inset-top);visibility:hidden";
+      document.body.append(probe);
+      const pr = probe.getBoundingClientRect(), app = $("app").getBoundingClientRect(), tabs = $("tabs").getBoundingClientRect();
+      const d = { at: new Date().toISOString(), ua: navigator.userAgent.slice(0, 120), standalone: !!navigator.standalone, dm: matchMedia("(display-mode: standalone)").matches,
+        innerH: innerHeight, innerW: innerWidth, outerH: outerHeight, screenH: screen.height, screenW: screen.width, dpr: devicePixelRatio,
+        vvH: window.visualViewport ? Math.round(visualViewport.height) : null, docH: document.documentElement.clientHeight, bodyH: document.body.clientHeight,
+        safeTop: Math.round(pr.top), probeBottom: Math.round(pr.bottom), appTop: Math.round(app.top), appBottom: Math.round(app.bottom), tabsBottom: Math.round(tabs.bottom),
+        appH: getComputedStyle(document.documentElement).getPropertyValue("--app-h"), dvh: (() => { const x = document.createElement("div"); x.style.cssText = "position:absolute;height:100dvh;width:1px"; document.body.append(x); const h = x.offsetHeight; x.style.height = "100lvh"; const l = x.offsetHeight; x.remove(); return [h, l]; })() };
+      probe.remove();
+      if (d.standalone || d.dm) sb.from("control").upsert({ id: "atlas_diag", data: d }).then(() => {}, () => {});
+    } catch (e) {}
+  }, 4000);
   window.addEventListener("resize", fitHeight);
 
   // ---- skins: the Jarvis wardrobe (same JSON skins and reactors as the Jarvis app) + Atlas's own "Aurora" orb
@@ -731,6 +746,7 @@
       Object.assign(lens.style, { width: cur.offsetWidth + "px", height: cur.offsetHeight + "px", transform: `translate(${left}px, ${cur.offsetTop}px)` });
     };
     box._place = () => place();
+    new ResizeObserver(() => { if (box.offsetWidth) place(); }).observe(box);   // placed as soon as the screen is shown (hidden screens have no size)
     requestAnimationFrame(() => place());
     let t = 0, drag = false;
     box.onpointerdown = (e) => { const x = e.clientX; t = setTimeout(() => { drag = true; lens.classList.add("lift"); place(x); try { navigator.vibrate && navigator.vibrate(8); } catch (er) {} }, 380); };
