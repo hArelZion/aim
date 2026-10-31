@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="apple-mobile-web-app-title" content="UK History">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UK History | A Regal Journey Through Britain’s Past</title>
+  <meta name="description" content="Explore the rich tapestry of British history, from ancient origins and royal dynasties to cultural revolutions and modern influence.">
+  <meta name="atlas-build" content="7xxkyxmpwvafjskn4tpu">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-navy: #0A1F44;
+      --bg-cream: #F5F0E1;
+      --text-dark: #212121;
+      --accent-gold: #C89F40;
+      --accent-crimson: #8B2D2D;
+      --card-bg: #FFFFFF;
+      --navy-light: #16325B;
+      --gold-light: #EAD08B;
+      
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body: 'Merriweather', serif;
+
+      --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 100%;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-dark);
+      font-family: var(--font-body);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4 {
+      font-family: var(--font-display);
+      line-height: 1.2;
+      color: var(--bg-navy);
+      font-weight: 700;
+    }
+
+    h1 { font-size: clamp(2.2rem, 5vw + 1rem, 4.2rem); }
+    h2 { font-size: clamp(1.8rem, 3vw + 1rem, 2.8rem); }
+    h3 { font-size: clamp(1.3rem, 2vw + 0.8rem, 1.8rem); }
+
+    p {
+      font-size: clamp(0.95rem, 0.5vw + 0.8rem, 1.1rem);
+      margin-bottom: 1.25rem;
+      color: #333333;
+    }
+
+    a {
+      color: var(--accent-crimson);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    a:hover, a:focus {
+      color: var(--accent-gold);
+    }
+
+    /* Accessibility Focus */
+    :focus-visible {
+      outline: 3px solid var(--accent-gold);
+      outline-offset: 3px;
+    }
+
+    /* Layout & Components */
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .section {
+      padding: 5rem 0;
+      position: relative;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 3.5rem;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 3px;
+      background: var(--accent-gold);
+      margin: 1rem auto 0;
+    }
+
+    /* Navigation */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(10, 31, 68, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--bg-cream);
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--bg-cream);
+      font-size: 0.95rem;
+      font-family: var(--font-display);
+      letter-spacing: 0.5px;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent-gold);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    /* Mobile Nav Toggle */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 25px;
+      height: 2px;
+      background: var(--bg-cream);
+      margin: 5px 0;
+      transition: 0.3s;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, rgba(10,31,68,0.92) 0%, rgba(22,50,91,0.85) 100%),
+                  radial-gradient(circle at center, rgba(200,159,64,0.15) 0%, transparent 70%);
+      color: var(--bg-cream);
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding-top: 5rem;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .hero h1 {
+      color: var(--bg-cream);
+      margin-bottom: 1.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    .hero p {
+      color: var(--gold-light);
+      font-size: clamp(1.1rem, 1.5vw + 0.8rem, 1.4rem);
+      margin-bottom: 2.5rem;
+      font-style: italic;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.85rem 2rem;
+      background: var(--accent-gold);
+      color: var(--bg-navy);
+      font-family: var(--font-display);
+      font-weight: 700;
+      border-radius: 2px;
+      border: 2px solid var(--accent-gold);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .btn:hover {
+      background: transparent;
+      color: var(--accent-gold);
+      transform: translateY(-2px);
+    }
+
+    .hero-pattern {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0.05;
+      background-image: repeating-linear-gradient(45deg, var(--accent-gold) 0, var(--accent-gold) 1px, transparent 0, transparent 50px);
+      pointer-events: none;
+    }
+
+    /* Timeline Section */
+    .timeline {
+      position: relative;
+      padding: 2rem 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--accent-gold);
+      transform: translateX(-50%);
+    }
+
+    .timeline-item {
+      display: flex;
+      justify-content: flex-end;
+      padding-right: 30px;
+      position: relative;
+      margin-bottom: 3rem;
+      width: 50%;
+    }
+
+    .timeline-item:nth-child(even) {
+      align-self: flex-end;
+      justify-content: flex-start;
+      padding-right: 0;
+      padding-left: 30px;
+      margin-left: 50%;
+    }
+
+    .timeline-dot {
+      width: 16px;
+      height: 16px;
+      background: var(--accent-crimson);
+      border: 3px solid var(--accent-gold);
+      border-radius: 50%;
+      position: absolute;
+      right: -8px;
+      top: 15px;
+      z-index: 1;
+    }
+
+    .timeline-item:nth-child(even) .timeline-dot {
+      left: -8px;
+    }
+
+    .timeline-content {
+      background: var(--card-bg);
+      padding: 1.8rem;
+      border-radius: 4px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+      border-top: 3px solid var(--accent-gold);
+      max-width: 500px;
+    }
+
+    .timeline-date {
+      font-family: var(--font-display);
+      color: var(--accent-crimson);
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Key Figures Section */
+    .figures-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .figure-card {
+      background: var(--card-bg);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .figure-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .figure-img-wrapper {
+      height: 220px;
+      background: var(--bg-navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      color: var(--accent-gold);
+    }
+
+    .figure-info {
+      padding: 1.5rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .figure-role {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-crimson);
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Culture Section */
+    .culture-section {
+      background: var(--bg-navy);
+      color: var(--bg-cream);
+    }
+
+    .culture-section .section-title h2 {
+      color: var(--bg-cream);
+    }
+
+    .culture-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2.5rem;
+    }
+
+    .culture-card {
+      background: var(--navy-light);
+      padding: 2rem;
+      border-radius: 4px;
+      border-left: 4px solid var(--accent-gold);
+    }
+
+    .culture-card h3 {
+      color: var(--gold-light);
+      margin-bottom: 1rem;
+    }
+
+    .culture-card p {
+      color: var(--bg-cream);
+      opacity: 0.9;
+    }
+
+    /* Resources Section */
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .resource-link {
+      display: block;
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+      transition: all 0.3s ease;
+    }
+
+    .resource-link:hover {
+      border-color: var(--accent-gold);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    .resource-link h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .resource-link p {
+      font-size: 0.9rem;
+      margin-bottom: 0;
+      color: #666;
+    }
+
+    /* Footer */
+    .footer {
+      background: #051024;
+      color: var(--bg-cream);
+      padding: 3rem 0 1.5rem;
+      border-top: 1px solid var(--accent-gold);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    /* Scroll Animations */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav-links {
+        position: fixed;
+        top: 60px;
+        right: -100%;
+        width: 80%;
+        height: calc(100vh - 60px);
+        background: var(--bg-navy);
+        flex-direction: column;
+        align-items: center;
+        padding-top: 3rem;
+        transition: right 0.3s ease;
+        box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+      }
+
+      .nav-links.active {
+        right: 0;
+      }
+
+      .timeline::before {
+        left: 20px;
+      }
+
+      .timeline-item, 
+      .timeline-item:nth-child(even) {
+        width: 100%;
+        padding-left: 50px;
+        padding-right: 0;
+        margin-left: 0;
+        justify-content: flex-start;
+      }
+
+      .timeline-dot,
+      .timeline-item:nth-child(even) .timeline-dot {
+        left: 12px;
+        right: auto;
+      }
+
+      .timeline-content {
+        max-width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .fade-in {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container nav-container">
+      <a href="#hero" class="brand">
+        <img src="logo.svg" alt="" width="36" height="36">
+        <span>UK History</span>
+      </a>
+      <button class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#timeline">Eras & Events</a></li>
+          <li><a href="#figures">Key Figures</a></li>
+          <li><a href="#culture">Culture</a></li>
+          <li><a href="#resources">Resources</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+      <div class="hero-pattern"></div>
+      <div class="container hero-content">
+        <h1 class="fade-in">A Royal Tapestry of Time</h1>
+        <p class="fade-in">Unearthing the legends, conflicts, and triumphs that forged a global story.</p>
+        <a href="#timeline" class="btn fade-in">Explore the History</a>
+      </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section id="timeline" class="section">
+      <div class="container">
+        <div class="section-title fade-in">
+          <h2>Chronicles of the Realm</h2>
+        </div>
+        <div class="timeline">
+          
+          <div class="timeline-item fade-in">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">43 AD – 410 AD</div>
+              <h3>Roman Britannia</h3>
+              <p>Emperor Claudius launches the invasion of Britain, introducing urban infrastructure, roads, and fortifications like Hadrian's Wall across the island.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item fade-in">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">1066</div>
+              <h3>The Norman Conquest</h3>
+              <p>William the Conqueror defeats King Harold II at the Battle of Hastings, fundamentally altering English society, culture, and governance.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item fade-in">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">1215</div>
+              <h3>The Magna Carta</h3>
+              <p>King John signs the Great Charter at Runnymede, establishing the foundational principle that even the monarch is subject to the rule of law.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item fade-in">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">1534</div>
+              <h3>The Tudor Reformation</h3>
+              <p>Henry VIII breaks away from the Catholic Church in Rome, creating the Church of England and initiating decades of religious shift.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item fade-in">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">1707</div>
+              <h3>Acts of Union</h3>
+              <p>The Kingdoms of England and Scotland unite under a single parliament, officially creating the Kingdom of Great Britain.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item fade-in">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">18th – 19th Century</div>
+              <h3>Industrial Revolution</h3>
+              <p>Steam power, mechanised factories, and expanding rail networks transform Britain into the world's leading industrial force.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Figures Section -->
+    <section id="figures" class="section" style="background: rgba(245, 240, 225, 0.5);">
+      <div class="container">
+        <div class="section-title fade-in">
+          <h2>Architects of Destiny</h2>
+        </div>
+        <div class="figures-grid">
+          
+          <div class="figure-card fade-in">
+            <div class="figure-img-wrapper">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L15 8L21 9L16.5 14L18 20L12 16.5L6 20L7.5 14L3 9L9 8L12 2Z"/></svg>
+            </div>
+            <div class="figure-info">
+              <span class="figure-role">Monarch</span>
+              <h3>Queen Elizabeth I</h3>
+              <p>Ruler during the Golden Age of England, defeating the Spanish Armada and fostering a cultural renaissance led by Shakespeare.</p>
+            </div>
+          </div>
+
+          <div class="figure-card fade-in">
+            <div class="figure-img-wrapper">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v18m9-9H3"/></svg>
+            </div>
+            <div class="figure-info">
+              <span class="figure-role">Statesman</span>
+              <h3>Winston Churchill</h3>
+              <p>Prime Minister who led the United Kingdom to victory in World War II, famed for his stirring speeches and strategic resolve.</p>
+            </div>
+          </div>
+
+          <div class="figure-card fade-in">
+            <div class="figure-img-wrapper">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <div class="figure-info">
+              <span class="figure-role">Playwright</span>
+              <h3>William Shakespeare</h3>
+              <p>Widely regarded as the greatest writer in the English language, shaping modern literature and theater through timeless plays.</p>
+            </div>
+          </div>
+
+          <div class="figure-card fade-in">
+            <div class="figure-img-wrapper">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l4 4"/></svg>
+            </div>
+            <div class="figure-info">
+              <span class="figure-role">Scientist</span>
+              <h3>Sir Isaac Newton</h3>
+              <p>Physicist and mathematician whose principles of gravity and laws of motion revolutionized the scientific world.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Culture Section -->
+    <section id="culture" class="section culture-section">
+      <div class="container">
+        <div class="section-title fade-in">
+          <h2>Cultural Revolutions</h2>
+        </div>
+        <div class="culture-grid">
+          
+          <div class="culture-card fade-in">
+            <h3>Literature & Drama</h3>
+            <p>From Beowulf and Chaucer to Jane Austen and the Brontë sisters, British literature has captured the human condition across centuries, leaving an indelible mark on global storytelling.</p>
+          </div>
+
+          <div class="culture-card fade-in">
+            <h3>Architectural Legacy</h3>
+            <p>The landscape ranges from ancient stone circles like Stonehenge to majestic Gothic cathedrals, grand Victorian civic buildings, and modern architectural wonders.</p>
+          </div>
+
+          <div class="culture-card fade-in">
+            <h3>Scientific & Social Innovation</h3>
+            <p>Pioneering contributions to democracy, the rule of law, industrial mechanisation, the discovery of penicillin, and the creation of the World Wide Web.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources" class="section">
+      <div class="container">
+        <div class="section-title fade-in">
+          <h2>Archives & Exploration</h2>
+        </div>
+        <div class="resources-grid">
+          
+          <a href="#" class="resource-link fade-in">
+            <h3>The National Archives</h3>
+            <p>Explore official records spanning 1,000 years of history.</p>
+          </a>
+
+          <a href="#" class="resource-link fade-in">
+            <h3>British Museum Collections</h3>
+            <p>Discover artifacts from human history, art, and culture.</p>
+          </a>
+
+          <a href="#" class="resource-link fade-in">
+            <h3>Historic Royal Palaces</h3>
+            <p>Step inside the stories of iconic historic buildings.</p>
+          </a>
+
+          <a href="#" class="resource-link fade-in">
+            <h3>Interactive Heritage Maps</h3>
+            <p>Chart the spatial and demographic shifts over time.</p>
+          </a>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="brand">
+          <img src="logo.svg" alt="" width="36" height="36">
+          <span>UK History</span>
+        </div>
+        <p style="color: #a0aec0; margin-bottom: 0;">Preserving and sharing the rich narrative of Britain's past.</p>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 UK History Narrative. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Navigation Toggle for Mobile
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    menuToggle.addEventListener('click', () => {
+      const expanded = menuToggle.getAttribute('aria-expanded') === 'true' || false;
+      menuToggle.setAttribute('aria-expanded', !expanded);
+      navLinks.classList.toggle('active');
+    });
+
+    // Close menu when clicking links
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        menuToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Scroll Observer for Animations
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.15
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach(element => {
+      observer.observe(element);
+    });
+  </script>
+</body>
+</html>
