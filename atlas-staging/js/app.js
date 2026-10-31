@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.1906";
+  const APP_VERSION = "20261031.1915";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -709,7 +709,32 @@
   const VOICES = [["Charon", "deep", "עמוק"], ["Puck", "bright", "שמח"], ["Kore", "firm", "יציב"], ["Fenrir", "warm", "חם"], ["Aoede", "breezy", "קליל"], ["Orus", "calm", "רגוע"], ["Leda", "youthful", "צעיר"], ["Zephyr", "light", "אוורירי"]];
   function seg(box, options, value, onPick) {
     box.replaceChildren();
-    options.forEach(([v, label]) => { const b = el("button", null, label); b.type = "button"; b.setAttribute("aria-pressed", String(v === value)); b.onclick = () => onPick(v); box.append(b); });
+    options.forEach(([v, label]) => { const b = el("button", null, label); b.type = "button"; b.dataset.v = v; b.setAttribute("aria-pressed", String(v === value)); b.onclick = () => { if (box._dragged) { box._dragged = false; return; } onPick(v); }; box.append(b); });
+    glassLens(box, onPick);
+  }
+  /* the glass lens on a segmented control: it sits on the chosen option; a long press lifts it, and it follows the
+     finger; letting go on an option picks it (the same gesture as the tab bar) */
+  function glassLens(box, onPick) {
+    const lens = el("span", "lens"); box.prepend(lens);
+    const place = (x) => {
+      const btns = [...box.querySelectorAll("button")], cur = btns.find((b) => b.getAttribute("aria-pressed") === "true");
+      if (!cur) { lens.style.width = "0"; return; }
+      const br = box.getBoundingClientRect();
+      const left = x == null ? cur.offsetLeft : Math.max(0, Math.min(br.width - cur.offsetWidth, x - br.left - cur.offsetWidth / 2));
+      Object.assign(lens.style, { width: cur.offsetWidth + "px", height: cur.offsetHeight + "px", transform: `translate(${left}px, ${cur.offsetTop}px)` });
+    };
+    requestAnimationFrame(() => place());
+    let t = 0, drag = false;
+    box.onpointerdown = (e) => { const x = e.clientX; t = setTimeout(() => { drag = true; lens.classList.add("lift"); place(x); try { navigator.vibrate && navigator.vibrate(8); } catch (er) {} }, 380); };
+    box.onpointermove = (e) => { if (drag) { e.preventDefault(); place(e.clientX); } };
+    box.onpointerup = box.onpointercancel = (e) => {
+      clearTimeout(t);
+      if (!drag) return;
+      drag = false; lens.classList.remove("lift"); box._dragged = true;
+      const b = [...box.querySelectorAll("button")].find((x) => { const r = x.getBoundingClientRect(); return e.clientX >= r.left && e.clientX <= r.right; });
+      if (b) onPick(b.dataset.v); else place();
+    };
+    box.oncontextmenu = (e) => e.preventDefault();
   }
   function setCloud(patch) { saveRow("atlas_settings", { ...settingsRow(), ...patch }).then(renderSettings); }
   let sampleCtx = null;
