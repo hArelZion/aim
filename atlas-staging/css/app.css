@@ -19,6 +19,9 @@
    viewport (the bottom ~48 px), so any glow that ends at the viewport's edge reads as a band there */
 html, body { margin: 0; height: 100%; background: var(--night); color: var(--ink); font: 16px/1.5 var(--font); }
 body { overflow: hidden; overscroll-behavior: none; }
+/* iOS 26 home-screen app (see fitHeight in app.js): the page is as tall as the screen, not the short layout viewport */
+html.tall, html.tall body { height: var(--app-h); overflow: hidden; }
+html.tall #app, html.tall .theater, html.tall .sheet { position: absolute; }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 [hidden] { display: none !important; }

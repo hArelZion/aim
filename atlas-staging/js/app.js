@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.2009";
+  const APP_VERSION = "20261031.2013";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -84,12 +84,19 @@
   }
   function applyTheme() { document.documentElement.dataset.theme = store.get("atlas-theme", "auto"); }
   applyTheme();
-  // The visible height (CSS --app-h): the layout viewport, or the visual viewport while the keyboard is up. Never taller
-  // than what the webview shows, so the tab bar is never cut off.
+  // The app's height (CSS --app-h). iOS 26 home-screen apps with a translucent status bar get a layout viewport that is
+  // short by the status bar's height (WebKit bug 301108) and leave a band under the page; the webview itself still
+  // covers the whole screen and 100lvh still measures it. There the page is sized to 100lvh (html.tall), not the viewport.
+  // While the keyboard is up, the visual viewport.
+  const lvh = () => { const x = document.createElement("div"); x.style.cssText = "position:absolute;top:0;width:1px;height:100lvh;visibility:hidden"; document.body.append(x); const h = x.offsetHeight; x.remove(); return h; };
   function fitHeight() {
     const vv = window.visualViewport;
     const typing = vv && vv.height < innerHeight * 0.8 && /INPUT|TEXTAREA/.test((document.activeElement || {}).tagName || "");
-    const h = typing ? vv.height : innerHeight;
+    const standalone = navigator.standalone || matchMedia("(display-mode: standalone)").matches;
+    const big = standalone && /iPhone|iPad/.test(navigator.userAgent) && !typing ? lvh() : 0;
+    const tall = big > innerHeight && big - innerHeight < 80;
+    document.documentElement.classList.toggle("tall", tall);
+    const h = typing ? vv.height : tall ? big : innerHeight;
     document.documentElement.style.setProperty("--app-h", h + "px");
   }
   fitHeight();
@@ -103,7 +110,7 @@
         innerH: innerHeight, innerW: innerWidth, outerH: outerHeight, screenH: screen.height, screenW: screen.width, dpr: devicePixelRatio,
         vvH: window.visualViewport ? Math.round(visualViewport.height) : null, docH: document.documentElement.clientHeight, bodyH: document.body.clientHeight,
         safeTop: Math.round(pr.top), probeBottom: Math.round(pr.bottom), appTop: Math.round(app.top), appBottom: Math.round(app.bottom), tabsBottom: Math.round(tabs.bottom),
-        appH: getComputedStyle(document.documentElement).getPropertyValue("--app-h"), dvh: (() => { const x = document.createElement("div"); x.style.cssText = "position:absolute;height:100dvh;width:1px"; document.body.append(x); const h = x.offsetHeight; x.style.height = "100lvh"; const l = x.offsetHeight; x.remove(); return [h, l]; })() };
+        appH: getComputedStyle(document.documentElement).getPropertyValue("--app-h"), tall: document.documentElement.classList.contains("tall"), dvh: (() => { const x = document.createElement("div"); x.style.cssText = "position:absolute;height:100dvh;width:1px"; document.body.append(x); const h = x.offsetHeight; x.style.height = "100lvh"; const l = x.offsetHeight; x.remove(); return [h, l]; })() };
       probe.remove();
       if (d.standalone || d.dm) sb.from("control").upsert({ id: "atlas_diag", data: d }).then(() => {}, () => {});
     } catch (e) {}
