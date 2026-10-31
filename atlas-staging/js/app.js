@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.2135";
+  const APP_VERSION = "20261031.2139";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -894,7 +894,6 @@
       vbox.append(b);
     });
     seg($("segLang"), [["auto", t("auto")], ["he", "עברית"], ["en", "English"]], s.lang || "auto", (v) => setCloud({ lang: v }));
-    seg($("segAddr"), [["m", t("male")], ["f", t("female")], ["plural", t("plural")]], s.address || "plural", (v) => setCloud({ address: v }));
     seg($("segModel"), [["", t("auto")], ["gemini-3.8-live", "3.8"], ["gemini-3.1-flash-live-preview", t("fast")]], s.live_model || "", (v) => setCloud({ live_model: v }));
     // iPhone: with the mic open, some iOS versions play voice from the earpiece; the other audio-session mode fixes it
     seg($("segAudio"), [["auto", t("audioA")], ["default", t("audioB")]], store.get("atlas-audiosession", "auto"), (v) => { store.set("atlas-audiosession", v); renderSettings(); });
