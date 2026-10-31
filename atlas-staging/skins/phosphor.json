@@ -1,0 +1,44 @@
+{
+ "order": 5,
+ "name": "Phosphor",
+ "tagline": "מסך CRT ירוק, קווי סריקה וליבה מתווים. מחשב של האקר משנות ה-80.",
+ "reactor": {
+  "renderer": "ascii"
+ },
+ "core": "220,255,232",
+ "light": false,
+ "fonts_css": "family=VT323&family=IBM+Plex+Mono:wght@400;500;600",
+ "tokens": {
+  "--bg": "#020a05",
+  "--bg-a": "#06301a",
+  "--bg-b": "#031409",
+  "--panel": "rgba(10,40,22,.5)",
+  "--edge": "rgba(57,255,143,.25)",
+  "--c": "57,255,143",
+  "--c-hi": "#b6ffd6",
+  "--c-deep": "#1fa85a",
+  "--a": "200,255,120",
+  "--a-hi": "#e8ffc8",
+  "--g": "57,255,143",
+  "--g-hi": "#b6ffd6",
+  "--r": "255,90,90",
+  "--r-hi": "#ffc0c0",
+  "--v": "120,255,200",
+  "--p": "180,255,160",
+  "--text": "#b9f5cf",
+  "--text2": "#96e2b4",
+  "--hi": "#e6ffef",
+  "--muted": "#3fa86a",
+  "--faint": "#2a7048",
+  "--well": "1,10,4",
+  "--ink": "230,255,239",
+  "--scan": ".55",
+  "--grid": ".04",
+  "--disp": "\"VT323\",monospace",
+  "--ui": "\"IBM Plex Mono\",monospace",
+  "--mono": "\"VT323\",ui-monospace,monospace"
+ },
+ "voice": {
+  "name": "en-GB-RyanNeural"
+ }
+}

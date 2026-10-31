@@ -1,0 +1,44 @@
+{
+ "order": 1,
+ "name": "Mark VII",
+ "tagline": "ה-HUD הקלאסי: ציאן על כחול לילה, טבעות של כור קשת שמסתובבות. סטארק טהור.",
+ "reactor": {
+  "renderer": "rings"
+ },
+ "core": "255,255,255",
+ "light": false,
+ "fonts_css": "family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600",
+ "tokens": {
+  "--bg": "#01050d",
+  "--bg-a": "#072046",
+  "--bg-b": "#03102a",
+  "--panel": "rgba(6,24,52,.55)",
+  "--edge": "rgba(80,200,255,.22)",
+  "--c": "63,208,255",
+  "--c-hi": "#9af0ff",
+  "--c-deep": "#1f8fd0",
+  "--a": "255,181,71",
+  "--a-hi": "#ffe2b0",
+  "--g": "62,240,168",
+  "--g-hi": "#9ee9cb",
+  "--r": "255,84,112",
+  "--r-hi": "#ffb3c0",
+  "--v": "180,140,255",
+  "--p": "255,122,200",
+  "--text": "#cfefff",
+  "--text2": "#bfe3f7",
+  "--hi": "#e9fbff",
+  "--muted": "#6f9bbd",
+  "--faint": "#4f7999",
+  "--well": "1,8,20",
+  "--ink": "255,255,255",
+  "--scan": ".25",
+  "--grid": ".035",
+  "--disp": "\"Orbitron\",\"Rajdhani\",sans-serif",
+  "--ui": "\"Rajdhani\",\"Segoe UI\",sans-serif",
+  "--mono": "\"JetBrains Mono\",ui-monospace,Consolas,monospace"
+ },
+ "voice": {
+  "name": "en-GB-RyanNeural"
+ }
+}

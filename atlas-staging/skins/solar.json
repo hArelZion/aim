@@ -1,0 +1,44 @@
+{
+ "order": 8,
+ "name": "Solar",
+ "tagline": "חדש · שמש כתומה עם קורונה שמתלקחת כשהוא מדבר. חם ואלגנטי, בלי צעקה.",
+ "reactor": {
+  "renderer": "corona"
+ },
+ "core": "255,246,222",
+ "light": false,
+ "fonts_css": "family=Bai+Jamjuree:wght@600;700&family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600",
+ "tokens": {
+  "--bg": "#0a0604",
+  "--bg-a": "#3a1806",
+  "--bg-b": "#1a0b04",
+  "--panel": "rgba(50,24,8,.5)",
+  "--edge": "rgba(255,160,60,.24)",
+  "--c": "255,138,31",
+  "--c-hi": "#ffd9a8",
+  "--c-deep": "#c25a0a",
+  "--a": "255,210,122",
+  "--a-hi": "#fff0cf",
+  "--g": "170,230,120",
+  "--g-hi": "#dcf5c4",
+  "--r": "255,80,70",
+  "--r-hi": "#ffc4bd",
+  "--v": "255,180,120",
+  "--p": "255,140,100",
+  "--text": "#f6e3cc",
+  "--text2": "#e3c9a8",
+  "--hi": "#fff6ea",
+  "--muted": "#b38a62",
+  "--faint": "#7d5d3f",
+  "--well": "12,6,2",
+  "--ink": "255,255,255",
+  "--scan": ".12",
+  "--grid": ".03",
+  "--disp": "\"Bai Jamjuree\",\"Chakra Petch\",sans-serif",
+  "--ui": "\"Chakra Petch\",\"Segoe UI\",sans-serif",
+  "--mono": "\"JetBrains Mono\",ui-monospace,Consolas,monospace"
+ },
+ "voice": {
+  "name": "en-GB-RyanNeural"
+ }
+}

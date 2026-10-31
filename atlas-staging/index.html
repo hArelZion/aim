@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=20261031.1843">
+<link rel="stylesheet" href="css/app.css?v=20261031.1852">
 </head>
 <body>
 <div id="aurora" aria-hidden="true"></div>
@@ -39,7 +39,7 @@
 <!-- the app -->
 <div id="app" hidden>
   <header class="top">
-    <div class="brand"><span class="mini-mark" aria-hidden="true"></span><b>Atlas</b></div>
+    <div class="brand"><span class="mini-mark" aria-hidden="true"></span><b class="mark">ATLAS</b></div>
     <div class="pills">
       <span class="pill" id="pcPill" hidden><i class="dot"></i><span data-t="pcOnline"></span></span>
       <span class="pill warn" id="netPill" hidden data-t="offline"></span>
@@ -97,6 +97,11 @@
 
     <!-- Settings -->
     <section class="view" id="view-settings" data-view="settings" hidden>
+      <div class="card group">
+        <h2 class="h2" data-t="wardrobe"></h2>
+        <p class="muted" data-t="wardrobeSub" style="margin:-4px 0 12px"></p>
+        <div class="sgrid" id="sgrid"></div>
+      </div>
       <div class="card group">
         <h2 class="h2" data-t="voice"></h2>
         <div class="voices" id="voices"></div>
@@ -189,10 +194,11 @@
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
-<script src="js/orb.js?v=20261031.1843"></script>
-<script src="js/highlight.js?v=20261031.1843"></script>
-<script src="js/theater.js?v=20261031.1843"></script>
-<script src="js/live.js?v=20261031.1843"></script>
-<script src="js/app.js?v=20261031.1843"></script>
+<script src="js/reactors.js?v=20261031.1852"></script>
+<script src="js/orb.js?v=20261031.1852"></script>
+<script src="js/highlight.js?v=20261031.1852"></script>
+<script src="js/theater.js?v=20261031.1852"></script>
+<script src="js/live.js?v=20261031.1852"></script>
+<script src="js/app.js?v=20261031.1852"></script>
 </body>
 </html>

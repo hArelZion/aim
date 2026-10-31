@@ -1,0 +1,48 @@
+{
+ "order": 6,
+ "name": "Aurora",
+ "tagline": "מראה יום בהיר: זכוכית לבנה וזוהר צפוני מטורקיז לסגול. לעבודה באור.",
+ "reactor": {
+  "renderer": "sphere"
+ },
+ "core": "20,184,166",
+ "light": true,
+ "bench": {
+  "--c": "45,212,191",
+  "--c-hi": "#99f6e4"
+ },
+ "fonts_css": "family=Sora:wght@400;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600",
+ "tokens": {
+  "--bg": "#eef3f8",
+  "--bg-a": "#ffffff",
+  "--bg-b": "#e6eef7",
+  "--panel": "rgba(255,255,255,.7)",
+  "--edge": "rgba(20,120,140,.22)",
+  "--c": "13,148,136",
+  "--c-hi": "#0f5f59",
+  "--c-deep": "#14b8a6",
+  "--a": "139,92,246",
+  "--a-hi": "#5b21b6",
+  "--g": "5,150,105",
+  "--g-hi": "#047857",
+  "--r": "225,29,72",
+  "--r-hi": "#9f1239",
+  "--v": "139,92,246",
+  "--p": "219,39,119",
+  "--text": "#1f2a37",
+  "--text2": "#374151",
+  "--hi": "#0b1220",
+  "--muted": "#5b6b7d",
+  "--faint": "#8a99aa",
+  "--well": "255,255,255",
+  "--ink": "15,23,42",
+  "--scan": "0",
+  "--grid": ".05",
+  "--disp": "\"Sora\",\"Manrope\",sans-serif",
+  "--ui": "\"Manrope\",\"Segoe UI\",sans-serif",
+  "--mono": "\"JetBrains Mono\",ui-monospace,Consolas,monospace"
+ },
+ "voice": {
+  "name": "en-GB-RyanNeural"
+ }
+}

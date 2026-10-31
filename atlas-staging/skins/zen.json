@@ -1,0 +1,48 @@
+{
+ "order": 10,
+ "name": "Zen",
+ "tagline": "חדש · נייר אורז, מעגל אנסו בדיו שנושם, וחותמת אדומה. רוגע מוחלט.",
+ "reactor": {
+  "renderer": "enso"
+ },
+ "core": "212,64,43",
+ "light": true,
+ "bench": {
+  "--c": "232,98,74",
+  "--c-hi": "#ffc2b5"
+ },
+ "fonts_css": "family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;600",
+ "tokens": {
+  "--bg": "#f4efe6",
+  "--bg-a": "#fbf8f2",
+  "--bg-b": "#efe8dc",
+  "--panel": "rgba(255,252,246,.72)",
+  "--edge": "rgba(28,26,23,.16)",
+  "--c": "28,26,23",
+  "--c-hi": "#1c1a17",
+  "--c-deep": "#4a4540",
+  "--a": "212,64,43",
+  "--a-hi": "#a32a18",
+  "--g": "70,120,80",
+  "--g-hi": "#2f5d3a",
+  "--r": "200,50,40",
+  "--r-hi": "#8f1f16",
+  "--v": "90,80,120",
+  "--p": "190,70,90",
+  "--text": "#2b2824",
+  "--text2": "#4a453f",
+  "--hi": "#12100e",
+  "--muted": "#7d756b",
+  "--faint": "#a69d91",
+  "--well": "255,252,246",
+  "--ink": "28,26,23",
+  "--scan": "0",
+  "--grid": ".045",
+  "--disp": "\"Shippori Mincho\",serif",
+  "--ui": "\"Zen Kaku Gothic New\",\"Segoe UI\",sans-serif",
+  "--mono": "\"JetBrains Mono\",ui-monospace,Consolas,monospace"
+ },
+ "voice": {
+  "name": "en-GB-RyanNeural"
+ }
+}

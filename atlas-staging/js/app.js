@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.1843";
+  const APP_VERSION = "20261031.1852";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -20,6 +20,7 @@
       talk: "דברו עם Atlas", keyboard: "מקלדת", vision: "מצלמה", send: "שליחה", flip: "החלפת מצלמה", typePh: "כתבו ל-Atlas…",
       sIdle: "הקישו על המיקרופון כדי לדבר", sConnecting: "מתחבר…", sListening: "מקשיב…", sThinking: "חושב…", sSpeaking: "מדבר…", sError: "החיבור נפל. נסו שוב.",
       q1: "תבנה לי אתר", q2: "מה מזג האוויר?", q3: "מה אתה יודע עליי?", q4: "מה קורה במחשב?", q5: "תספר לי משהו מעניין",
+      wardrobe: "חדר הלבשה", wardrobeSub: "אותם סקינים כמו ב-Jarvis, ועוד אחד רק של Atlas.",
       audioMode: "מצב שמע (אם הקול נשמע חלש)", audioA: "רגיל", audioB: "רמקול",
       buildsSet: "בניית אתרים", builder: "מי בונה", bFast: "מהיר", bSmart: "חכם", bClaude: "Claude במחשב",
       toClaude: "נשלח ל-Claude במחשב. הקישור יגיע ב-AIM.", buildTime: "זמן מקסימלי", buildOpen: "פתיחת הקוד", oAsk: "לשאול אותי", oAuto: "אוטומטי", sec: " שנ׳", min2: "2 דק׳",
@@ -48,6 +49,7 @@
       talk: "Talk to Atlas", keyboard: "Keyboard", vision: "Camera", send: "Send", flip: "Flip camera", typePh: "Message Atlas…",
       sIdle: "Tap the mic to talk", sConnecting: "Connecting…", sListening: "Listening…", sThinking: "Thinking…", sSpeaking: "Speaking…", sError: "Connection lost. Try again.",
       q1: "Build me a website", q2: "What's the weather?", q3: "What do you know about me?", q4: "What's my computer doing?", q5: "Tell me something interesting",
+      wardrobe: "Wardrobe", wardrobeSub: "The same skins as Jarvis, plus one that is Atlas's alone.",
       audioMode: "Audio mode (if the voice is quiet)", audioA: "Normal", audioB: "Speaker",
       buildsSet: "Building sites", builder: "Who builds", bFast: "Fast", bSmart: "Smart", bClaude: "Claude on PC",
       toClaude: "Sent to Claude on your computer. The link will come in AIM.", buildTime: "Time limit", buildOpen: "Open the code", oAsk: "Ask me", oAuto: "Automatic", sec: " s", min2: "2 min",
@@ -98,10 +100,67 @@
   }
   fitHeight();
   window.addEventListener("resize", fitHeight);
+
+  // ---- skins: the Jarvis wardrobe (same JSON skins and reactors as the Jarvis app) + Atlas's own "Aurora" orb
+  const ATLAS_SKIN = { id: "atlas", name: "Atlas", tagline_he: "הסקין של Atlas: הילת זוהר סגול-טורקיז-מנטה שנושמת איתך.", tagline_en: "Atlas's own: a violet-cyan-mint aurora that breathes with you.", a: "#2a2272", b: "#07080C", c: "61,255,181", light: false };
+  let skinKeys = [];
+  async function applySkin(id) {
+    const root = document.documentElement.style;
+    skinKeys.forEach((k) => root.removeProperty(k)); skinKeys = [];
+    document.body.classList.remove("light");
+    if (!id || id === "atlas") {
+      document.body.dataset.skin = "atlas";
+      document.documentElement.style.colorScheme = "";
+      const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = "#07080C";
+      window.Orb && window.Orb.useSkin(null);
+    } else {
+      try {
+        const skin = await (await fetch("skins/" + id + ".json", { cache: "no-cache" })).json();
+        skin.id = id;
+        Skin.assetBase = "";   // reactors.js: the skins' pictures (the mouth) sit beside this page
+        const P = Skin.apply(skin), t = skin.tokens || {};
+        const rgb = (v, d) => "rgb(" + (v || d) + ")";
+        const map = {   // Atlas's tokens, from the Jarvis tokens
+          "--night": t["--bg"], "--panel": "rgba(" + (t["--ink"] || "255,255,255") + ",.06)", "--panel-2": "rgba(" + (t["--ink"] || "255,255,255") + ",.1)",
+          "--line": t["--edge"] || "rgba(255,255,255,.12)", "--ink": t["--hi"] || t["--text"], "--muted": t["--muted"],
+          "--a1": rgb(t["--c"], "63,208,255"), "--a2": t["--c-hi"] || rgb(t["--c"], "63,208,255"), "--a3": rgb(t["--g"], "62,240,168"),
+          "--warn": rgb(t["--r"], "255,84,112"), "--ok": rgb(t["--g"], "62,240,168"), "--font": t["--ui"], "--disp": t["--disp"],
+        };
+        for (const [k, v] of Object.entries(map)) if (v) { root.setProperty(k, v); skinKeys.push(k); }
+        skinKeys.push(...Object.keys(t));
+        document.documentElement.style.colorScheme = skin.light ? "light" : "dark";
+        document.body.dataset.skin = id;
+        window.Orb && window.Orb.useSkin(makeReactor((skin.reactor || {}).renderer, skin.reactor), P);
+        const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = t["--bg"] || "#07080C";
+      } catch (e) { console.warn("skin", e); document.body.dataset.skin = "atlas"; }
+    }
+    store.set("atlas-skin", id || "atlas");
+    renderWardrobe();
+  }
+  function syncSkin() { const k = (rows.atlas_settings || {}).skin; if (k && k !== document.body.dataset.skin) applySkin(k); }
+  let skinList = null;
+  async function renderWardrobe() {
+    const grid = $("sgrid"); if (!grid) return;
+    if (!skinList) { try { skinList = await (await fetch("skins/index.json", { cache: "no-cache" })).json(); } catch (e) { skinList = []; } }
+    const cur = document.body.dataset.skin || "atlas";
+    grid.replaceChildren();
+    [ATLAS_SKIN, ...skinList].forEach((k) => {
+      const b = el("button", "skin" + (k.light ? " lt" : "") + (k.id === cur ? " cur" : "")); b.type = "button";
+      b.style.background = k.id === "atlas" ? "radial-gradient(70% 70% at 70% 30%, rgba(46,197,255,.55), transparent 60%), linear-gradient(140deg, #7C5CFF, #07080C 75%)" : `linear-gradient(140deg, ${k.a}, ${k.b || k.bg})`;
+      const dot = el("i"); dot.style.background = k.id === "atlas" ? "linear-gradient(120deg,#7C5CFF,#2EC5FF,#3DFFB5)" : `rgb(${k.c})`; dot.style.boxShadow = `0 0 18px rgb(${k.c})`;
+      const tag = k.id === "atlas" ? (ui === "he" ? k.tagline_he : k.tagline_en) : k.tagline || "";
+      const s = el("small", null, tag); s.dir = "auto";
+      b.append(dot, el("b", null, k.name), s);
+      b.onclick = () => { applySkin(k.id); setCloud({ skin: k.id }); };   // the choice follows you to your other devices
+      grid.append(b);
+    });
+  }
   window.addEventListener("orientationchange", () => setTimeout(fitHeight, 300));
   if (window.visualViewport) visualViewport.addEventListener("resize", fitHeight);
   document.addEventListener("focusin", () => setTimeout(fitHeight, 300));
   document.addEventListener("focusout", () => setTimeout(fitHeight, 300));
+
+  applySkin(store.get("atlas-skin", "atlas"));
 
   // ------------------------------------------------------------------ toast
   let toastT = 0;
@@ -152,7 +211,7 @@
     if (r.id === "atlas_mem" || r.id === "atlas_hist") renderMemory();
     if (r.id === "atlas_active") paintPill();
     if (["status", "watcher", "settings", "pc"].includes(r.id)) renderPc();
-    if (r.id === "atlas_settings") renderSettings();
+    if (r.id === "atlas_settings") { renderSettings(); syncSkin(); }
     if (r.id === "atlas_debug") renderSiri();
   }
   let lastEvent = 0;
@@ -621,6 +680,7 @@
     } catch (e) { toast(String(e.message || e)); }
   }
   function renderSettings() {
+    renderWardrobe();
     const vbox = $("voices"); if (!vbox) return;
     const s = settingsRow();
     vbox.replaceChildren();
@@ -666,7 +726,7 @@
   $("installBtn").onclick = async () => { if (!installEvt) return; installEvt.prompt(); installEvt = null; $("installBtn").hidden = true; };
 
   // ------------------------------------------------------------------ boot
-  function renderAll() { renderGallery(); renderMemory(); renderSettings(); renderPc(); paintPill(); }
+  function renderAll() { syncSkin(); renderGallery(); renderMemory(); renderSettings(); renderPc(); paintPill(); }
   function net() { $("netPill").hidden = navigator.onLine; }
   window.addEventListener("online", () => { net(); loadRows(); }); window.addEventListener("offline", net);
   document.addEventListener("visibilitychange", () => { if (!document.hidden && started) loadRows(); });

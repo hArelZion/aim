@@ -24,7 +24,23 @@
     ctx.fillStyle = g;
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
   }
+  // a Jarvis skin: its own reactor (rings, petals, the mouth...) from reactors.js replaces the aurora orb
+  let reactor = null, pal = null, rT = 0, lastNow = 0;
+  const RSTATE = { idle: "idle", listening: "listen", thinking: "think", speaking: "speak" };
+  function frameReactor(now) {
+    const dt = Math.min(0.1, (now - (lastNow || now)) / 1000); lastNow = now;
+    const st = RSTATE[S.state] || "idle";
+    rT += dt * (st === "think" ? 3.2 : st === "listen" ? 1.6 : st === "speak" ? 1.3 : 0.6);
+    const target = S.state === "listening" ? Math.min(1.2, S.mic * 6) : S.state === "speaking" ? Math.min(1.2, S.out * 5) : 0;
+    S.lvl += (target - S.lvl) * (target > S.lvl ? 0.45 : 0.12);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, w, h);
+    ctx.setTransform(dpr, 0, 0, dpr, w / 2, h / 2);
+    try { reactor.draw(ctx, Math.min(w, h) / dpr * 0.45, rT, S.lvl, pal, { state: st, building: false, now, dt, src: st === "listen" ? "mic" : "voice", raw: st === "speak" ? S.lvl : 0, shape: 0.5 }); } catch (e) {}
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    raf = requestAnimationFrame(frame);
+  }
   function frame(now) {
+    if (reactor) return frameReactor(now);
     const t = (now - t0) / 1000;
     const target = S.state === "listening" ? Math.min(1, S.mic * 6) : S.state === "speaking" ? Math.min(1, S.out * 5) : 0;
     S.lvl += (target - S.lvl) * 0.25;
@@ -61,5 +77,7 @@
     set(state) { S.state = state; },
     mic(v) { S.mic = v; },
     out(v) { S.out = v; },
+    /** a Jarvis reactor + its palette, or null for Atlas's own aurora orb */
+    useSkin(r, p) { reactor = r; pal = p; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, w, h); start(); },
   };
 })();
