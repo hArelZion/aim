@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.1852";
+  const APP_VERSION = "20261031.1859";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -161,6 +161,14 @@
   document.addEventListener("focusout", () => setTimeout(fitHeight, 300));
 
   applySkin(store.get("atlas-skin", "atlas"));
+  // the wardrobe opens only from its small button at the end of Settings, or with "C3PO" (voice, typed, Siri)
+  function openWardrobe(show = true) {
+    const w = $("wardrobe"); if (!w) return;
+    w.hidden = !show; $("wardrobeBtn").setAttribute("aria-expanded", String(show));
+    if (show) { if (typeof go === "function") go("settings"); renderWardrobe(); setTimeout(() => w.scrollIntoView({ behavior: "smooth", block: "start" }), 80); }
+  }
+  $("wardrobeBtn").addEventListener("click", () => openWardrobe($("wardrobe").hidden));
+  const C3PO = /\bc\s*-?\s*3\s*-?\s*p\s*-?\s*o\b|\bsee three p\.? ?o\b|סי.?3.?פי.?או|סי ת'?רי פי או/i;
 
   // ------------------------------------------------------------------ toast
   let toastT = 0;
@@ -375,6 +383,7 @@
 
   /** A typed question: into the live session when one is open, else one cloud turn spoken by the browser voice. */
   async function ask(text) {
+    if (C3PO.test(text)) { openWardrobe(true); return; }
     if (live && live.sendText(text)) return;
     caption("u", text, true);
     setState("thinking");
@@ -441,6 +450,9 @@
       case "set_timer":
         startTimer(Number(args.seconds) || 60, args.label || "");
         return { result: "The timer is running on screen." };
+      case "open_wardrobe":
+        openWardrobe(true);
+        return { result: "The wardrobe of skins is open on the screen." };
       case "open_build": {
         const id = (rows.atlas_active || {}).id;
         if (!id) return { result: "No build is running." };
@@ -455,6 +467,7 @@
   function doAct(a) {
     if (!a) return;
     if (a.a === "watch" && a.id) { openTheater(a.id); return; }
+    if (a.a === "wardrobe") { openWardrobe(true); return; }
     if (a.a === "open" && a.url) chip(t("tapToOpen") + (a.url.split(/[/:?]/)[0] || ""), a.url, "go");
     else if (a.a === "timer") startTimer(+a.s || 60, a.label && a.label !== "none" ? a.label : "");
     else if (["alarm", "reminder", "event", "note", "torch", "dnd", "volume", "brightness", "media", "call", "sms"].includes(a.a)) {
@@ -741,7 +754,8 @@
     const shared = [q.get("title"), q.get("text"), q.get("url")].filter(Boolean).join(" ");
     if (shared) { go("builds"); $("buildInput").value = shared; }
     if (q.get("tab")) go(q.get("tab"));
-    if (q.get("src") || shared || bid) history.replaceState(null, "", location.pathname);
+    if (q.get("wardrobe")) openWardrobe(true);
+    if (q.get("src") || shared || bid || q.get("wardrobe")) history.replaceState(null, "", location.pathname);
   }
   applyLang();
   sb.auth.getSession().then(({ data }) => show(!!(data && data.session)));

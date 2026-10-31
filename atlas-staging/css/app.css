@@ -79,7 +79,7 @@ textarea.field { resize: none; line-height: 1.45; }
 .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: calc(env(safe-area-inset-top) + 10px) 16px 6px; }
 .brand { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; letter-spacing: -.02em; }
 /* the same top bar as Jarvis: a letter-spaced mark in the skin's display face */
-.brand .mark { font: 700 15px/1 var(--disp, var(--font)); letter-spacing: .34em; color: var(--ink); }
+.brand .brandmark { font: 700 15px/1 var(--disp, var(--font)); letter-spacing: .34em; color: var(--ink); }
 /* Jarvis skins: their tokens (--bg, --bg-a, --c...) are set on <html> by Skin.apply; Atlas's own tokens follow them
    (app.js), and the background is Jarvis's: a radial light over the skin's night */
 body:not([data-skin="atlas"]) { background: radial-gradient(120% 70% at 50% 18%, var(--bg-a) 0%, var(--bg-b) 45%, var(--bg) 85%) fixed; }
@@ -238,3 +238,5 @@ body.pill-on #view-talk { padding-bottom: calc(var(--tabs-h) + env(safe-area-ins
   .theater .th-code { position: relative; }
   .theater .th-preview { position: relative; display: grid !important; border-left: 1px solid #1B212C; }
 }
+
+.wardrobe-btn { display: flex; margin: 4px auto 14px; color: var(--muted); }
