@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.1921";
+  const APP_VERSION = "20261031.1922";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -766,7 +766,7 @@
     VOICES.forEach(([v, d, dh]) => {
       const b = el("button"); b.type = "button"; b.setAttribute("aria-pressed", String((s.voice || "Charon") === v));
       b.append(el("span", null, v), el("small", null, ui === "he" ? dh : d));
-      b.onclick = () => { if (sampleCtx) sampleCtx.resume(); setCloud({ voice: v }); playSample(v); };
+      b.onclick = () => { vbox.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); if (sampleCtx) sampleCtx.resume(); setCloud({ voice: v }); playSample(v); };
       vbox.append(b);
     });
     seg($("segLang"), [["auto", t("auto")], ["he", "עברית"], ["en", "English"]], s.lang || "auto", (v) => setCloud({ lang: v }));
