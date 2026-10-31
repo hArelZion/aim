@@ -101,8 +101,17 @@ body:not([data-skin="atlas"]) .h2, body:not([data-skin="atlas"]) .tabs button, b
 .view { position: absolute; inset: 0; overflow-y: auto; padding: 8px 16px calc(var(--tabs-h) + env(safe-area-inset-bottom) + 70px); -webkit-overflow-scrolling: touch; }
 #view-talk { display: flex; flex-direction: column; align-items: center; overflow: hidden; padding-bottom: calc(var(--tabs-h) + env(safe-area-inset-bottom) + 12px); }
 
-.tabs { position: absolute; inset-inline: 0; bottom: 0; z-index: 4; display: grid; grid-template-columns: repeat(4, 1fr); padding: 6px 8px calc(env(safe-area-inset-bottom) + 6px); background: color-mix(in srgb, var(--night) 82%, transparent); border-top: 1px solid var(--line); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
-.tabs button { display: grid; justify-items: center; gap: 2px; min-height: 52px; padding: 4px 0; border: 0; background: none; color: var(--muted); font-size: .72rem; font-weight: 600; }
+/* the tab bar floats like Jarvis's (iOS glass): nothing painted under it, so no band at the bottom of the screen.
+   A glass lens marks the current tab; a long press lifts it, and dragging it moves between tabs. */
+.tabs { position: absolute; inset-inline: 12px; bottom: calc(env(safe-area-inset-bottom) + 6px); z-index: 4; display: grid; grid-template-columns: repeat(4, 1fr); padding: 5px; border-radius: 30px;
+  background: color-mix(in srgb, var(--night) 62%, transparent); border: 1px solid var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 12px 34px rgba(0,0,0,.4);
+  backdrop-filter: blur(24px) saturate(1.6); -webkit-backdrop-filter: blur(24px) saturate(1.6); touch-action: none; user-select: none; -webkit-user-select: none; }
+.tabs .lens { position: absolute; top: 5px; bottom: 5px; left: 0; width: 0; border-radius: 25px; pointer-events: none; z-index: 0;
+  background: rgba(255,255,255,.10); box-shadow: inset 0 1px 0 rgba(255,255,255,.25), inset 0 -1px 0 rgba(255,255,255,.06);
+  transition: transform .35s cubic-bezier(.3,1.35,.5,1), width .35s, background .2s, box-shadow .2s; }
+.tabs .lens.lift { transition: width .2s, background .2s, box-shadow .2s; background: rgba(255,255,255,.18); box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 10px 30px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.18); top: -6px; bottom: -6px; border-radius: 34px; backdrop-filter: blur(2px) saturate(1.8); -webkit-backdrop-filter: blur(2px) saturate(1.8); }
+.tabs button { position: relative; z-index: 1;
+  display: grid; justify-items: center; gap: 2px; min-height: 52px; padding: 4px 0; border: 0; background: none; color: var(--muted); font-size: .72rem; font-weight: 600; }
 .tabs button svg { width: 24px; height: 24px; }
 .tabs button.on { color: var(--ink); }
 .tabs button.on svg { color: var(--a2); filter: drop-shadow(0 0 8px rgba(46,197,255,.6)); }
@@ -212,7 +221,7 @@ body.pill-on #view-talk { padding-bottom: calc(var(--tabs-h) + env(safe-area-ins
 .hl-tag { color: #7EE787; } .hl-attr { color: #79C0FF; } .hl-str { color: #A5D6FF; } .hl-prop { color: #D2A8FF; }
 .hl-num { color: #FFA657; } .hl-kw { color: #FF7B72; } .hl-com { color: #8B949E; font-style: italic; } .hl-sel { color: #FFA657; } .hl-punc { color: #8B949E; }
 .th-preview { position: absolute; inset: 0; display: grid; place-items: center; padding: 12px; background: radial-gradient(60% 60% at 50% 40%, #141a26, #0B0E14); }
-.phone { position: relative; width: min(100%, 300px); aspect-ratio: 9 / 18.5; border-radius: 34px; border: 8px solid #1d2230; background: #fff; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 1px #2a3142; }
+.phone { position: relative; direction: ltr; width: min(100%, 300px); aspect-ratio: 9 / 18.5; border-radius: 34px; border: 8px solid #1d2230; background: #fff; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 1px #2a3142; }
 .phone iframe { width: 100%; height: 100%; border: 0; background: #fff; }
 .phone.big { width: min(100%, 320px); }
 .th-log { height: 72px; overflow: hidden; padding: 8px 14px; border-top: 1px solid #1B212C; font: .76rem/1.5 var(--mono); color: #8B949E; display: flex; flex-direction: column; justify-content: flex-end; }

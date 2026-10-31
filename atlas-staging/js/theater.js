@@ -4,9 +4,24 @@
    builder is done the rest is typed within 4 s. Then "going live" (polls the page until its atlas-build meta matches),
    and the reveal: the site in a phone frame with Open / Share / Edit / Replay.
    window.Theater.open(id, {feed, t, onEdit, onState}) — feed(id, cb) subscribes to the row and returns an unsubscribe. */
+/* A site inside a phone frame is laid out at a real phone width (390 px) and scaled down to the frame, so it never
+   gets a narrower layout than on a phone and never slides sideways. Refits itself when the frame changes size. */
+window.fitPhone = function fitPhone(frame) {
+  const box = frame && frame.parentElement;
+  if (!box) return;
+  const fit = () => {
+    const w = box.clientWidth, h = box.clientHeight;
+    if (!w || !h) return;
+    const s = w / 390;
+    Object.assign(frame.style, { width: "390px", height: h / s + "px", transform: `scale(${s})`, transformOrigin: "top left" });
+  };
+  fit();
+  if (!box._fitObs) { box._fitObs = new ResizeObserver(fit); box._fitObs.observe(box); }
+};
 (function () {
   const $ = (id) => document.getElementById(id);
   const root = $("theater");
+  ["thFrame", "thLive"].forEach((id) => window.fitPhone($(id)));
   if (!root) return;
   const STEPS = ["brief", "style", "html", "motion", "check", "publish", "live"];
   const LABEL = { brief: "Brief", style: "Style", html: "HTML", motion: "Motion", check: "Check", publish: "Publish", live: "Live" };

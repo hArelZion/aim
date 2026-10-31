@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.1859";
+  const APP_VERSION = "20261031.1906";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -23,7 +23,7 @@
       wardrobe: "חדר הלבשה", wardrobeSub: "אותם סקינים כמו ב-Jarvis, ועוד אחד רק של Atlas.",
       audioMode: "מצב שמע (אם הקול נשמע חלש)", audioA: "רגיל", audioB: "רמקול",
       buildsSet: "בניית אתרים", builder: "מי בונה", bFast: "מהיר", bSmart: "חכם", bClaude: "Claude במחשב",
-      toClaude: "נשלח ל-Claude במחשב. הקישור יגיע ב-AIM.", buildTime: "זמן מקסימלי", buildOpen: "פתיחת הקוד", oAsk: "לשאול אותי", oAuto: "אוטומטי", sec: " שנ׳", min2: "2 דק׳",
+      toClaude: "נשלח ל-Claude במחשב. הקישור יגיע ב-AIM.", noLimit: "ללא הגבלה", buildTime: "זמן מקסימלי", buildOpen: "פתיחת הקוד", oAsk: "לשאול אותי", oAuto: "אוטומטי", sec: " שנ׳", min2: "2 דק׳",
       qTr: "🌐 מתרגם חי", sTranslating: "מתרגם: מדברים עברית או אנגלית", classicOn: "הקול החי לא זמין, עובר לקול רגיל", micEmpty: "לא שמעתי. נסו שוב.",
       buildQ: "מה לבנות?", buildPh: "למשל: אתר למסעדת סושי בתל אביב, עם תפריט אומקסה והזמנת מקום", build: "בנה", gallery: "הגלריה", sites: "אתרים",
       idea1: "דף נחיתה לבית קפה", idea2: "פורטפוליו לצלמת", idea3: "משחק זיכרון צבעוני", idea4: "אתר חתונה",
@@ -52,7 +52,7 @@
       wardrobe: "Wardrobe", wardrobeSub: "The same skins as Jarvis, plus one that is Atlas's alone.",
       audioMode: "Audio mode (if the voice is quiet)", audioA: "Normal", audioB: "Speaker",
       buildsSet: "Building sites", builder: "Who builds", bFast: "Fast", bSmart: "Smart", bClaude: "Claude on PC",
-      toClaude: "Sent to Claude on your computer. The link will come in AIM.", buildTime: "Time limit", buildOpen: "Open the code", oAsk: "Ask me", oAuto: "Automatic", sec: " s", min2: "2 min",
+      toClaude: "Sent to Claude on your computer. The link will come in AIM.", noLimit: "No limit", buildTime: "Time limit", buildOpen: "Open the code", oAsk: "Ask me", oAuto: "Automatic", sec: " s", min2: "2 min",
       qTr: "🌐 Live interpreter", sTranslating: "Interpreting: speak Hebrew or English", classicOn: "Live voice is unavailable, using classic voice", micEmpty: "I didn't hear anything. Try again.",
       buildQ: "What should I build?", buildPh: "e.g. a site for a sushi bar in Tel Aviv with an omakase menu and reservations", build: "Build", gallery: "Gallery", sites: "sites",
       idea1: "Coffee shop landing page", idea2: "Photographer portfolio", idea3: "Colorful memory game", idea4: "Wedding website",
@@ -256,8 +256,40 @@
     document.querySelectorAll(".view").forEach((v) => { v.hidden = v.dataset.view !== name; });
     document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("on", b.dataset.tab === name));
     if (name === "builds") renderGallery();
+    placeLens();
   }
-  $("tabs").addEventListener("click", (e) => { const b = e.target.closest("button[data-tab]"); if (b) go(b.dataset.tab); });
+  // the glass lens (like Jarvis): sits behind the current tab; a long press lifts it and it follows the finger,
+  // letting go on a tab opens that tab. A short tap still just opens the tab.
+  const tabsEl = $("tabs"), lens = el("span", "lens");
+  tabsEl.prepend(lens);
+  function placeLens(x) {
+    const btns = [...tabsEl.querySelectorAll("button[data-tab]")], r = tabsEl.getBoundingClientRect();
+    const cur = btns.find((b) => b.dataset.tab === tab) || btns[0];
+    if (!cur || !r.width) return;
+    const w = cur.offsetWidth;
+    const left = x == null ? cur.offsetLeft : Math.max(5, Math.min(r.width - w - 5, x - r.left - w / 2));
+    lens.style.width = w + "px"; lens.style.transform = `translateX(${left}px)`;
+  }
+  let pressT = 0, dragging = false, suppressClick = false;
+  tabsEl.addEventListener("pointerdown", (e) => {
+    const x = e.clientX;
+    pressT = setTimeout(() => { dragging = true; lens.classList.add("lift"); placeLens(x); try { navigator.vibrate && navigator.vibrate(10); } catch (er) {} }, 380);
+  });
+  tabsEl.addEventListener("pointermove", (e) => { if (dragging) placeLens(e.clientX); });
+  const endPress = (e) => {
+    clearTimeout(pressT);
+    if (!dragging) return;
+    dragging = false; lens.classList.remove("lift"); suppressClick = true;
+    const b = [...tabsEl.querySelectorAll("button[data-tab]")].find((x) => { const r = x.getBoundingClientRect(); return e.clientX >= r.left && e.clientX <= r.right; });
+    if (b) go(b.dataset.tab); else placeLens();
+  };
+  ["pointerup", "pointercancel"].forEach((ev) => tabsEl.addEventListener(ev, endPress));
+  tabsEl.addEventListener("contextmenu", (e) => e.preventDefault());
+  tabsEl.addEventListener("click", (e) => {
+    if (suppressClick) { suppressClick = false; return; }
+    const b = e.target.closest("button[data-tab]"); if (b) go(b.dataset.tab);
+  });
+  new ResizeObserver(() => placeLens()).observe(tabsEl);
 
   // ------------------------------------------------------------------ Talk
   let live = null, state = "idle", caps = [];
@@ -624,6 +656,7 @@
     $("shTitle").textContent = s.title; $("shTitle").dir = "auto";
     $("shMeta").textContent = [s.version > 1 ? "v" + s.version : "", s.updated ? ago(Date.now() - s.updated) : "", s.prompt || ""].filter(Boolean).join(" · ");
     $("shFrame").src = s.url; $("shOpen").href = s.url;
+    requestAnimationFrame(() => window.fitPhone($("shFrame")));
     $("sheet").hidden = false;
     if (focusEdit) setTimeout(() => $("shEdit").focus(), 300);
   }
@@ -709,7 +742,7 @@
     // iPhone: with the mic open, some iOS versions play voice from the earpiece; the other audio-session mode fixes it
     seg($("segAudio"), [["auto", t("audioA")], ["default", t("audioB")]], store.get("atlas-audiosession", "auto"), (v) => { store.set("atlas-audiosession", v); renderSettings(); });
     seg($("segBuilder"), [["fast", t("bFast")], ["smart", t("bSmart")], ["claude", t("bClaude")]], s.builder || "fast", (v) => setCloud({ builder: v }));
-    seg($("segTime"), [["30", "30" + t("sec")], ["60", "60" + t("sec")], ["90", "90" + t("sec")], ["125", t("min2")]], String(s.build_time || 125), (v) => setCloud({ build_time: Number(v) }));
+    seg($("segTime"), [["30", "30" + t("sec")], ["60", "60" + t("sec")], ["125", t("min2")], ["0", t("noLimit")]], String(s.build_time == null ? 125 : s.build_time), (v) => setCloud({ build_time: Number(v) }));
     seg($("segOpen"), [["ask", t("oAsk")], ["auto", t("oAuto")]], s.build_open || "ask", (v) => setCloud({ build_open: v }));
     seg($("segTheme"), [["auto", t("auto")], ["dark", t("dark")], ["light", t("light")]], store.get("atlas-theme", "auto"), (v) => { store.set("atlas-theme", v); applyTheme(); renderSettings(); });
     seg($("segUi"), [["he", "עברית"], ["en", "English"]], ui, (v) => { ui = v; store.set("atlas-ui", v); applyLang(); });
