@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.1929";
+  const APP_VERSION = "20261031.1938";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -84,18 +84,12 @@
   }
   function applyTheme() { document.documentElement.dataset.theme = store.get("atlas-theme", "auto"); }
   applyTheme();
-  // The real screen height (CSS --app-h). On an iPhone home-screen app the layout viewport can stop well above the
-  // bottom of the screen; there the screen height wins, except while the keyboard is up (the visual viewport then).
+  // The visible height (CSS --app-h): the layout viewport, or the visual viewport while the keyboard is up. Never taller
+  // than what the webview shows, so the tab bar is never cut off.
   function fitHeight() {
-    const standalone = navigator.standalone || matchMedia("(display-mode: standalone)").matches;
     const vv = window.visualViewport;
     const typing = vv && vv.height < innerHeight * 0.8 && /INPUT|TEXTAREA/.test((document.activeElement || {}).tagName || "");
-    let h = innerHeight;
-    if (typing) h = vv.height;
-    else if (standalone && /iPhone|iPad/.test(navigator.userAgent)) {
-      const portrait = matchMedia("(orientation: portrait)").matches;
-      h = Math.max(innerHeight, portrait ? Math.max(screen.width, screen.height) : Math.min(screen.width, screen.height));
-    }
+    const h = typing ? vv.height : innerHeight;
     document.documentElement.style.setProperty("--app-h", h + "px");
   }
   fitHeight();
@@ -740,13 +734,16 @@
     const lens = el("span", "lens"); box.prepend(lens);
     const place = (x) => {
       const btns = [...box.querySelectorAll("button")], cur = btns.find((b) => b.getAttribute("aria-pressed") === "true");
-      if (!cur) { lens.style.width = "0"; return; }
+      if (!cur || !cur.offsetWidth) { lens.style.width = "0"; box.classList.remove("placed"); return; }
       const br = box.getBoundingClientRect();
       const left = x == null ? cur.offsetLeft : Math.max(0, Math.min(br.width - cur.offsetWidth, x - br.left - cur.offsetWidth / 2));
       Object.assign(lens.style, { width: cur.offsetWidth + "px", height: cur.offsetHeight + "px", transform: `translate(${left}px, ${cur.offsetTop}px)` });
+      box.classList.add("placed");
     };
     box._place = () => place();
-    new ResizeObserver(() => { if (box.offsetWidth) place(); }).observe(box);   // placed as soon as the screen is shown (hidden screens have no size)
+    const ro = new ResizeObserver(() => { if (box.offsetWidth) place(); });
+    ro.observe(box); box.querySelectorAll("button").forEach((b) => ro.observe(b));   // buttons change size when the font loads
+    if (document.fonts) document.fonts.ready.then(() => place());   // placed as soon as the screen is shown (hidden screens have no size)
     requestAnimationFrame(() => place());
     let t = 0, drag = false;
     box.onpointerdown = (e) => { const x = e.clientX; t = setTimeout(() => { drag = true; lens.classList.add("lift"); place(x); try { navigator.vibrate && navigator.vibrate(8); } catch (er) {} }, 380); };
