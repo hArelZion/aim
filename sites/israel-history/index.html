@@ -7,7 +7,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Explore the journey of Israel through millennia: ancient kingdoms, the rebirth of a modern nation, pivotal figures, cultural heritage, and historical archives.">
-  <meta name="atlas-build" content="5q8mg3mdhwb8pep9hgwh">
+  <meta name="atlas-build" content="gv3squnvoa2kiqh87asm">
   <title>Israel History | Ancient Heritage, Modern Legacy</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -154,22 +154,38 @@
       min-height: 100vh;
       display: flex;
       align-items: center;
-      background: 
-        linear-gradient(180deg, rgba(13,13,13,0.4) 0%, rgba(26,61,124,0.7) 60%, rgba(13,13,13,0.9) 100%),
-        radial-gradient(circle at 70% 30%, #E67E22 0%, transparent 50%),
-        linear-gradient(135deg, #1A3D7C 0%, #0D0D0D 100%);
       color: var(--white);
       padding-top: 80px;
       overflow: hidden;
     }
 
+    .hero-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      z-index: 0;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: 
+        linear-gradient(180deg, rgba(13,13,13,0.75) 0%, rgba(26,61,124,0.75) 50%, rgba(13,13,13,0.92) 100%),
+        radial-gradient(circle at 75% 30%, rgba(230,126,34,0.3) 0%, transparent 60%);
+    }
+
     .hero-bg-art {
       position: absolute;
       inset: 0;
-      opacity: 0.25;
+      opacity: 0.2;
       background-image: radial-gradient(var(--sand) 1px, transparent 1px);
       background-size: 32px 32px;
       pointer-events: none;
+      z-index: 1;
     }
 
     .hero-sun {
@@ -180,14 +196,15 @@
       height: clamp(200px, 30vw, 450px);
       background: radial-gradient(circle, #F4E1C1 0%, #E67E22 60%, transparent 100%);
       border-radius: 50%;
-      filter: blur(20px);
-      opacity: 0.6;
+      filter: blur(30px);
+      opacity: 0.35;
       animation: pulseSun 8s ease-in-out infinite alternate;
+      z-index: 1;
     }
 
     @keyframes pulseSun {
-      0% { transform: scale(1); opacity: 0.5; }
-      100% { transform: scale(1.1); opacity: 0.7; }
+      0% { transform: scale(1); opacity: 0.3; }
+      100% { transform: scale(1.1); opacity: 0.45; }
     }
 
     .hero-content {
@@ -210,7 +227,7 @@
 
     .hero h1 {
       color: var(--sand-light);
-      text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      text-shadow: 0 4px 20px rgba(0,0,0,0.7);
       margin-bottom: 1.5rem;
     }
 
@@ -218,7 +235,7 @@
       color: var(--sand);
       margin-bottom: 2.5rem;
       max-width: 680px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      text-shadow: 0 2px 10px rgba(0,0,0,0.7);
     }
 
     .btn {
@@ -343,7 +360,7 @@
     }
 
     .timeline-card:hover {
-      transform: translateY(-50px);
+      transform: translateY(-5px);
     }
 
     .timeline-year {
@@ -484,9 +501,23 @@
     }
 
     .culture-img {
-      height: 200px;
+      height: 220px;
       background-color: var(--sand-dark);
       position: relative;
+      overflow: hidden;
+    }
+
+    .culture-img img {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .culture-card:hover .culture-img img {
+      transform: scale(1.05);
     }
 
     .culture-content {
@@ -618,6 +649,12 @@
       color: rgba(244, 225, 193, 0.5);
     }
 
+    .photo-credits {
+      margin-top: 0.5rem;
+      font-size: 0.78rem;
+      color: rgba(244, 225, 193, 0.45);
+    }
+
     /* Scroll Animation Utility */
     .reveal {
       opacity: 0;
@@ -709,6 +746,11 @@
   <main>
     <!-- Hero Section -->
     <section id="hero" class="section-padding">
+      <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/Carved_steps_along_Ancient_Roman_Road.jpg/1280px-Carved_steps_along_Ancient_Roman_Road.jpg?utm_source=commons.wikimedia.org&amp;utm_campaign=imageinfo&amp;utm_content=thumbnail" 
+           alt="Carved steps along Ancient Roman Road" 
+           class="hero-photo"
+           decoding="async">
+      <div class="hero-overlay"></div>
       <div class="hero-bg-art"></div>
       <div class="hero-sun"></div>
       
@@ -864,41 +906,39 @@
       <div class="container">
         <div class="text-center reveal" style="max-width: 700px; margin: 0 auto 2.5rem;">
           <h2>Heritage & Arts</h2>
-          <p>A vibrant tapestry where ancient traditions intertw with contemporary creative expressions.</p>
+          <p>A vibrant tapestry where ancient traditions intertwine with contemporary creative expressions.</p>
         </div>
 
         <div class="culture-tabs reveal">
           <button class="culture-tab-btn active" data-tab="sites">Heritage Sites</button>
-          <button class="culture-tab-btn" data-tab="arts">Literature & Music</button>
+          <button class="culture-tab-btn" data-tab="arts">Living Traditions & Arts</button>
         </div>
 
         <div id="sites" class="culture-panel active">
           
           <div class="culture-card reveal">
             <div class="culture-img">
-              <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
-                <rect width="400" height="200" fill="#E2CDA7"/>
-                <path d="M0 150 L100 100 L200 130 L300 80 L400 120 L400 200 L0 200 Z" fill="#E67E22" opacity="0.7"/>
-                <rect x="180" y="70" width="40" height="60" fill="#1A3D7C" opacity="0.8"/>
-              </svg>
+              <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/Acre_City_Walls_%28S%29_and_Arches_on_Magistrate%27s_Ct._Acre%2C_Old_City_%28SRF_5%3B_284%29.jpg/1280px-Acre_City_Walls_%28S%29_and_Arches_on_Magistrate%27s_Ct._Acre%2C_Old_City_%28SRF_5%3B_284%29.jpg?utm_source=commons.wikimedia.org&amp;utm_campaign=imageinfo&amp;utm_content=thumbnail" 
+                   alt="Acre City Walls and Arches on Magistrate's Court, Old City" 
+                   loading="lazy" 
+                   decoding="async">
             </div>
             <div class="culture-content">
-              <h3>Masada Fortress</h3>
-              <p>An ancient fortification atop an isolated rock plateau, symbolizing determination and freedom overlooking the Judean Desert.</p>
+              <h3>Acre's Historic Fortifications</h3>
+              <p>Stretching back through Crusader and Ottoman epochs, the fortified city walls of Acre stand as a testament to maritime trade, ancient defenses, and enduring architectural legacy.</p>
             </div>
           </div>
 
           <div class="culture-card reveal">
             <div class="culture-img">
-              <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
-                <rect width="400" height="200" fill="#1A3D7C"/>
-                <circle cx="200" cy="180" r="120" fill="#F4E1C1" opacity="0.5"/>
-                <path d="M50 200 L350 200 L200 80 Z" fill="#C0392B" opacity="0.6"/>
-              </svg>
+              <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/9/91/Jess_and_Nikki_dancing_in_the_ancient_ruins_%282852670357%29.jpg/1280px-Jess_and_Nikki_dancing_in_the_ancient_ruins_%282852670357%29.jpg?utm_source=commons.wikimedia.org&amp;utm_campaign=imageinfo&amp;utm_content=thumbnail" 
+                   alt="Jess and Nikki dancing in the ancient ruins" 
+                   loading="lazy" 
+                   decoding="async">
             </div>
             <div class="culture-content">
-              <h3>Jerusalem's Old City</h3>
-              <p>A sacred center for three world religions, housing historic landmarks like the Western Wall, the Holy Sepulchre, and the Dome of the Rock.</p>
+              <h3>Ancient Ruins & Archaeology</h3>
+              <p>Archaeological sites across the land breathe life into antiquity, uniting millennia of classical columns, stone roads, and preserved monuments with present-day curiosity and cultural life.</p>
             </div>
           </div>
 
@@ -908,29 +948,27 @@
           
           <div class="culture-card">
             <div class="culture-img">
-              <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
-                <rect width="400" height="200" fill="#FAF2E6"/>
-                <circle cx="100" cy="100" r="60" fill="#E67E22" opacity="0.3"/>
-                <path d="M150 150 C 200 80, 300 180, 350 100" stroke="#1A3D7C" stroke-width="4" fill="none"/>
-              </svg>
+              <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/JerusalemHats072.JPG/1280px-JerusalemHats072.JPG?utm_source=commons.wikimedia.org&amp;utm_campaign=imageinfo&amp;utm_content=thumbnail" 
+                   alt="Jerusalem hats and cultural bazaar life" 
+                   loading="lazy" 
+                   decoding="async">
             </div>
             <div class="culture-content">
-              <h3>Revival of the Hebrew Language</h3>
-              <p>The unprecedented historical feat led by Eliezer Ben-Yehuda, transforming an ancient liturgical tongue into a spoken modern national language.</p>
+              <h3>Urban Mosaic & Jerusalem Life</h3>
+              <p>Jerusalem's alleys and marketplaces bring together multifaceted communities, traditional craftsmanship, and vibrant expressions that define the living heartbeat of the land.</p>
             </div>
           </div>
 
           <div class="culture-card">
             <div class="culture-img">
-              <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
-                <rect width="400" height="200" fill="#0D0D0D"/>
-                <circle cx="250" cy="80" r="40" fill="#C0392B" opacity="0.8"/>
-                <rect x="50" y="120" width="200" height="10" fill="#F4E1C1"/>
-              </svg>
+              <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Etrog_%28citron%29_growers_anticipate_a_record_season_with_an_increase_of_sales_both_in_the_local_and_export_markets_%28FL45812357%29.jpg/1280px-Etrog_%28citron%29_growers_anticipate_a_record_season_with_an_increase_of_sales_both_in_the_local_and_export_markets_%28FL45812357%29.jpg?utm_source=commons.wikimedia.org&amp;utm_campaign=imageinfo&amp;utm_content=thumbnail" 
+                   alt="Etrog citron growers harvesting fruit for seasonal traditions" 
+                   loading="lazy" 
+                   decoding="async">
             </div>
             <div class="culture-content">
-              <h3>Israeli Cinema & Literature</h3>
-              <p>Renowned globally, Israeli authors and filmmakers delve into narrative complexities, identity, cultural fusion, and modern existential themes.</p>
+              <h3>Agrarian Traditions & Harvest</h3>
+              <p>Agricultural roots tied deeply to seasonal festivals and ancient biblical cultivars, highlighting a timeless union between the soil, traditional rituals, and regional exports.</p>
             </div>
           </div>
 
@@ -1027,6 +1065,7 @@
 
       <div class="copyright">
         <p>&copy; 2025 Israel History Educational Portal. Designed for historical exploration.</p>
+        <p class="photo-credits">Photos: Wikimedia Commons</p>
       </div>
     </div>
   </footer>
