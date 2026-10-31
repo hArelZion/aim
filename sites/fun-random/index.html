@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A neon-kissed, kinetic playground where chaos meets design. Experience random quotes, color shifts, and whimsy!">
+  <meta name="atlas-build" content="2rc63aurxvwstybs4xs4">
+  <title>Fun Random — The Kinetic Playground</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Karla:wght@400;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #1a1a2e;
+      --bg-card: #16213e;
+      --accent: #e94560;
+      --secondary: #0f3460;
+      --text-light: #f5f5f5;
+      --font-display: 'Bungee', cursive, sans-serif;
+      --font-body: 'Karla', sans-serif;
+      --neon-glow: 0 0 15px rgba(233, 69, 96, 0.6);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Typography */
+    h1, h2, h3 {
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Layout & Utilities */
+    .container {
+      width: 90%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 4rem 0;
+    }
+
+    .btn {
+      display: inline-block;
+      font-family: var(--font-display);
+      background: var(--accent);
+      color: var(--text-light);
+      padding: 1rem 2rem;
+      border: 3px solid var(--text-light);
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      box-shadow: 4px 4px 0px var(--text-light);
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover, .btn:focus-visible {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px var(--text-light), var(--neon-glow);
+      outline: none;
+    }
+
+    .btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px var(--text-light);
+    }
+
+    /* Scroll Animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Header / Nav */
+    header {
+      padding: 1.5rem 0;
+      position: sticky;
+      top: 0;
+      background: rgba(26, 26, 46, 0.9);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      border-bottom: 2px solid var(--secondary);
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 90%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--accent);
+      text-decoration: none;
+      text-shadow: 2px 2px var(--secondary);
+    }
+
+    /* Hero Section */
+    #hero {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      background: radial-gradient(circle at center, var(--bg-card) 0%, var(--bg-dark) 70%);
+      overflow: hidden;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 8vw, 5.5rem);
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+      text-shadow: 4px 4px 0px var(--accent);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      font-weight: 700;
+    }
+
+    /* Floating shapes background */
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--accent), var(--secondary));
+      opacity: 0.3;
+      animation: float 6s infinite ease-in-out alternate;
+    }
+    .shape-1 { width: 80px; height: 80px; top: 15%; left: 10%; animation-delay: 0s; }
+    .shape-2 { width: 120px; height: 120px; bottom: 15%; right: 10%; animation-delay: 2s; }
+    .shape-3 { width: 50px; height: 50px; top: 60%; left: 15%; animation-delay: 4s; }
+
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-30px) rotate(180deg); }
+    }
+
+    /* Gallery Section */
+    #gallery {
+      background: var(--secondary);
+      border-top: 4px solid var(--accent);
+      border-bottom: 4px solid var(--accent);
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--text-light);
+    }
+
+    .carousel-wrapper {
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 20px;
+      border: 4px solid var(--text-light);
+      background: var(--bg-dark);
+      box-shadow: 8px 8px 0px var(--accent);
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .carousel-card {
+      min-width: 100%;
+      padding: 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .card-svg {
+      width: 150px;
+      height: 150px;
+      margin-bottom: 1.5rem;
+    }
+
+    .carousel-nav {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .icon-btn {
+      background: var(--bg-card);
+      border: 2px solid var(--text-light);
+      color: var(--text-light);
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: background 0.2s;
+    }
+
+    .icon-btn:hover, .icon-btn:focus-visible {
+      background: var(--accent);
+      outline: none;
+    }
+
+    /* Generator Section */
+    #generator {
+      text-align: center;
+    }
+
+    .generator-box {
+      background: var(--bg-card);
+      padding: 3rem 2rem;
+      border-radius: 20px;
+      border: 3px solid var(--accent);
+      max-width: 700px;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: background 0.5s ease;
+    }
+
+    .output-text {
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      font-weight: 800;
+      margin-bottom: 2rem;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* About Section */
+    #about {
+      background: var(--bg-card);
+      position: relative;
+    }
+
+    .hand-drawn-box {
+      border: 3px solid var(--text-light);
+      padding: 2.5rem;
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; /* Quirky border style */
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--bg-dark);
+      box-shadow: 6px 6px 0px var(--accent);
+    }
+
+    .hand-drawn-box p {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-dark);
+      padding: 3rem 0 1.5rem;
+      border-top: 2px solid var(--secondary);
+      text-align: center;
+    }
+
+    .socials {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .socials a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+
+    .socials a:hover {
+      color: var(--accent);
+    }
+
+    .easter-egg {
+      display: inline-block;
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: rgba(245, 245, 245, 0.4);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .easter-egg:hover {
+      color: var(--accent);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .shape, .reveal, .carousel-track {
+        animation: none !important;
+        transition: none !important;
+      }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header>
+    <div class="nav-container">
+      <a href="#" class="logo">FUN/RNDM</a>
+      <a href="#generator" class="btn" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Play Now</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero">
+    <div class="shape shape-1" aria-hidden="true"></div>
+    <div class="shape shape-2" aria-hidden="true"></div>
+    <div class="shape shape-3" aria-hidden="true"></div>
+    
+    <div class="container reveal">
+      <h1 class="hero-title">Embrace The Pure Chaos</h1>
+      <p class="hero-subtitle">A neon-fueled playground designed to break predictability. Click, spin, and discover pure digital randomness.</p>
+      <a href="#generator" class="btn">Unleash Randomness</a>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section id="gallery">
+    <div class="container reveal">
+      <h2 class="section-title">Whimsical Visuals</h2>
+      <div class="carousel-wrapper">
+        <div class="carousel-track" id="carouselTrack">
+          
+          <div class="carousel-card">
+            <svg class="card-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="#e94560" />
+              <path d="M 30 40 Q 50 10 70 40" stroke="#f5f5f5" stroke-width="5" fill="none"/>
+              <circle cx="35" cy="55" r="5" fill="#f5f5f5" />
+              <circle cx="65" cy="55" r="5" fill="#f5f5f5" />
+            </svg>
+            <h3>Cosmic Giggle</h3>
+            <p>A floating entity that feeds strictly on cosmic absurdities.</p>
+          </div>
+
+          <div class="carousel-card">
+            <svg class="card-svg" viewBox="0 0 100 100">
+              <rect x="20" y="20" width="60" height="60" rx="10" fill="#0f3460" stroke="#e94560" stroke-width="4"/>
+              <polygon points="50,25 75,75 25,75" fill="#f5f5f5"/>
+            </svg>
+            <h3>Neon Prism</h3>
+            <p>Reflecting pure unpredictability across 4 dimensions.</p>
+          </div>
+
+          <div class="carousel-card">
+            <svg class="card-svg" viewBox="0 0 100 100">
+              <path d="M10 80 Q 52.5 10 95 80 Z" fill="#e94560" />
+              <circle cx="52.5" cy="50" r="12" fill="#1a1a2e"/>
+            </svg>
+            <h3>Cyber Cone</h3>
+            <p>Pointy, loud, and entirely without any practical purpose.</p>
+          </div>
+
+        </div>
+      </div>
+      
+      <div class="carousel-nav">
+        <button class="icon-btn" id="prevBtn" aria-label="Previous Slide">←</button>
+        <button class="icon-btn" id="nextBtn" aria-label="Next Slide">→</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Generator Section -->
+  <section id="generator">
+    <div class="container reveal">
+      <h2 class="section-title">Idea Machine</h2>
+      <div class="generator-box" id="genBox">
+        <div class="output-text" id="outputText">Press the button below to generate a spark of chaos!</div>
+        <button class="btn" id="generateBtn">Surprise Me!</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about">
+    <div class="container reveal">
+      <h2 class="section-title">Why So Random?</h2>
+      <div class="hand-drawn-box">
+        <p>We built this tiny corner of the web because the modern internet feels a bit too... predictable. Algorithmic feeds try to guess your every move.</p>
+        <p>Here, chaos rules! No machine learning, no tracking, just beautiful CSS, random number generators, and dynamic visual parties. Turn off your logic and enjoy the randomness.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="socials">
+        <a href="#">Twitter</a>
+        <a href="#">GitHub</a>
+        <a href="#">Codepen</a>
+      </div>
+      <p>&copy; 2023 Fun Random. Built strictly for smiles and vibrant pixels.</p>
+      <div class="easter-egg" id="easterEgg" role="button" tabindex="0" aria-label="Secret Easter Egg">
+        psst... click here for a tiny secret 🤫
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 1. Scroll Reveal Logic
+    const observerOptions = { threshold: 0.15 };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // 2. Carousel Logic
+    const track = document.getElementById('carouselTrack');
+    const slides = document.querySelectorAll('.carousel-card');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let currentIndex = 0;
+
+    function updateCarousel() {
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % slides.length;
+      updateCarousel();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+      updateCarousel();
+    });
+
+    // 3. Random Content Generator Logic
+    const quotes = [
+      "“Do not push the red button. Unless it glows.”",
+      "“Pineapples belong anywhere they want to be.”",
+      "“Gravity is just a strong suggestion.”",
+      "“Error 404: Seriousness not found.”",
+      "“Dance like nobody is watching your code.”"
+    ];
+
+    const colors = ['#16213e', '#0f3460', '#301b3f', '#1b2021', '#2c003e'];
+
+    const genBtn = document.getElementById('generateBtn');
+    const outputText = document.getElementById('outputText');
+    const genBox = document.getElementById('genBox');
+
+    genBtn.addEventListener('click', () => {
+      // Pick random quote
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      // Pick random color for card background
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      
+      outputText.textContent = randomQuote;
+      genBox.style.backgroundColor = randomColor;
+    });
+
+    // 4. Easter Egg Logic
+    const easterEgg = document.getElementById('easterEgg');
+    easterEgg.addEventListener('click', () => {
+      document.body.style.transform = 'rotate(180deg)';
+      document.body.style.transition = 'transform 1s ease';
+      setTimeout(() => {
+        alert("🙃 You flipped the world! Reload or click again to fix it.");
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
