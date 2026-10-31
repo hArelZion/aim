@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="apple-mobile-web-app-title" content="Spoke  Chain">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spoke & Chain | Neighborhood Bike Repair & Custom Builds</title>
+  <meta name="description" content="Urban bike repair shop offering expert tune-ups, custom builds, and rentals. Retro-industrial grit meets modern precision cycling culture.">
+  <meta name="atlas-build" content="cgzv7zorb9ckuqcgea7g">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Rubik:ital,wght@0,500;0,700;0,900;1,900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-navy: #2C3E50;
+      --bg-darker: #1A252F;
+      --teal: #1ABC9C;
+      --light-gray: #ECF0F1;
+      --red: #E74C3C;
+      --yellow: #F1C40F;
+      --text-main: #ECF0F1;
+      --text-muted: #BDC3C7;
+      --font-display: 'Rubik', sans-serif;
+      --font-body: 'Assistant', sans-serif;
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background-color: var(--bg-navy);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: radial-gradient(rgba(26, 188, 156, 0.05) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    /* Typography */
+    h1, h2, h3, .font-display {
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: clamp(1rem, 1.1vw, 1.15rem);
+    }
+
+    a {
+      color: var(--teal);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    a:hover, a:focus-visible {
+      color: var(--yellow);
+    }
+
+    /* Accessibility Focus */
+    :focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 4px;
+    }
+
+    /* Header & Nav */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(26, 37, 47, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 3px solid var(--teal);
+      padding: 0.8rem 1.5rem;
+      transition: var(--transition);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-title {
+      font-size: 1.4rem;
+      color: var(--light-gray);
+      font-style: italic;
+    }
+
+    .brand-title span {
+      color: var(--red);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--light-gray);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--red);
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .mobile-menu-btn stroke {
+      transition: var(--transition);
+    }
+
+    /* Mobile Nav Drawer */
+    .nav-menu {
+      display: flex;
+      align-items: center;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0.85rem 1.8rem;
+      font-family: var(--font-display);
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      box-shadow: 4px 4px 0px var(--bg-darker);
+    }
+
+    .btn-primary {
+      background: var(--red);
+      color: var(--light-gray);
+    }
+
+    .btn-primary:hover {
+      background: #c0392b;
+      color: #fff;
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px var(--teal);
+    }
+
+    .btn-secondary {
+      background: var(--teal);
+      color: var(--bg-darker);
+    }
+
+    .btn-secondary:hover {
+      background: #16a085;
+      color: #fff;
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px var(--yellow);
+    }
+
+    /* Layout Sections */
+    section {
+      padding: 6rem 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--light-gray);
+      margin-bottom: 0.5rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 60%;
+      height: 4px;
+      background: var(--teal);
+      margin-top: 5px;
+    }
+
+    .section-subtitle {
+      margin-bottom: 3rem;
+      font-size: 1.1rem;
+    }
+
+    /* Hero Section */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 2rem;
+      padding-top: 8rem;
+      position: relative;
+    }
+
+    .hero-content {
+      z-index: 2;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(241, 196, 15, 0.15);
+      color: var(--yellow);
+      border: 1px solid var(--yellow);
+      padding: 0.4rem 0.8rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1.5rem;
+      transform: rotate(-1deg);
+    }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      line-height: 0.95;
+      margin-bottom: 1.5rem;
+      text-shadow: 3px 3px 0px var(--bg-darker);
+    }
+
+    .hero-title span {
+      color: var(--teal);
+      font-style: italic;
+    }
+
+    .hero-desc {
+      font-size: clamp(1.1rem, 2vw, 1.3rem);
+      margin-bottom: 2rem;
+      max-width: 500px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-graphic {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hero-svg {
+      width: 100%;
+      max-width: 500px;
+      height: auto;
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+    }
+
+    /* About Section */
+    #about {
+      background: var(--bg-darker);
+      border-radius: 8px;
+      border-left: 6px solid var(--red);
+      margin-top: 2rem;
+      margin-bottom: 4rem;
+      padding: 4rem 2rem;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-navy);
+      padding: 1.2rem;
+      border-bottom: 3px solid var(--yellow);
+    }
+
+    .stat-num {
+      font-size: 2.2rem;
+      font-family: var(--font-display);
+      color: var(--yellow);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    /* Services Section */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .service-card {
+      background: var(--bg-darker);
+      padding: 2rem;
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--teal);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .service-icon {
+      width: 50px;
+      height: 50px;
+      background: rgba(26, 188, 156, 0.1);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      color: var(--teal);
+    }
+
+    .service-card:nth-child(even) .service-icon {
+      background: rgba(231, 76, 60, 0.1);
+      color: var(--red);
+    }
+
+    .service-title {
+      font-size: 1.3rem;
+      margin-bottom: 0.8rem;
+      color: var(--light-gray);
+    }
+
+    .service-price {
+      margin-top: auto;
+      padding-top: 1.5rem;
+      font-family: var(--font-display);
+      color: var(--yellow);
+      font-size: 1.1rem;
+    }
+
+    /* Testimonials Section */
+    #testimonials {
+      background: rgba(26, 37, 47, 0.6);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .testimonial-container {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      min-height: 220px;
+    }
+
+    .testimonial-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      transform: translateX(20px);
+      background: var(--bg-darker);
+      padding: 2.5rem;
+      border-left: 4px solid var(--yellow);
+    }
+
+    .testimonial-slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+
+    .quote-text {
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--light-gray);
+      margin-bottom: 1.5rem;
+    }
+
+    .quote-author {
+      font-family: var(--font-display);
+      color: var(--teal);
+      text-transform: uppercase;
+      font-size: 0.95rem;
+    }
+
+    .quote-role {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .testimonial-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .dot-btn {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .dot-btn.active {
+      background: var(--teal);
+      transform: scale(1.3);
+    }
+
+    /* Contact Section */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .info-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .info-icon {
+      background: var(--bg-darker);
+      padding: 0.8rem;
+      border: 1px solid var(--teal);
+      color: var(--teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .map-mock {
+      width: 100%;
+      height: 180px;
+      background: var(--bg-darker);
+      border: 2px dashed rgba(255,255,255,0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--text-muted);
+      margin-top: 1rem;
+    }
+
+    /* Form Styles */
+    .booking-form {
+      background: var(--bg-darker);
+      padding: 2.5rem;
+      border-top: 4px solid var(--teal);
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+      color: var(--light-gray);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: var(--bg-navy);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--light-gray);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      border-color: var(--teal);
+      outline: none;
+    }
+
+    select.form-control option {
+      background: var(--bg-darker);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-darker);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 3rem 1.5rem 1.5rem;
+      text-align: center;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-bottom {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      width: 100%;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Scroll Animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Media Queries */
+    @media (max-width: 900px) {
+      #hero {
+        grid-template-columns: 1fr;
+        padding-top: 6rem;
+        text-align: center;
+      }
+
+      .hero-desc {
+        margin: 0 auto 2rem;
+      }
+
+      .hero-ctas {
+        justify-content: center;
+      }
+
+      .about-grid, .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-graphic {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .nav-menu {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background: var(--bg-darker);
+        flex-direction: column;
+        padding: 2rem;
+        gap: 1.5rem;
+        transform: translateY(-150%);
+        transition: var(--transition);
+        border-bottom: 2px solid var(--teal);
+      }
+
+      .nav-menu.active {
+        transform: translateY(0);
+      }
+
+      .nav-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="nav-container">
+      <a href="#" class="brand">
+        <img src="logo.svg" alt="" width="36" height="36">
+        <span class="brand-title font-display">Spoke <span>&amp;</span> Chain</span>
+      </a>
+      
+      <button class="mobile-menu-btn" aria-label="Toggle navigation menu" id="menuBtn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ECF0F1" stroke-width="2">
+          <path d="M3 12h18M3 6h18M3 18h18" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <nav class="nav-menu" id="navMenu">
+        <ul class="nav-links">
+          <li><a href="#about">About</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#testimonials">Reviews</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section id="hero">
+      <div class="hero-content">
+        <span class="hero-badge">Eastside’s Premier Bike Shop</span>
+        <h1 class="hero-title">Precision Repair. <br><span>Street Spirit.</span></h1>
+        <p class="hero-desc">From daily commuter tune-ups to custom track builds, we keep your wheels spinning smoothly through the urban jungle.</p>
+        <div class="hero-ctas">
+          <a href="#contact" class="btn btn-primary">Book Repair</a>
+          <a href="#services" class="btn btn-secondary">View Services</a>
+        </div>
+      </div>
+      <div class="hero-graphic">
+        <!-- SVG Custom Illustration: Bike Sprocket / Wheel Abstract -->
+        <svg class="hero-svg" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="200" cy="200" r="160" stroke="#1ABC9C" stroke-width="8" stroke-dasharray="12 12"/>
+          <circle cx="200" cy="200" r="120" stroke="#E74C3C" stroke-width="4"/>
+          <circle cx="200" cy="200" r="40" fill="#2C3E50" stroke="#F1C40F" stroke-width="6"/>
+          <!-- Spokes -->
+          <path d="M200 40 L200 160 M200 240 L200 360 M40 200 L160 200 M240 200 L360 200" stroke="#ECF0F1" stroke-width="2" opacity="0.6"/>
+          <path d="M87 87 L171 171 M229 229 L313 313 M87 313 L171 229 M229 171 L313 87" stroke="#ECF0F1" stroke-width="2" opacity="0.6"/>
+          <path d="M200 100 L215 140 L200 130 L185 140 Z" fill="#E74C3C"/>
+          <!-- Chain Links Decorative Accent -->
+          <circle cx="200" cy="200" r="10" fill="#F1C40F"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="reveal">
+      <div class="about-grid">
+        <div>
+          <h2 class="section-title">Built On Grease &amp; Grit</h2>
+          <p style="margin-top: 1rem;">Founded in 2014 by former courier Marcus Vance, Spoke &amp; Chain started in a tiny garage with two stands and a single goal: honest, fast, and uncompromising cycle repair for the neighborhood.</p>
+          <p style="margin-top: 1rem;">We don't do corporate upsells. We diagnose correctly, source quality parts, and treat every bike—whether it's a restored vintage steel frame or a modern carbon road machine—with equal reverence.</p>
+        </div>
+        <div class="about-stats">
+          <div class="stat-card">
+            <div class="stat-num">10+</div>
+            <div class="stat-label">Years Operating</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">14k</div>
+            <div class="stat-label">Bikes Serviced</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">100%</div>
+            <div class="stat-label">Local Owned</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">24h</div>
+            <div class="stat-label">Flat Turnaround</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="reveal">
+      <h2 class="section-title">Workshop Services</h2>
+      <p class="section-subtitle">Transparent pricing, expert mechanics, no hidden surprises.</p>
+
+      <div class="services-grid">
+        <!-- Service 1 -->
+        <div class="service-card">
+          <div class="service-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+          </div>
+          <h3 class="service-title">The Street Tune</h3>
+          <p>Complete brake and gear adjustment, chain lube, tire inflation, lateral wheel truing, and safety bolt check.</p>
+          <div class="service-price">$75.00</div>
+        </div>
+
+        <!-- Service 2 -->
+        <div class="service-card">
+          <div class="service-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 3v18M3 12h18"/>
+            </svg>
+          </div>
+          <h3 class="service-title">Overhaul &amp; Strip</h3>
+          <p>Full teardown to the frame. Ultrasonic cleaning of drivetrain, fresh bearings, new cables, and complete rebuild.</p>
+          <div class="service-price">$210.00</div>
+        </div>
+
+        <!-- Service 3 -->
+        <div class="service-card">
+          <div class="service-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <h3 class="service-title">Custom Builds</h3>
+          <p>Dreaming of a bespoke fixed-gear, gravel grinder, or touring rig? We source, paint, and assemble from scratch.</p>
+          <div class="service-price">Custom Quote</div>
+        </div>
+
+        <!-- Service 4 -->
+        <div class="service-card">
+          <div class="service-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="3" width="15" height="13"/>
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+              <circle cx="5.5" cy="18.5" r="2.5"/>
+              <circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+          </div>
+          <h3 class="service-title">Urban Fleet Rentals</h3>
+          <p>High-quality 8-speed city cruisers available for daily or weekly rentals. Includes helmet, lock, and lights.</p>
+          <div class="service-price">From $35 / Day</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials">
+      <div style="text-align: center; margin-bottom: 2.5rem;">
+        <h2 class="section-title">Rider Stories</h2>
+      </div>
+
+      <div class="testimonial-container">
+        <!-- Quote 1 -->
+        <div class="testimonial-slide active">
+          <div class="quote-text">“Marcus and his crew saved my commuter rig after a brutal winter crash. Fixed the bent derailleur hanger and had me rolling in under three hours.”</div>
+          <div class="quote-author">Elena Rostova</div>
+          <div class="quote-role">Daily Commuter &amp; Graphic Designer</div>
+        </div>
+
+        <!-- Quote 2 -->
+        <div class="testimonial-slide">
+          <div class="quote-text">“The absolute best shop for custom builds. They helped me source vintage Italian steel components and built my dream sunday rider. Unmatched craft.”</div>
+          <div class="quote-author">Darnell Washington</div>
+          <div class="quote-role">Fixed Gear Enthusiast</div>
+        </div>
+
+        <!-- Quote 3 -->
+        <div class="testimonial-slide">
+          <div class="quote-text">“Honest advice, fair prices, and zero elitist attitude. The only shop in the city I trust with my gravel bike before big races.”</div>
+          <div class="quote-author">Sarah Jenkins</div>
+          <div class="quote-role">Amateur Cyclocross Racer</div>
+        </div>
+      </div>
+
+      <div class="testimonial-controls">
+        <button class="dot-btn active" aria-label="Slide 1"></button>
+        <button class="dot-btn" aria-label="Slide 2"></button>
+        <button class="dot-btn" aria-label="Slide 3"></button>
+      </div>
+    </section>
+
+    <!-- Contact & Booking Section -->
+    <section id="contact" class="reveal">
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div>
+            <h2 class="section-title">Drop In</h2>
+            <p style="margin-top: 1rem;">No appointment needed for quick flat repairs or safety checks. For comprehensive overhauls, drop us a line or use the form.</p>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <div>
+              <strong style="color:var(--light-gray);">Shop Location</strong>
+              <p>412 Industrial Parkway, District 4</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div>
+              <strong style="color:var(--light-gray);">Shop Hours</strong>
+              <p>Tue – Fri: 8:00 AM – 7:00 PM<br>Sat – Sun: 9:00 AM – 5:00 PM<br>Mon: Closed for riding</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <div>
+              <strong style="color:var(--light-gray);">Direct Contact</strong>
+              <p>Phone: (555) 839-2019<br>Email: service@spokechain-example.com</p>
+            </div>
+          </div>
+
+          <!-- Stylized Map Vector Placeholder -->
+          <div class="map-mock">
+            
+</body>
+</html>
