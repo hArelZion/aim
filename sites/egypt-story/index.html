@@ -1,0 +1,1040 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="apple-mobile-web-app-title" content="Egypt Story">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Egypt Story — The Eternal Legacy of the Nile</title>
+  <meta name="description" content="Explore the epic history of Egypt: from ancient pharaohs and sacred hieroglyphs along the Nile to enduring cultural innovations and modern legacy.">
+  <meta name="atlas-build" content="zobjyeggwbsnwakzresc">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --sand-light: #F4E1C1;
+      --sand-gold: #E0C097;
+      --deep-bark: #3B2F2F;
+      --terracotta: #C1440E;
+      --egypt-gold: #D4A017;
+      --dark-obsidian: #1A1414;
+      --cream-bg: #FAF5EE;
+      
+      --font-display: 'Cinzel', serif;
+      --font-body: 'Merriweather', Georgia, serif;
+      
+      --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      --shadow-soft: 0 10px 30px rgba(59, 47, 47, 0.08);
+      --shadow-deep: 0 20px 40px rgba(26, 20, 20, 0.3);
+      --gold-gradient: linear-gradient(135deg, #D4A017 0%, #F4E1C1 50%, #C1440E 100%);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+      background-color: var(--dark-obsidian);
+      color: var(--deep-bark);
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--cream-bg);
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Focus styling */
+    :focus-visible {
+      outline: 3px solid var(--terracotta);
+      outline-offset: 4px;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4, .font-display {
+      font-family: var(--font-display);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      color: var(--deep-bark);
+      margin-bottom: 1.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    h2::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: var(--gold-gradient);
+      margin: 1rem auto 0;
+      border-radius: 2px;
+    }
+
+    p {
+      margin-bottom: 1.25rem;
+      font-size: clamp(1rem, 1.1vw, 1.15rem);
+      color: #4A3E3E;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Layout Components */
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    section {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    /* Header & Navigation */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(26, 20, 20, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(212, 160, 23, 0.2);
+      transition: var(--transition-smooth);
+      padding: 1rem 0;
+    }
+
+    .header-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--sand-light);
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--sand-light);
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--egypt-gold);
+      transition: var(--transition-smooth);
+    }
+
+    .nav-links a:hover {
+      color: var(--egypt-gold);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--egypt-gold);
+      color: var(--sand-light);
+      padding: 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: #000;
+      color: var(--sand-light);
+      padding-top: 5rem;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.45;
+      filter: contrast(1.1) brightness(0.9);
+      transform: scale(1.05);
+      animation: heroZoom 20s infinite alternate linear;
+    }
+
+    @keyframes heroZoom {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.08); }
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(26,20,20,0.3) 0%, rgba(26,20,20,0.85) 100%),
+                  linear-gradient(to bottom, transparent 60%, var(--dark-obsidian) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 900px;
+      padding: 2rem;
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-display);
+      color: var(--egypt-gold);
+      font-size: clamp(0.9rem, 1.5vw, 1.25rem);
+      letter-spacing: 0.3em;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      color: var(--sand-light);
+      margin-bottom: 1.5rem;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .hero-description {
+      font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+      color: var(--sand-gold);
+      max-width: 700px;
+      margin: 0 auto 2.5rem;
+      font-style: italic;
+      line-height: 1.8;
+    }
+
+    .btn-gold {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      background: var(--gold-gradient);
+      color: var(--dark-obsidian);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.15em;
+      border-radius: 2px;
+      box-shadow: 0 4px 15px rgba(212, 160, 23, 0.4);
+      transition: var(--transition-smooth);
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(212, 160, 23, 0.6);
+      background: linear-gradient(135deg, #E0C097 0%, #D4A017 100%);
+    }
+
+    /* Section Introductions */
+    .section-desc {
+      text-align: center;
+      max-width: 700px;
+      margin: -0.5rem auto 3.5rem;
+      font-size: 1.1rem;
+      color: var(--deep-bark);
+      opacity: 0.9;
+    }
+
+    /* Timeline Section */
+    .timeline-section {
+      background-color: var(--cream-bg);
+      position: relative;
+    }
+
+    .timeline {
+      position: relative;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: linear-gradient(to bottom, transparent, var(--egypt-gold) 15%, var(--egypt-gold) 85%, transparent);
+      transform: translateX(-50%);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 4rem;
+      width: 50%;
+      padding: 0 2.5rem;
+    }
+
+    .timeline-item:nth-child(odd) {
+      left: 0;
+      text-align: right;
+    }
+
+    .timeline-item:nth-child(even) {
+      left: 50%;
+      text-align: left;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      background: var(--dark-obsidian);
+      border: 3px solid var(--egypt-gold);
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-dot {
+      right: -10px;
+    }
+
+    .timeline-item:nth-child(even) .timeline-dot {
+      left: -10px;
+    }
+
+    .timeline-card {
+      background: #FFF;
+      padding: 2rem;
+      border-radius: 6px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(224, 192, 151, 0.4);
+      transition: var(--transition-smooth);
+    }
+
+    .timeline-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(59, 47, 47, 0.12);
+      border-color: var(--egypt-gold);
+    }
+
+    .timeline-date {
+      font-family: var(--font-display);
+      color: var(--terracotta);
+      font-weight: 700;
+      font-size: 1.1rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-title {
+      font-size: 1.4rem;
+      color: var(--deep-bark);
+      margin-bottom: 0.75rem;
+    }
+
+    /* Pharaohs Section */
+    .pharaohs-section {
+      background: var(--dark-obsidian);
+      color: var(--sand-light);
+      overflow: hidden;
+    }
+
+    .pharaohs-section h2 {
+      color: var(--sand-light);
+    }
+
+    .pharaohs-section .section-desc {
+      color: var(--sand-gold);
+    }
+
+    .pharaohs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .pharaoh-card {
+      background: rgba(59, 47, 47, 0.4);
+      border: 1px solid rgba(212, 160, 23, 0.25);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pharaoh-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--egypt-gold);
+      box-shadow: var(--shadow-deep);
+    }
+
+    .pharaoh-img-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+    }
+
+    .pharaoh-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .pharaoh-card:hover .pharaoh-img-wrapper img {
+      transform: scale(1.08);
+    }
+
+    .pharaoh-info {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .pharaoh-reign {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      color: var(--egypt-gold);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .pharaoh-name {
+      font-size: 1.5rem;
+      color: var(--sand-light);
+      margin-bottom: 1rem;
+    }
+
+    .pharaoh-desc {
+      color: var(--sand-gold);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .pharaoh-achievements {
+      list-style: none;
+      margin-top: auto;
+      border-top: 1px solid rgba(224, 192, 151, 0.15);
+      padding-top: 1rem;
+    }
+
+    .pharaoh-achievements li {
+      font-size: 0.85rem;
+      color: var(--sand-light);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .pharaoh-achievements li::before {
+      content: '✦';
+      color: var(--egypt-gold);
+    }
+
+    /* Culture Section */
+    .culture-section {
+      background: var(--cream-bg);
+    }
+
+    .culture-showcase {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem;
+      align-items: center;
+      margin-bottom: 5rem;
+    }
+
+    .culture-showcase:nth-child(even) {
+      direction: rtl;
+    }
+
+    .culture-showcase:nth-child(even) .culture-content {
+      direction: ltr;
+    }
+
+    .culture-img-box {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .culture-img-box img {
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      display: block;
+    }
+
+    .culture-content {
+      padding: 1rem 0;
+    }
+
+    .culture-tag {
+      font-family: var(--font-display);
+      color: var(--terracotta);
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .culture-title {
+      font-size: 2rem;
+      color: var(--deep-bark);
+      margin-bottom: 1.25rem;
+    }
+
+    /* Legacy Section */
+    .legacy-section {
+      background: linear-gradient(to bottom, #2D2323, var(--dark-obsidian));
+      color: var(--sand-light);
+      position: relative;
+    }
+
+    .legacy-section h2 {
+      color: var(--sand-light);
+    }
+
+    .legacy-section .section-desc {
+      color: var(--sand-gold);
+    }
+
+    .legacy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .legacy-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(224, 192, 151, 0.15);
+      padding: 2.5rem 2rem;
+      border-radius: 8px;
+      text-align: center;
+      transition: var(--transition-smooth);
+    }
+
+    .legacy-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateY(-6px);
+      border-color: var(--egypt-gold);
+    }
+
+    .legacy-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(212, 160, 23, 0.15);
+      color: var(--egypt-gold);
+    }
+
+    .legacy-card-title {
+      font-size: 1.3rem;
+      color: var(--sand-light);
+      margin-bottom: 1rem;
+    }
+
+    .legacy-card-text {
+      font-size: 0.95rem;
+      color: var(--sand-gold);
+      line-height: 1.7;
+      margin-bottom: 0;
+    }
+
+    /* Footer */
+    .footer {
+      background: #110D0D;
+      color: var(--sand-gold);
+      padding: 4rem 0 2rem;
+      border-top: 1px solid rgba(212, 160, 23, 0.2);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--sand-light);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--sand-gold);
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      transition: var(--transition-smooth);
+    }
+
+    .footer-links a:hover {
+      color: var(--egypt-gold);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+      color: rgba(224, 192, 151, 0.6);
+    }
+
+    .footer-attribution {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    /* Scroll Reveal Animation Classes */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 900px) {
+      .timeline::before {
+        left: 20px;
+      }
+
+      .timeline-item {
+        width: 100%;
+        padding-left: 3.5rem;
+        padding-right: 0;
+        text-align: left !important;
+        margin-bottom: 2.5rem;
+      }
+
+      .timeline-item:nth-child(even) {
+        left: 0;
+      }
+
+      .timeline-dot, .timeline-item:nth-child(odd) .timeline-dot, .timeline-item:nth-child(even) .timeline-dot {
+        left: 10px;
+      }
+
+      .culture-showcase, .culture-showcase:nth-child(even) {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        direction: ltr;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav-links {
+        position: fixed;
+        top: 68px;
+        left: 0;
+        width: 100%;
+        background: var(--dark-obsidian);
+        flex-direction: column;
+        padding: 2rem;
+        gap: 1.5rem;
+        transform: translateY(-150%);
+        transition: transform 0.4s ease;
+        border-bottom: 1px solid var(--egypt-gold);
+      }
+
+      .nav-links.active {
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-nav">
+      <a href="#hero" class="brand">
+        <img src="logo.svg" alt="" width="36" height="36">
+        <span>Egypt Story</span>
+      </a>
+      <button class="menu-toggle" aria-label="Toggle navigation menu" id="menuToggle">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#timeline">Chronology</a></li>
+          <li><a href="#pharaohs">Pharaohs</a></li>
+          <li><a href="#culture">Culture & Life</a></li>
+          <li><a href="#legacy">World Legacy</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+      <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Great_Sphinx_of_Giza_%28%D8%A3%D8%A8%D9%88_%D8%A7%D9%84%D9%87%D9%88%D9%84%29.jpg/1280px-Great_Sphinx_of_Giza_%28%D8%A3%D8%A8%D9%88_%D8%A7%D9%84%D9%87%D9%88%D9%84%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="Great Sphinx of Giza framed by golden desert sun" class="hero-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-subtitle">Five Millennia of Wonder</span>
+        <h1 class="hero-title">The Eternal Story of Egypt</h1>
+        <p class="hero-description">Step into a living museum of ancient splendor. Discover the civilization that shaped human history along the fertile banks of the timeless Nile.</p>
+        <a href="#timeline" class="btn-gold">Begin the Journey</a>
+      </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section id="timeline" class="timeline-section">
+      <div class="container">
+        <h2 class="reveal">Chronicles of Time</h2>
+        <p class="section-desc reveal">From early farming communities to a golden empire and modern metropolis, trace Egypt's momentous epochs.</p>
+        
+        <div class="timeline">
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-date">c. 6000 – 3100 BCE</span>
+              <h3 class="timeline-title">Predynastic Era</h3>
+              <p>Early settlements blossom along the Nile Valley. Agriculture thrives, leading to the unification of Upper and Lower Egypt under King Narmer.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-date">c. 2686 – 2181 BCE</span>
+              <h3 class="timeline-title">The Old Kingdom</h3>
+              <p>The legendary "Age of the Pyramids." Architectural marvels like the Great Pyramids of Giza and the Sphinx are constructed with immense precision.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-date">c. 1550 – 1069 BCE</span>
+              <h3 class="timeline-title">The New Kingdom</h3>
+              <p>Egypt reaches the pinnacle of its imperial power and wealth under famous rulers such as Hatshepsut, Akhenaten, Tutankhamun, and Ramesses II.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-date">332 – 30 BCE</span>
+              <h3 class="timeline-title">Greco-Roman Period</h3>
+              <p>Alexander the Great conquers Egypt, founding Alexandria. The Ptolemaic Dynasty ends with the tragic, celebrated reign of Cleopatra VII.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-date">641 CE – Present</span>
+              <h3 class="timeline-title">Islamic & Modern Egypt</h3>
+              <p>Cairo becomes a jewel of the Islamic Golden Age. Today, Egypt stands as a vibrant bridge connecting ancient heritage with modern innovation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pharaohs Section -->
+    <section id="pharaohs" class="pharaohs-section">
+      <div class="container">
+        <h2 class="reveal">Rulers of the Two Lands</h2>
+        <p class="section-desc reveal">Meet the divine sovereigns who commanded armies, erected grand monuments, and guided Egypt across millennia.</p>
+
+        <div class="pharaohs-grid">
+          <!-- Card 1 -->
+          <article class="pharaoh-card reveal">
+            <div class="pharaoh-img-wrapper">
+              <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/The_Great_Sphinx%2C_Pyramids_of_Gizeh-1839%29_by_David_Roberts%2C_RA.jpg/1280px-The_Great_Sphinx%2C_Pyramids_of_Gizeh-1839%29_by_David_Roberts%2C_RA.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="Historic 1839 David Roberts painting of the Sphinx and Pyramids" loading="lazy" decoding="async">
+            </div>
+            <div class="pharaoh-info">
+              <span class="pharaoh-reign">Old Kingdom • 4th Dynasty</span>
+              <h3 class="pharaoh-name">Khafre & Khufu</h3>
+              <p class="pharaoh-desc">Master builders of the Giza Plateau whose monumental tombs continue to awe humanity and defy the passage of time.</p>
+              <ul class="pharaoh-achievements">
+                <li>Built the Great Pyramid & Sphinx</li>
+                <li>Pioneered advance engineering</li>
+                <li>Established centralized state rule</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="pharaoh-card reveal">
+            <div class="pharaoh-img-wrapper">
+              <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Temple_of_Seti_I%2C_Hieroglyphs_art_of_Ancient_Egypt%2C_Abydos%2C_Egypt.jpg/1280px-Temple_of_Seti_I%2C_Hieroglyphs_art_of_Ancient_Egypt%2C_Abydos%2C_Egypt.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="Detail of intricate carved hieroglyphs in the Temple of Seti I" loading="lazy" decoding="async">
+            </div>
+            <div class="pharaoh-info">
+              <span class="pharaoh-reign">New Kingdom • 19th Dynasty</span>
+              <h3 class="pharaoh-name">Seti I & Ramesses II</h3>
+              <p class="pharaoh-desc">The great military strategists and master patrons who commissioned classical relief art and colossal temples across Abydos and Luxor.</p>
+              <ul class="pharaoh-achievements">
+                <li>Signed first recorded peace treaty</li>
+                <li>Built the Hypostyle Hall at Karnak</li>
+                <li>Expanded Egyptian empire frontiers</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="pharaoh-card reveal">
+            <div class="pharaoh-img-wrapper">
+              <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/Sarcophagus_of_Ankhnesneferibre.jpg/1280px-Sarcophagus_of_Ankhnesneferibre.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="Intricately carved dark stone Sarcophagus of Ankhnesneferibre" loading="lazy" decoding="async">
+            </div>
+            <div class="pharaoh-info">
+              <span class="pharaoh-reign">Late Period • 26th Dynasty</span>
+              <h3 class="pharaoh-name">Ankhnesneferibre</h3>
+              <p class="pharaoh-desc">High Priestess of Amun and Divine Adoratrice who held immense spiritual and political authority in Thebes during turbulent political shifts.</p>
+              <ul class="pharaoh-achievements">
+                <li>Supreme religious authority</li>
+                <li>Protected divine traditions</li>
+                <li>Preserved royal artistic legacies</li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Culture Section -->
+    <section id="culture" class="culture-section">
+      <div class="container">
+        <h2 class="reveal">Art, Life & Sacred River</h2>
+        <p class="section-desc reveal">Daily existence in ancient Egypt was driven by spiritual devotion, river cycles, and extraordinary artistic craft.</p>
+
+        <!-- Showcase 1 -->
+        <div class="culture-showcase reveal">
+          <div class="culture-img-box">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/28/Nile_River_Sunrise_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled" alt="Serene sunrise over the Nile River with traditional boats" loading="lazy" decoding="async">
+          </div>
+          <div class="culture-content">
+            <span class="culture-tag">Lifeblood of the Realm</span>
+            <h3 class="culture-title">The Sacred Nile</h3>
+            <p>Every summer, the Nile River flooded its banks, depositing rich black silt across the valley. Known as <em>Kemet</em> ("Black Land"), this fertile gift sustained agriculture, trade routes, and cosmic belief systems centered on renewal and rebirth.</p>
+          </div>
+        </div>
+
+        <!-- Showcase 2 -->
+        <div class="culture-showcase reveal">
+          <div class="culture-img-box">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Nile_River_Sunrise_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled" alt="Golden horizon during sunrise over calm waters of the Nile" loading="lazy" decoding="async">
+          </div>
+          <div class="culture-content">
+            <span class="culture-tag">Sacred Geometry & Spirit</span>
+            <h3 class="culture-title">Cosmology & Rituals</h3>
+            <p>Egyptian religion harmonized human life with natural cycles. Temple rituals aimed to maintain <em>Ma'at</em>—the cosmic order of truth, balance, and justice. Solar deities like Ra ruled the skies while Osiris promised eternal life after death.</p>
+          </div>
+        </div>
+
+        <!-- Showcase 3 -->
+        <div class="culture-showcase reveal">
+          <div class="culture-img-box">
+            <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Spices_on_Spice_Bazaar_in_Istanbul_02.jpg/1280px-Spices_on_Spice_Bazaar_in_Istanbul_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="Mounds of colorful fragrant spices on display in a market" loading="lazy" decoding="async">
+          </div>
+          <div class="culture-content">
+            <span class="culture-tag">Bazaars & Commerce</span>
+            <h3 class="culture-title">Trade, Aromas & Everyday Life</h3>
+            <p>Beyond massive stone tombs, Egyptians cherished life's sensory delights. Vibrant markets overflowed with frankincense, myrrh, lapis lazuli, fine linens, and aromatic spices traded along caravan routes reaching deep into Africa and Asia.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Legacy Section -->
+    <section id="legacy" class="legacy-section">
+      <div class="container">
+        <h2 class="reveal">Gift to the World</h2>
+        <p class="section-desc reveal">How ancient Egyptian innovations continue to illuminate and inspire modern civilization.</p>
+
+        <div class="legacy-grid">
+          <div class="legacy-card reveal">
+            <div class="legacy-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <h3 class="legacy-card-title">Written Word & Papyrus</h3>
+            <p class="legacy-card-text">Pioneered early papyrus paper and hieroglyphic scripts, creating the foundational models for record-keeping, literature, and formal administration.</p>
+          </div>
+
+          <div class="legacy-card reveal">
+            <div class="legacy-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <h3 class="legacy-card-title">Architecture & Engineering</h3>
+            <p class="legacy-card-text">Mastered post-and-lintel stone construction, precise geometric alignment, and massive quarrying techniques copied across classical Antiquity.</p>
+          </div>
+
+          <div class="legacy-card reveal">
+            <div class="legacy-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <h3 class="legacy-card-title">Astronomy & Medicine</h3>
+            <p class="legacy-card-text">Devised the 365-day solar calendar, cataloged constellations, and created pioneering surgical techniques and pharmacological remedies.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img src="logo.svg" alt="" width="36" height="36">
+          <span>Egypt Story</span>
+        </div>
+        <ul class="footer-links">
+          <li><a href="#hero">Top</a></li>
+          <li><a href="#timeline">Chronology</a></li>
+          <li><a href="#pharaohs">Pharaohs</a></li>
+          <li><a href="#culture">Culture</a></li>
+          <li><a href="#legacy">Legacy</a></li>
+        </ul>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; Egypt Story. Preserving ancient heritage for future generations.</p>
+        <p class="footer-attribution">Photos: Wikimedia Commons</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactivity Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mobile Navigation Menu Toggle
+      const menuToggle = document.getElementById('menuToggle');
+      const navLinks = document.getElementById('navLinks');
+
+      if (menuToggle && navLinks) {
+        menuToggle.addEventListener('click', () => {
+          navLinks.classList.toggle('active');
+          const expanded = menuToggle.getAttribute('aria-expanded') === 'true' || false;
+          menuToggle.setAttribute('aria-expanded', !expanded);
+        });
+
+        // Close menu when clicking link
+        navLinks.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            menuToggle.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+
+      // Intersection Observer for Scroll Reveal Animations
+      const revealElements = document.querySelectorAll('.reveal');
+
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        root: null,
+        threshold: 0.15,
+        rootMargin: '0px 0px -40px 0px'
+      });
+
+      revealElements.forEach(el => revealObserver.observe(el));
+    });
+  </script>
+</body>
+</html>
