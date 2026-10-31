@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.2032";
+  const APP_VERSION = "20261031.2053";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -23,7 +23,7 @@
       wardrobe: "חדר הלבשה", wardrobeSub: "אותם סקינים כמו ב-Jarvis, ועוד אחד רק של Atlas.",
       audioMode: "מצב שמע (אם הקול נשמע חלש)", audioA: "רגיל", audioB: "רמקול",
       buildsSet: "בניית אתרים", builder: "מי בונה", bFast: "מהיר", bSmart: "חכם", bClaude: "Claude במחשב",
-      toClaude: "נשלח ל-Claude במחשב. הקישור יגיע ב-AIM.", noLimit: "ללא הגבלה", buildTime: "זמן מקסימלי", buildOpen: "פתיחת הקוד", oAsk: "לשאול אותי", oAuto: "אוטומטי", sec: " שנ׳", min2: "2 דק׳",
+      toClaude: "נשלח ל-Claude במחשב. הקישור יגיע ב-AIM.", noLimit: "ללא הגבלה", buildTime: "זמן מקסימלי", buildOpen: "פתיחת הקוד", oAsk: "לשאול אותי", oAuto: "אוטומטי", notify: "התראות על בנייה מ-Siri", photoDefault: "תוסיף את התמונה הזאת לאתר במקום הכי מתאים", notifyOn: "הפעלה", notifyDone: "פועל", notifyNo: "צריך לפתוח את Atlas ממסך הבית", sec: " שנ׳", min2: "2 דק׳",
       qTr: "🌐 מתרגם חי", sTranslating: "מתרגם: מדברים עברית או אנגלית", classicOn: "הקול החי לא זמין, עובר לקול רגיל", micEmpty: "לא שמעתי. נסו שוב.",
       buildQ: "מה לבנות?", buildPh: "למשל: אתר למסעדת סושי בתל אביב, עם תפריט אומקסה והזמנת מקום", build: "בנה", gallery: "הגלריה", sites: "אתרים",
       idea1: "דף נחיתה לבית קפה", idea2: "פורטפוליו לצלמת", idea3: "משחק זיכרון צבעוני", idea4: "אתר חתונה",
@@ -52,7 +52,7 @@
       wardrobe: "Wardrobe", wardrobeSub: "The same skins as Jarvis, plus one that is Atlas's alone.",
       audioMode: "Audio mode (if the voice is quiet)", audioA: "Normal", audioB: "Speaker",
       buildsSet: "Building sites", builder: "Who builds", bFast: "Fast", bSmart: "Smart", bClaude: "Claude on PC",
-      toClaude: "Sent to Claude on your computer. The link will come in AIM.", noLimit: "No limit", buildTime: "Time limit", buildOpen: "Open the code", oAsk: "Ask me", oAuto: "Automatic", sec: " s", min2: "2 min",
+      toClaude: "Sent to Claude on your computer. The link will come in AIM.", noLimit: "No limit", buildTime: "Time limit", buildOpen: "Open the code", oAsk: "Ask me", oAuto: "Automatic", notify: "Alerts for Siri builds", photoDefault: "Add this photo to the site where it fits best", notifyOn: "Turn on", notifyDone: "On", notifyNo: "Open Atlas from the home screen first", sec: " s", min2: "2 min",
       qTr: "🌐 Live interpreter", sTranslating: "Interpreting: speak Hebrew or English", classicOn: "Live voice is unavailable, using classic voice", micEmpty: "I didn't hear anything. Try again.",
       buildQ: "What should I build?", buildPh: "e.g. a site for a sushi bar in Tel Aviv with an omakase menu and reservations", build: "Build", gallery: "Gallery", sites: "sites",
       idea1: "Coffee shop landing page", idea2: "Photographer portfolio", idea3: "Colorful memory game", idea4: "Wedding website",
@@ -587,6 +587,7 @@
     if (openNow) openTheater(id);
   }
   function openTheater(id) {
+    store.set("atlas-autoopened", id);
     window.Theater.open(id, {
       feed, t, toast,
       onState: (s) => { if (s.state === "revealed" || s.state === "live") loadRows(); paintPill(); },
@@ -598,6 +599,13 @@
     const a = rows.atlas_active || {}, pill = $("buildPill");
     const fresh = a.started && Date.now() - a.started < 10 * 60000;
     const running = fresh && !["live", "error"].includes(a.state);
+    // Settings "open the code by itself": a build started elsewhere (Siri, another device) opens as soon as the app
+    // is in front, once per build. Siri itself cannot open the home-screen app.
+    if (running && settingsRow().build_open === "auto" && !document.hidden && $("theater").hidden && !window.Theater.open_ && store.get("atlas-autoopened", "") !== a.id) {
+      store.set("atlas-autoopened", a.id);
+      openTheater(a.id);
+      return;
+    }
     const justDone = a.state === "live" && a.started && Date.now() - a.started < 5 * 60000;
     const theaterUp = !$("theater").hidden;
     pill.hidden = theaterUp || !(running || justDone);
@@ -696,12 +704,30 @@
   $("sheet").addEventListener("click", (e) => { if (e.target === $("sheet")) closeSheet(); });
   $("shShare").onclick = async () => { const s = sheetSite; try { if (navigator.share) await navigator.share({ title: s.title, url: s.url }); else { await navigator.clipboard.writeText(s.url); toast(t("copied")); } } catch (e) {} };
   $("shReplay").onclick = () => { const s = sheetSite; closeSheet(); window.Theater.replay({ ...s, t, toast, onEdit: (x) => openSheet(x, true) }); };
+  // a photo from the phone for the site: shrunk to 1600 px JPEG here, stored next to the page by the build
+  let shPhoto = "";
+  const photoBtn = $("shPhotoBtn");
+  function clearPhoto() { shPhoto = ""; photoBtn.classList.remove("has"); const i = photoBtn.querySelector("img"); if (i) i.remove(); $("shPhoto").value = ""; }
+  $("shPhoto").addEventListener("change", async () => {
+    const f = $("shPhoto").files[0]; if (!f) return;
+    try {
+      const bmp = await createImageBitmap(f);
+      const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+      const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+      c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+      shPhoto = c.toDataURL("image/jpeg", 0.85);
+      const img = document.createElement("img"); img.src = shPhoto; img.alt = "";
+      photoBtn.classList.add("has"); photoBtn.append(img);
+      if (!$("shEdit").value.trim()) $("shEdit").value = t("photoDefault");
+      $("shEdit").focus();
+    } catch (err) { toast(String(err.message || err)); clearPhoto(); }
+  });
   $("shEditForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const instruction = $("shEdit").value.trim(); if (!instruction || !sheetSite) return;
     try {
-      const r = await api({ op: "build", base: sheetSite.slug, instruction, prompt: instruction });
-      $("shEdit").value = ""; closeSheet(); watchBuild(r.id, true);
+      const r = await api({ op: "build", base: sheetSite.slug, instruction, prompt: instruction, ...(shPhoto ? { image: shPhoto } : {}) });
+      $("shEdit").value = ""; clearPhoto(); closeSheet(); watchBuild(r.id, true);
     } catch (err) { toast(String(err.message || err)); }
   });
 
@@ -777,6 +803,25 @@
     };
     box.oncontextmenu = (e) => e.preventDefault();
   }
+  // ---- notifications: Atlas's own push subscription (row atlas_push), so a tap opens Atlas itself, e.g. the live code
+  // of a build Siri started (Siri cannot open the home-screen app)
+  const VAPID_PUBLIC = "BImaI1EXl0q-k2JRbtlqptYy2GSHneQS96ToM6qqa5R5j86K6-d19a8rR5yq8TemH_TFRab2er8X0GnICgWhHVc";
+  async function pushSubscribe(ask) {
+    const btn = $("pushBtn");
+    try {
+      if (!("serviceWorker" in navigator) || !("PushManager" in window) || !window.Notification) { if (ask) toast(t("notifyNo"), 4000); return; }
+      if (Notification.permission !== "granted") { if (!ask) return; if (await Notification.requestPermission() !== "granted") return; }
+      const reg = await navigator.serviceWorker.ready;
+      const key = Uint8Array.from(atob((VAPID_PUBLIC + "=".repeat((4 - VAPID_PUBLIC.length % 4) % 4)).replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
+      const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+      const j = sub.toJSON();
+      const { data } = await sb.from("control").select("data").eq("id", "atlas_push").maybeSingle();
+      const subs = ((data && data.subs) || []).filter((s) => s.endpoint !== j.endpoint);
+      await sb.from("control").upsert({ id: "atlas_push", data: { subs: [...subs, { ...j, ua: navigator.userAgent.slice(0, 80), at: Date.now() }].slice(-6) }, updated_at: new Date().toISOString() });
+      if (btn) { btn.textContent = t("notifyDone"); btn.disabled = true; }
+    } catch (e) { if (ask) toast(String(e.message || e), 4000); }
+  }
+  $("pushBtn").onclick = () => pushSubscribe(true);
   function setCloud(patch) { saveRow("atlas_settings", { ...settingsRow(), ...patch }); }   // the control already shows the choice
   let sampleCtx = null;
   async function playSample(voice) {
@@ -841,11 +886,12 @@
   function renderAll() { syncSkin(); renderGallery(); renderMemory(); renderSettings(); renderPc(); paintPill(); }
   function net() { $("netPill").hidden = navigator.onLine; }
   window.addEventListener("online", () => { net(); loadRows(); }); window.addEventListener("offline", net);
-  document.addEventListener("visibilitychange", () => { if (!document.hidden && started) loadRows(); });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && started) { loadRows(); paintPill(); } });
   async function boot() {
     applyLang();
     await loadRows();
     subscribe();
+    pushSubscribe(false);   // refresh this device's subscription when notifications are already allowed
     checkHealth(); net(); askGeo();
     const q = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.slice(1));
     const bid = q.get("build") || h.get("build");

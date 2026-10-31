@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=20261031.2032">
+<link rel="stylesheet" href="css/app.css?v=20261031.2053">
 </head>
 <body>
 <div id="aurora" aria-hidden="true"></div>
@@ -110,6 +110,7 @@
         <div class="set-row"><span data-t="builder"></span><div class="seg" id="segBuilder"></div></div>
         <div class="set-row"><span data-t="buildTime"></span><div class="seg" id="segTime"></div></div>
         <div class="set-row"><span data-t="buildOpen"></span><div class="seg" id="segOpen"></div></div>
+        <div class="set-row"><span data-t="notify"></span><button class="btn ghost small" id="pushBtn" type="button" data-t="notifyOn"></button></div>
       </div>
       <div class="card group">
         <h2 class="h2" data-t="appearance"></h2>
@@ -187,7 +188,7 @@
       <button class="btn ghost" id="shShare" type="button" data-t="share"></button>
       <button class="btn ghost" id="shReplay" type="button" data-t="replay"></button>
     </div>
-    <form class="edit-row" id="shEditForm"><input class="field" id="shEdit" data-ph="editPh" autocomplete="off"><button class="btn primary" type="submit" data-t="apply"></button></form>
+    <form class="edit-row" id="shEditForm"><label class="btn ghost photo-btn" id="shPhotoBtn" aria-label="Photo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="15" rx="3"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><input type="file" id="shPhoto" accept="image/*" hidden></label><input class="field" id="shEdit" data-ph="editPh" autocomplete="off"><button class="btn primary" type="submit" data-t="apply"></button></form>
     <div class="phone"><iframe id="shFrame" title="site" loading="lazy"></iframe></div>
   </div>
 </section>
@@ -195,11 +196,11 @@
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
-<script src="js/reactors.js?v=20261031.2032"></script>
-<script src="js/orb.js?v=20261031.2032"></script>
-<script src="js/highlight.js?v=20261031.2032"></script>
-<script src="js/theater.js?v=20261031.2032"></script>
-<script src="js/live.js?v=20261031.2032"></script>
-<script src="js/app.js?v=20261031.2032"></script>
+<script src="js/reactors.js?v=20261031.2053"></script>
+<script src="js/orb.js?v=20261031.2053"></script>
+<script src="js/highlight.js?v=20261031.2053"></script>
+<script src="js/theater.js?v=20261031.2053"></script>
+<script src="js/live.js?v=20261031.2053"></script>
+<script src="js/app.js?v=20261031.2053"></script>
 </body>
 </html>
