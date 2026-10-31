@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.2053";
+  const APP_VERSION = "20261031.2135";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -23,7 +23,7 @@
       wardrobe: "חדר הלבשה", wardrobeSub: "אותם סקינים כמו ב-Jarvis, ועוד אחד רק של Atlas.",
       audioMode: "מצב שמע (אם הקול נשמע חלש)", audioA: "רגיל", audioB: "רמקול",
       buildsSet: "בניית אתרים", builder: "מי בונה", bFast: "מהיר", bSmart: "חכם", bClaude: "Claude במחשב",
-      toClaude: "נשלח ל-Claude במחשב. הקישור יגיע ב-AIM.", noLimit: "ללא הגבלה", buildTime: "זמן מקסימלי", buildOpen: "פתיחת הקוד", oAsk: "לשאול אותי", oAuto: "אוטומטי", notify: "התראות על בנייה מ-Siri", photoDefault: "תוסיף את התמונה הזאת לאתר במקום הכי מתאים", notifyOn: "הפעלה", notifyDone: "פועל", notifyNo: "צריך לפתוח את Atlas ממסך הבית", sec: " שנ׳", min2: "2 דק׳",
+      toClaude: "נשלח ל-Claude במחשב. הקישור יגיע ב-AIM.", noLimit: "ללא הגבלה", buildTime: "זמן מקסימלי", buildOpen: "פתיחת הקוד", oAsk: "לשאול אותי", oAuto: "אוטומטי", notify: "התראות על בנייה מ-Siri", huge: "ענק (אלפי שורות)", pQueued: "בתור…", pBrief: "מתכנן את האתר…", pCode: "כותב קוד…", pCheck: "בודק…", pPublish: "מעלה ל-GitHub…", pLive: "עולה לאוויר…", photoDefault: "תוסיף את התמונה הזאת לאתר במקום הכי מתאים", notifyOn: "הפעלה", notifyDone: "פועל", notifyNo: "צריך לפתוח את Atlas ממסך הבית", sec: " שנ׳", min2: "2 דק׳",
       qTr: "🌐 מתרגם חי", sTranslating: "מתרגם: מדברים עברית או אנגלית", classicOn: "הקול החי לא זמין, עובר לקול רגיל", micEmpty: "לא שמעתי. נסו שוב.",
       buildQ: "מה לבנות?", buildPh: "למשל: אתר למסעדת סושי בתל אביב, עם תפריט אומקסה והזמנת מקום", build: "בנה", gallery: "הגלריה", sites: "אתרים",
       idea1: "דף נחיתה לבית קפה", idea2: "פורטפוליו לצלמת", idea3: "משחק זיכרון צבעוני", idea4: "אתר חתונה",
@@ -52,7 +52,7 @@
       wardrobe: "Wardrobe", wardrobeSub: "The same skins as Jarvis, plus one that is Atlas's alone.",
       audioMode: "Audio mode (if the voice is quiet)", audioA: "Normal", audioB: "Speaker",
       buildsSet: "Building sites", builder: "Who builds", bFast: "Fast", bSmart: "Smart", bClaude: "Claude on PC",
-      toClaude: "Sent to Claude on your computer. The link will come in AIM.", noLimit: "No limit", buildTime: "Time limit", buildOpen: "Open the code", oAsk: "Ask me", oAuto: "Automatic", notify: "Alerts for Siri builds", photoDefault: "Add this photo to the site where it fits best", notifyOn: "Turn on", notifyDone: "On", notifyNo: "Open Atlas from the home screen first", sec: " s", min2: "2 min",
+      toClaude: "Sent to Claude on your computer. The link will come in AIM.", noLimit: "No limit", buildTime: "Time limit", buildOpen: "Open the code", oAsk: "Ask me", oAuto: "Automatic", notify: "Alerts for Siri builds", huge: "Huge (thousands of lines)", pQueued: "Queued…", pBrief: "Planning the site…", pCode: "Writing code…", pCheck: "Checking…", pPublish: "Uploading to GitHub…", pLive: "Going live…", photoDefault: "Add this photo to the site where it fits best", notifyOn: "Turn on", notifyDone: "On", notifyNo: "Open Atlas from the home screen first", sec: " s", min2: "2 min",
       qTr: "🌐 Live interpreter", sTranslating: "Interpreting: speak Hebrew or English", classicOn: "Live voice is unavailable, using classic voice", micEmpty: "I didn't hear anything. Try again.",
       buildQ: "What should I build?", buildPh: "e.g. a site for a sushi bar in Tel Aviv with an omakase menu and reservations", build: "Build", gallery: "Gallery", sites: "sites",
       idea1: "Coffee shop landing page", idea2: "Photographer portfolio", idea3: "Colorful memory game", idea4: "Wedding website",
@@ -228,7 +228,7 @@
     (listeners.get(r.id) || []).forEach((cb) => { try { cb(rows[r.id]); } catch (e) {} });
     if (r.id === "atlas_sites" || r.id === "jarvis_projects") renderGallery();
     if (r.id === "atlas_mem" || r.id === "atlas_hist") renderMemory();
-    if (r.id === "atlas_active") paintPill();
+    if (r.id === "atlas_active") { paintPill(); paintPending(); }
     if (["status", "watcher", "settings", "pc"].includes(r.id)) renderPc();
     if (r.id === "atlas_settings") { renderSettings(); syncSkin(); }
     if (r.id === "atlas_debug") renderSiri();
@@ -583,7 +583,7 @@
   });
   function watchBuild(id, openNow) {
     rows.atlas_active = { id, state: "queued", started: Date.now() };
-    paintPill();
+    paintPill(); paintPending();
     if (openNow) openTheater(id);
   }
   function openTheater(id) {
@@ -649,7 +649,7 @@
       th.prepend(f);
     }), { rootMargin: "200px" });
     list.forEach((s, i) => {
-      const card = el("button", "site"); card.type = "button";
+      const card = el("button", "site"); card.type = "button"; card.dataset.slug = s.slug || "";
       const th = el("div", "thumb"); th.dataset.src = s.url;
       const p = s.palette || [];
       if (p.length >= 4) th.style.setProperty("--g", `linear-gradient(140deg, ${p[0]}, ${p[3]} 70%, ${p[4] || p[1]})`);
@@ -668,6 +668,52 @@
       if (i < 24) thumbIO.observe(th);
     });
     scaleThumbs();
+    paintPending();
+  }
+  /* The site being built or published: a card of its own at the top of the gallery (an edit: the site's own card) with
+     a live "building" effect, until GitHub Pages really serves this build (its atlas-build meta). */
+  const served = new Set();
+  let servedPoll = 0;
+  function paintPending() {
+    const box = $("gallery"); if (!box) return;
+    const a = rows.atlas_active || {};
+    const fresh = a.id && a.started && Date.now() - a.started < 15 * 60000;
+    const on = fresh && a.state !== "error" && !served.has(a.id);
+    box.querySelectorAll(".site.pending").forEach((c) => { if (!on || c.dataset.build !== a.id) { c.classList.remove("pending"); c.querySelector(".pend-fx")?.remove(); if (c.classList.contains("pend-new")) c.remove(); } });
+    if (!on) return;
+    const label = { queued: t("pQueued"), brief: t("pBrief"), code: t("pCode"), check: t("pCheck"), publish: t("pPublish"), live: t("pLive") }[a.state] || t("pCode");
+    let card = a.base ? [...box.querySelectorAll(".site")].find((c) => c.dataset.slug === a.base) : box.querySelector(".site.pend-new");
+    if (!card) {
+      if (a.base) return;
+      card = el("button", "site pend-new"); card.type = "button";
+      const th = el("div", "thumb"); const meta = el("div", "meta");
+      meta.append(el("b"), el("small"));
+      card.append(th, meta);
+      card.onclick = () => { if (window.Theater.id === a.id) window.Theater.show(); else openTheater(a.id); };
+      box.prepend(card);
+    }
+    card.classList.add("pending"); card.dataset.build = a.id;
+    if (card.classList.contains("pend-new")) { const b = card.querySelector(".meta b"); b.textContent = a.title || "…"; b.dir = "auto"; card.querySelector(".meta small").textContent = label; }
+    let fx = card.querySelector(".pend-fx");
+    if (!fx) {
+      fx = el("div", "pend-fx");
+      const lines = el("div", "pend-code");
+      for (let i = 0; i < 14; i++) { const l = el("i"); l.style.setProperty("--w", 30 + ((i * 37) % 60) + "%"); l.style.setProperty("--d", (i * 0.12).toFixed(2) + "s"); lines.append(l); }
+      fx.append(el("div", "pend-ring"), lines, el("div", "pend-scan"), el("div", "pend-orb"), el("span", "pend-label"));
+      card.querySelector(".thumb").append(fx);
+    }
+    fx.querySelector(".pend-label").textContent = label;
+    fx.dataset.state = a.state;
+    if (a.state === "live" && a.url && !servedPoll) {
+      const id = a.id, url = a.url;
+      servedPoll = setInterval(async () => {
+        try {
+          const html = await (await fetch(url + "?served=" + Date.now(), { cache: "no-store" })).text();
+          if (html.includes(id)) { clearInterval(servedPoll); servedPoll = 0; served.add(id); const g = $("gallery"); if (g) g._key = ""; renderGallery(); }
+        } catch (e) {}
+        if (Date.now() - a.started > 15 * 60000) { clearInterval(servedPoll); servedPoll = 0; }
+      }, 4000);
+    }
   }
   function scaleThumbs() { const c = document.querySelector(".site .thumb"); if (c) $("gallery").style.setProperty("--s", (c.clientWidth / 390).toFixed(3)); }
   new ResizeObserver(scaleThumbs).observe($("gallery"));
@@ -853,7 +899,7 @@
     // iPhone: with the mic open, some iOS versions play voice from the earpiece; the other audio-session mode fixes it
     seg($("segAudio"), [["auto", t("audioA")], ["default", t("audioB")]], store.get("atlas-audiosession", "auto"), (v) => { store.set("atlas-audiosession", v); renderSettings(); });
     seg($("segBuilder"), [["fast", t("bFast")], ["smart", t("bSmart")], ["claude", t("bClaude")]], s.builder || "fast", (v) => setCloud({ builder: v }));
-    seg($("segTime"), [["30", "30" + t("sec")], ["60", "60" + t("sec")], ["125", t("min2")], ["0", t("noLimit")]], String(s.build_time == null ? 125 : s.build_time), (v) => setCloud({ build_time: Number(v) }));
+    seg($("segTime"), [["30", "30" + t("sec")], ["60", "60" + t("sec")], ["125", t("min2")], ["0", t("noLimit")], ["-1", t("huge")]], String(s.build_time == null ? 125 : s.build_time), (v) => setCloud({ build_time: Number(v) }));
     seg($("segOpen"), [["ask", t("oAsk")], ["auto", t("oAuto")]], s.build_open || "ask", (v) => setCloud({ build_open: v }));
     seg($("segTheme"), [["auto", t("auto")], ["dark", t("dark")], ["light", t("light")]], store.get("atlas-theme", "auto"), (v) => { store.set("atlas-theme", v); applyTheme(); renderSettings(); });
     seg($("segUi"), [["he", "עברית"], ["en", "English"]], ui, (v) => { ui = v; store.set("atlas-ui", v); applyLang(); });

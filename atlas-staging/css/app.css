@@ -189,6 +189,25 @@ body.pill-on #view-talk { padding-bottom: calc(var(--tabs-h) + env(safe-area-ins
 .site .meta { padding: 10px 12px 12px; }
 .site .meta b { display: block; font-size: .95rem; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .site .meta small { color: var(--muted); font-size: .78rem; }
+/* the site being built / published: a living card (app.js paintPending) */
+.site.pending { border-color: transparent; box-shadow: 0 0 0 1px rgba(46,197,255,.45), 0 0 28px rgba(46,197,255,.25); animation: pend-glow 2.4s ease-in-out infinite; }
+.site.pending .meta small { color: var(--a2, #2EC5FF); font-weight: 600; }
+.pend-fx { position: absolute; inset: 0; z-index: 2; overflow: hidden; background: radial-gradient(120% 80% at 50% 0%, #121a2b, #07080C 70%); --c1: #2EC5FF; --c2: #7C5CFF; }
+.pend-fx[data-state="publish"], .pend-fx[data-state="live"] { --c1: #3DFFB5; --c2: #2EC5FF; }
+.pend-ring { position: absolute; inset: -40%; background: conic-gradient(from 0deg, transparent 0 55%, var(--c2) 70%, var(--c1) 82%, transparent 92%); filter: blur(18px); opacity: .55; animation: pend-spin 3.2s linear infinite; }
+.pend-code { position: absolute; inset: 14% 12% 26%; display: grid; align-content: start; gap: 7px; }
+.pend-code i { display: block; height: 5px; width: var(--w); border-radius: 3px; background: linear-gradient(90deg, var(--c1), var(--c2)); opacity: .0; transform-origin: left; animation: pend-type 2.8s ease-in-out infinite; animation-delay: var(--d); }
+[dir="rtl"] .pend-code i { transform-origin: right; justify-self: end; }
+.pend-scan { position: absolute; left: 0; right: 0; height: 38%; background: linear-gradient(to bottom, transparent, rgba(46,197,255,.18) 80%, var(--c1) 100%); mix-blend-mode: screen; animation: pend-scan 2.2s cubic-bezier(.5,0,.5,1) infinite; }
+.pend-fx[data-state="publish"] .pend-scan, .pend-fx[data-state="live"] .pend-scan { animation-direction: reverse; animation-duration: 1.3s; }
+.pend-orb { position: absolute; left: 50%; top: 46%; width: 34%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff, var(--c1) 35%, var(--c2) 70%, transparent 72%); box-shadow: 0 0 40px var(--c1), 0 0 90px var(--c2); animation: pend-breathe 1.6s ease-in-out infinite; }
+.pend-label { position: absolute; left: 50%; bottom: 10px; translate: -50% 0; white-space: nowrap; padding: 4px 10px; border-radius: 999px; font-size: .7rem; font-weight: 700; color: #07080C; background: var(--c1); box-shadow: 0 0 18px var(--c1); }
+@keyframes pend-spin { to { transform: rotate(360deg); } }
+@keyframes pend-type { 0% { opacity: 0; transform: scaleX(0); } 25%, 70% { opacity: .75; transform: scaleX(1); } 100% { opacity: 0; transform: scaleX(1); } }
+@keyframes pend-scan { from { top: -40%; } to { top: 100%; } }
+@keyframes pend-breathe { 50% { transform: scale(.82); opacity: .8; } }
+@keyframes pend-glow { 50% { box-shadow: 0 0 0 1px rgba(124,92,255,.6), 0 0 38px rgba(124,92,255,.35); } }
+@media (prefers-reduced-motion: reduce) { .pend-fx *, .site.pending { animation: none !important; } .pend-code i { opacity: .6; } }
 .badges { position: absolute; top: 8px; inset-inline-start: 8px; display: flex; gap: 4px; z-index: 1; }
 .badge { padding: 2px 8px; border-radius: 999px; font-size: .68rem; font-weight: 700; background: rgba(7,8,12,.7); color: #fff; backdrop-filter: blur(6px); }
 .badge.new { background: var(--a3); color: #07080C; }
