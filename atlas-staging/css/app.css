@@ -19,15 +19,15 @@
    viewport (the bottom ~48 px), so any glow that ends at the viewport's edge reads as a band there */
 html, body { margin: 0; height: 100%; background: var(--night); color: var(--ink); font: 16px/1.5 var(--font); }
 body { overflow: hidden; overscroll-behavior: none; }
-/* iOS 26 home-screen app (see fitHeight in app.js): the page is as tall as the screen, not the short layout viewport */
-html.tall, html.tall body { height: var(--app-h); overflow: hidden; }
-html.tall #app, html.tall .theater, html.tall .sheet { position: absolute; }
-/* iOS repaints moving content (scrolling, iframes) in the strip below the short viewport only now and then, so it
-   flickers there: in that strip only the still background is drawn; scrolled content and the tab bar end above it */
-html.tall .view { bottom: var(--cut); }
-html.tall #app::after { bottom: var(--cut); }
-html.tall #app::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--cut); z-index: 3; pointer-events: none; background: var(--night); }
-html.tall .tabs { bottom: calc(var(--cut) + 4px); }
+/* iOS 26 home-screen app: the layout viewport is short by the status bar's height (WebKit bug 301108) and left a band
+   under the page; the webview still covers the screen and 100lvh measures it. Pure CSS, so the first frame is already
+   right (no jump at launch). --kb-h: the visible height while the keyboard is up (app.js). The views are their own
+   layer so iOS draws them whole, also in the strip below the short viewport. */
+@media (display-mode: standalone) {
+  html, body { height: var(--kb-h, 100lvh); overflow: hidden; }
+  #app, .theater, .sheet { position: absolute; height: var(--kb-h, 100lvh); }
+  .view { transform: translateZ(0); }
+}
 button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 [hidden] { display: none !important; }
