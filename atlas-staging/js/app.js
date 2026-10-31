@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.1944";
+  const APP_VERSION = "20261031.2009";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -633,6 +633,7 @@
       if (!en.isIntersecting) return;
       const th = en.target; thumbIO.unobserve(th);
       const f = document.createElement("iframe"); f.tabIndex = -1; f.setAttribute("aria-hidden", "true"); f.setAttribute("scrolling", "no"); f.src = th.dataset.src;
+      fetch(th.dataset.src + "?live=" + Date.now(), { cache: "no-store" }).then((r) => { if (r.status === 404) { f.remove(); setTimeout(() => thumbIO && thumbIO.observe(th), 8000); } }).catch(() => {});
       f.onload = () => { setTimeout(() => { f.classList.add("ready"); const g = th.querySelector(".glyph"); if (g) g.remove(); }, 400); };
       th.prepend(f);
     }), { rootMargin: "200px" });
@@ -666,12 +667,28 @@
     sheetSite = s;
     $("shTitle").textContent = s.title; $("shTitle").dir = "auto";
     $("shMeta").textContent = [s.version > 1 ? "v" + s.version : "", s.updated ? ago(Date.now() - s.updated) : "", s.prompt || ""].filter(Boolean).join(" · ");
-    $("shFrame").src = s.url; $("shOpen").href = s.url;
+    $("shOpen").href = s.url;
+    whenLive(s.url, $("shFrame"));
     requestAnimationFrame(() => window.fitPhone($("shFrame")));
     $("sheet").hidden = false;
     if (focusEdit) setTimeout(() => $("shEdit").focus(), 300);
   }
-  function closeSheet() { $("sheet").hidden = true; $("shFrame").removeAttribute("src"); }
+  function closeSheet() { $("sheet").hidden = true; liveTry++; $("shFrame").removeAttribute("src"); }
+  /* A new site is public at once, but GitHub Pages needs about a minute to serve it; until then it answers 404.
+     Show "going live" instead of GitHub's 404 page, and load the site the moment it is served. */
+  let liveTry = 0;
+  async function whenLive(url, frame) {
+    const my = ++liveTry, t0 = Date.now();
+    frame.removeAttribute("src"); frame.removeAttribute("srcdoc");
+    while (my === liveTry) {
+      let ok = false;
+      try { ok = (await fetch(url + "?live=" + Date.now(), { cache: "no-store" })).ok; } catch (e) { ok = true; }   // offline etc.: just try to show it
+      if (my !== liveTry) return;
+      if (ok || Date.now() - t0 > 240000) { frame.removeAttribute("srcdoc"); frame.src = url; return; }
+      frame.srcdoc = `<body style="margin:0;height:100vh;display:grid;place-items:center;font:600 22px system-ui;color:#8A90A2;background:#0B0E14;text-align:center;padding:40px;box-sizing:border-box">${t("goingLive")}</body>`;
+      await new Promise((r) => setTimeout(r, 3000));
+    }
+  }
   $("shClose").onclick = closeSheet;
   $("sheet").addEventListener("click", (e) => { if (e.target === $("sheet")) closeSheet(); });
   $("shShare").onclick = async () => { const s = sheetSite; try { if (navigator.share) await navigator.share({ title: s.title, url: s.url }); else { await navigator.clipboard.writeText(s.url); toast(t("copied")); } } catch (e) {} };

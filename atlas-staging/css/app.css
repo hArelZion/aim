@@ -106,6 +106,9 @@ body:not([data-skin="atlas"]) .h2, body:not([data-skin="atlas"]) .tabs button, b
 
 /* the tab bar floats like Jarvis's (iOS glass): nothing painted under it, so no band at the bottom of the screen.
    A glass lens marks the current tab; a long press lifts it, and dragging it moves between tabs. */
+/* the iPhone home-screen app ends ~48 px above the screen and shows the page colour (--night) below it: scrolled
+   content fades into that colour instead of being cut off at a hard edge */
+#app::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 36px; z-index: 3; pointer-events: none; background: linear-gradient(to bottom, transparent, var(--night)); }
 .tabs { position: absolute; inset-inline: 12px; bottom: calc(env(safe-area-inset-bottom) + 8px); z-index: 4; display: grid; grid-template-columns: repeat(4, 1fr); padding: 5px; border-radius: 30px;
   background: color-mix(in srgb, var(--night) 62%, transparent); border: 1px solid var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 12px 34px rgba(0,0,0,.4);
   backdrop-filter: blur(24px) saturate(1.6); -webkit-backdrop-filter: blur(24px) saturate(1.6); touch-action: none; user-select: none; -webkit-user-select: none; }
