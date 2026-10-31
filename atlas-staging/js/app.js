@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.2024";
+  const APP_VERSION = "20261031.2026";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -98,6 +98,7 @@
     document.documentElement.classList.toggle("tall", tall);
     const h = typing ? vv.height : tall ? big : innerHeight;
     document.documentElement.style.setProperty("--app-h", h + "px");
+    document.documentElement.style.setProperty("--cut", (tall ? big - innerHeight : 0) + "px");
   }
   fitHeight();
   setTimeout(() => {   // what the iPhone really gives the app (to fix the band at the bottom of the home-screen app)
