@@ -147,6 +147,7 @@ body.pill-on #view-talk { padding-bottom: calc(var(--tabs-h) + env(safe-area-ins
 .site .thumb iframe.ready { opacity: 1; }
 [dir="rtl"] .site .thumb iframe { transform-origin: top right; }
 .site .thumb .glyph { position: absolute; inset: 0; display: grid; place-items: center; font-size: 2.4rem; font-weight: 800; color: rgba(255,255,255,.85); letter-spacing: -.04em; text-shadow: 0 4px 30px rgba(0,0,0,.3); }
+.site .thumb .glyph img { width: 38%; border-radius: 22%; box-shadow: 0 8px 30px rgba(0,0,0,.35); }
 .site .meta { padding: 10px 12px 12px; }
 .site .meta b { display: block; font-size: .95rem; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .site .meta small { color: var(--muted); font-size: .78rem; }

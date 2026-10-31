@@ -4,7 +4,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const APP_VERSION = "20261031.1816";
+  const APP_VERSION = "20261031.1835";
   const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
   const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
@@ -526,7 +526,10 @@
       const th = el("div", "thumb"); th.dataset.src = s.url;
       const p = s.palette || [];
       if (p.length >= 4) th.style.setProperty("--g", `linear-gradient(140deg, ${p[0]}, ${p[3]} 70%, ${p[4] || p[1]})`);
-      th.append(el("div", "glyph", (s.title || "?").trim().slice(0, 1).toUpperCase()));
+      const glyph = el("div", "glyph", (s.title || "?").trim().slice(0, 1).toUpperCase());
+      const logo = document.createElement("img"); logo.alt = ""; logo.src = s.url + "logo.svg";   // the site's own logo
+      logo.onload = () => { glyph.textContent = ""; glyph.append(logo); };
+      th.append(glyph);
       const badges = el("div", "badges");
       if (Date.now() - (s.updated || 0) < 86400000) badges.append(el("span", "badge new", t("newBadge")));
       if (s.version > 1) badges.append(el("span", "badge", "v" + s.version));
