@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="apple-mobile-web-app-title" content="Japan History">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore the comprehensive chronicle of Japan, from the ancient Jōmon period to modern neon-lit Tokyo and global cultural legacy.">
+  <meta name="atlas-build" content="zeqv72tsx6rxfv3in8pk">
+  <title>Chronicles of Japan — From Ancient Roots to Modern Horizons</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --color-cream: #f5f0e1;
+      --color-sand: #e0c9a6;
+      --color-charcoal: #2b2b2b;
+      --color-crimson: #c0392b;
+      --color-purple: #8e44ad;
+      --color-neon-crimson: #ff3b30;
+      --color-neon-purple: #b066fe;
+      --color-dark-bg: #141312;
+      --color-card-bg: rgba(35, 33, 31, 0.85);
+      
+      --font-display: 'Noto Serif JP', serif;
+      --font-body: 'M PLUS 1p', sans-serif;
+      
+      --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-smooth: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 16px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 100%;
+      background-color: var(--color-dark-bg);
+      color: var(--color-cream);
+    }
+
+    body {
+      font-family: var(--font-body);
+      line-height: 1.7;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(192, 57, 43, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(142, 68, 173, 0.08) 0%, transparent 40%);
+      background-attachment: fixed;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4, .kanji-bg {
+      font-family: var(--font-display);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      margin-bottom: 1rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--color-crimson), var(--color-purple));
+    }
+
+    p {
+      font-size: clamp(1rem, 1.2vw, 1.125rem);
+      color: rgba(245, 240, 225, 0.88);
+      margin-bottom: 1.25rem;
+    }
+
+    a {
+      color: var(--color-sand);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    a:hover, a:focus-visible {
+      color: var(--color-crimson);
+    }
+
+    /* Accessibility Focus */
+    :focus-visible {
+      outline: 2px solid var(--color-neon-purple);
+      outline-offset: 4px;
+    }
+
+    /* Layout Containers */
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    section {
+      padding: 5rem 0;
+      position: relative;
+    }
+
+    /* Header & Navigation */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(20, 19, 18, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(224, 201, 166, 0.1);
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-cream);
+    }
+
+    .brand img {
+      filter: drop-shadow(0 0 4px rgba(192, 57, 43, 0.5));
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--color-crimson);
+      transition: width var(--transition-fast);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--color-cream);
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding-top: 70px;
+      overflow: hidden;
+    }
+
+    .hero-bg-wrapper {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+    }
+
+    .hero-bg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.4) contrast(1.1);
+      transform: scale(1.05);
+      animation: heroZoom 20s infinite alternate ease-in-out;
+    }
+
+    @keyframes heroZoom {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(20, 19, 18, 0.4) 0%, rgba(20, 19, 18, 0.9) 90%),
+                  linear-gradient(to bottom, transparent 60%, var(--color-dark-bg) 100%);
+      z-index: -1;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      z-index: 1;
+    }
+
+    .hero-subtitle {
+      color: var(--color-sand);
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .hero-title-jp {
+      position: absolute;
+      right: 5%;
+      top: 20%;
+      font-size: 15vw;
+      opacity: 0.04;
+      font-family: var(--font-display);
+      writing-mode: vertical-rl;
+      pointer-events: none;
+      z-index: 0;
+      color: var(--color-cream);
+    }
+
+    .hero-description {
+      font-size: 1.25rem;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      color: rgba(245, 240, 225, 0.95);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.9rem 2rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      transition: all var(--transition-fast);
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: var(--color-crimson);
+      color: var(--color-cream);
+      box-shadow: 0 4px 20px rgba(192, 57, 43, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: #d63031;
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(192, 57, 43, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(224, 201, 166, 0.1);
+      border-color: var(--color-sand);
+      color: var(--color-cream);
+      margin-left: 1rem;
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-sand);
+      color: var(--color-charcoal);
+      transform: translateY(-2px);
+    }
+
+    /* Timeline Section */
+    .timeline-container {
+      position: relative;
+      margin-top: 3rem;
+    }
+
+    .timeline-container::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--color-crimson), var(--color-purple), var(--color-sand));
+      transform: translateX(-50%);
+    }
+
+    .timeline-item {
+      display: flex;
+      justify-content: flex-end;
+      padding-right: 3rem;
+      position: relative;
+      margin-bottom: 4rem;
+      width: 50%;
+    }
+
+    .timeline-item:nth-child(even) {
+      align-self: flex-end;
+      margin-left: 50%;
+      justify-content: flex-start;
+      padding-right: 0;
+      padding-left: 3rem;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      right: -9px;
+      top: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--color-crimson);
+      border: 3px solid var(--color-dark-bg);
+      box-shadow: 0 0 10px var(--color-neon-crimson);
+      z-index: 2;
+    }
+
+    .timeline-item:nth-child(even) .timeline-dot {
+      right: auto;
+      left: -9px;
+    }
+
+    .timeline-card {
+      background: var(--color-card-bg);
+      border: 1px solid rgba(224, 201, 166, 0.15);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: transform var(--transition-fast), border-color var(--transition-fast);
+      position: relative;
+    }
+
+    .timeline-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--color-sand);
+    }
+
+    .timeline-date {
+      font-family: var(--font-display);
+      color: var(--color-sand);
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .timeline-title {
+      font-size: 1.4rem;
+      margin-bottom: 0.75rem;
+      color: var(--color-cream);
+    }
+
+    /* Culture Section */
+    .culture-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .culture-card {
+      background: var(--color-card-bg);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid rgba(224, 201, 166, 0.1);
+      transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .culture-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+      border-color: var(--color-purple);
+    }
+
+    .culture-img-wrapper {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+    }
+
+    .culture-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .culture-card:hover .culture-img {
+      transform: scale(1.08);
+    }
+
+    .culture-body {
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .culture-tag {
+      align-self: flex-start;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      background: rgba(142, 68, 173, 0.2);
+      color: var(--color-neon-purple);
+      margin-bottom: 1rem;
+      border: 1px solid rgba(142, 68, 173, 0.4);
+    }
+
+    /* Figures Section */
+    .figures-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .figure-card {
+      position: relative;
+      background: linear-gradient(145deg, rgba(43, 43, 43, 0.6), rgba(20, 19, 18, 0.9));
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      border-left: 4px solid var(--color-crimson);
+      transition: transform var(--transition-fast);
+    }
+
+    .figure-card:hover {
+      transform: translateX(5px);
+    }
+
+    .figure-role {
+      color: var(--color-sand);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .figure-name {
+      font-size: 1.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .figure-kanji {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      font-size: 2.5rem;
+      opacity: 0.15;
+      font-family: var(--font-display);
+      pointer-events: none;
+    }
+
+    /* Legacy & Interactive Map Section */
+    .legacy-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      margin-top: 3rem;
+    }
+
+    .map-interactive {
+      background: var(--color-card-bg);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      border: 1px solid rgba(224, 201, 166, 0.15);
+      position: relative;
+    }
+
+    .map-svg-container {
+      width: 100%;
+      height: 350px;
+      position: relative;
+      background: rgba(15, 14, 13, 0.5);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .map-svg {
+      width: 80%;
+      height: 80%;
+      fill: none;
+      stroke: var(--color-sand);
+      stroke-width: 1.5;
+    }
+
+    .map-pin {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: var(--color-crimson);
+      border: 2px solid var(--color-cream);
+      border-radius: 50%;
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+      transition: transform var(--transition-fast), background var(--transition-fast);
+      box-shadow: 0 0 10px var(--color-neon-crimson);
+    }
+
+    .map-pin:hover, .map-pin.active {
+      transform: translate(-50%, -50%) scale(1.4);
+      background: var(--color-neon-purple);
+      box-shadow: 0 0 15px var(--color-neon-purple);
+    }
+
+    .map-info-box {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      background: rgba(20, 19, 18, 0.6);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-sand);
+      min-height: 100px;
+    }
+
+    .map-info-title {
+      font-size: 1.1rem;
+      color: var(--color-sand);
+      margin-bottom: 0.25rem;
+    }
+
+    /* Scroll Animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Footer */
+    .footer {
+      background: #0d0c0c;
+      border-top: 1px solid rgba(224, 201, 166, 0.1);
+      padding: 4rem 0 2rem;
+      margin-top: 5rem;
+      font-size: 0.9rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .footer-links-title {
+      color: var(--color-sand);
+      font-family: var(--font-display);
+      margin-bottom: 1rem;
+    }
+
+    .footer-links-list {
+      list-style: none;
+    }
+
+    .footer-links-list li {
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(245, 240, 225, 0.5);
+      font-size: 0.85rem;
+    }
+
+    /* Media Queries */
+    @media (max-width: 992px) {
+      .legacy-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        position: fixed;
+        top: 70px;
+        right: -100%;
+        width: 100%;
+        height: calc(100vh - 70px);
+        background: rgba(20, 19, 18, 0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        transition: right 0.3s ease;
+      }
+
+      .nav-links.open {
+        right: 0;
+      }
+
+      .mobile-menu-toggle {
+        display: block;
+      }
+
+      .timeline-container::before {
+        left: 20px;
+      }
+
+      .timeline-item,
+      .timeline-item:nth-child(even) {
+        width: 100%;
+        padding-left: 50px;
+        padding-right: 0;
+        margin-left: 0;
+        justify-content: flex-start;
+      }
+
+      .timeline-dot,
+      .timeline-item:nth-child(even) .timeline-dot {
+        left: 11px;
+        right: auto;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0 !important;
+        margin-bottom: 0.75rem;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+    }
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .hero-bg {
+        animation: none;
+      }
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="#hero" class="brand" aria-label="Japan History Home">
+        <img src="logo.svg" alt="" width="36" height="36">
+        <span>Japan History</span>
+      </a>
+      <button class="mobile-menu-toggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#hero">Overview</a></li>
+          <li><a href="#timeline">Timeline</a></li>
+          <li><a href="#culture">Culture</a></li>
+          <li><a href="#figures">Figures</a></li>
+          <li><a href="#legacy">Legacy</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+      <div class="hero-bg-wrapper">
+        <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/Tokyo_Shibuya_Scramble_Crossing_2018-10-09.jpg/1280px-Tokyo_Shibuya_Scramble_Crossing_2018-10-09.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" 
+             alt="Shibuya Scramble Crossing at night bathed in modern neon light" 
+             class="hero-bg" 
+             width="1280" 
+             height="853" 
+             decoding="async">
+        <div class="hero-overlay"></div>
+      </div>
+      <div class="hero-title-jp" aria-hidden="true">日本歴史</div>
+      <div class="container hero-content">
+        <span class="hero-subtitle reveal">Chronicles of the Sun's Origin</span>
+        <h1 class="reveal">Where Ancient Tradition Encounters the Neon Future.</h1>
+        <p class="hero-description reveal">
+          Journey through millennia of transformative history. From the intricate clay creations of prehistoric Jōmon artisans to the quiet discipline of the samurai, experience how Japan forged a unique civilization that commands world fascinations today.
+        </p>
+        <div class="reveal">
+          <a href="#timeline" class="btn btn-primary">
+            Explore Timeline
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#legacy" class="btn btn-secondary">Interactive Map</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section id="timeline">
+      <div class="container">
+        <h2 class="reveal">Epochs of History</h2>
+        <p class="reveal">Trace the fundamental eras that shaped the social structure, governance, and spiritual core of Japan.</p>
+        
+        <div class="timeline-container">
+          
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-date">14,000 BC – 300 BC</span>
+              <h3 class="timeline-title">Jōmon Period</h3>
+              <p>Characterized by hunter-gatherer lifestyles and deep-rooted spiritual connection to nature. Known for creating some of the oldest surviving unglazed pottery with distinctive cord-markings.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-date">300 BC – 300 AD</span>
+              <h3 class="timeline-title">Yayoi Period</h3>
+              <p>Introduced wet-rice cultivation, iron and bronze metalworking, and hierarchical social structures. This shift laid the agricultural foundation for centralized state formation.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-date">794 – 1185 AD</span>
+              <h3 class="timeline-title">Heian Period</h3>
+              <p>The golden age of classical courtly art, poetry, and literature. Capital moved to Heian-kyō (Kyoto). Lady Murasaki written <em>The Tale of Genji</em> during this flourish of native aesthetic identity.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-date">1185 – 1868 AD</span>
+              <h3 class="timeline-title">Feudal Era & Edo Period</h3>
+              <p>Rise of the warrior class (samurai) and shogun dominance. The Edo period brought over 250 years of internal peace, strict isolationism (Sakoku), and vibrant urban popular cultures.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-date">1868 – 1912 AD</span>
+              <h3 class="timeline-title">Meiji Restoration</h3>
+              <p>A dramatic turning point marked by rapid modernization, industrialization, and Western alignment, restoring practical imperial rule and propelling Japan onto the global stage.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-date">2019 – Present</span>
+              <h3 class="timeline-title">Reiwa Era</h3>
+              <p>The current era of "Beautiful Harmony," defined by advanced technological innovation, global cultural diplomacy, and sustainable preservation of heritage.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Culture Section -->
+    <section id="culture">
+      <div class="container">
+        <h2 class="reveal">Cultural Foundations</h2>
+        <p class="reveal">Art, spirituality, and martial philosophies that continue to permeate daily life.</p>
+
+        <div class="culture-grid">
+          
+          <article class="culture-card reveal">
+            <div class="culture-img-wrapper">
+              <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/Jarre_de_la_p%C3%A9riode_japonaise_J%C5%8Dmon_%28Guimet_%E2%80%93_MA_1680%29.jpg/1280px-Jarre_de_la_p%C3%A9riode_japonaise_J%C5%8Dmon_%28Guimet_%E2%80%93_MA_1680%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" 
+                   alt="Jarre de la période japonaise Jōmon pot" 
+                   class="culture-img" 
+                   loading="lazy" 
+                   decoding="async" 
+                   width="400" 
+                   height="220">
+            </div>
+            <div class="culture-body">
+              <span class="culture-tag">Ancient Crafts</span>
+              <h3>Jōmon Ceramics</h3>
+              <p>Early Japanese artisans hand-modeled clay vessels with dynamic, flame-like rims and cord impressions, establishing an enduring reverence for raw material and organic geometry.</p>
+            </div>
+          </article>
+
+          <article class="culture-card reveal">
+            <div class="culture-img-wrapper">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/1/16/Antique_Japanese_%28samurai%29_kawari_kabuto_5.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled" 
+                   alt="Antique Japanese samurai kawari kabuto helmet" 
+                   class="culture-img" 
+                   loading="lazy" 
+                   decoding="async" 
+                   width="400" 
+                   height="220">
+            </div>
+            <div class="culture-body">
+              <span class="culture-tag">Martial Honor</span>
+              <h3>Bushidō & Armor</h3>
+              <p>Samurai armor was designed to inspire awe and signify spiritual protection. Elaborate helmets (Kabuto) fused martial efficiency with profound personal artistic expression.</p>
+            </div>
+          </article>
+
+          <article class="culture-card reveal">
+            <div class="culture-img-wrapper">
+              <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d8/Kinkaku-ji_in_November_2016_-02.jpg/1280px-Kinkaku-ji_in_November_2016_-02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" 
+                   alt="Kinkaku-ji Golden Pavilion surrounded by autumn foliage in Kyoto" 
+                   class="culture-img" 
+                   loading="lazy" 
+                   decoding="async" 
+                   width="400" 
+                   height="220">
+            </div>
+            <div class="culture-body">
+              <span class="culture-tag">Architecture & Zen</span>
+              <h3>Sacred Spaces</h3>
+              <p>Structures like Kyoto's Golden Pavilion showcase the harmonious balance between nature, Shinto nature worship, and Zen Buddhist minimalist architecture.</p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Figures Section -->
+    <section id="figures">
+      <div class="container">
+        <h2 class="reveal">Iconic Figures</h2>
+        <p class="reveal">Visionaries, warlords, and creators who defined the trajectory of the nation.</p>
+
+        <div class="figures-wrapper">
+          
+          <div class="figure-card reveal">
+            <div class="figure-kanji">信長</div>
+            <span class="figure-role">Sengoku Warlord</span>
+            <h3 class="figure-name">Oda Nobunaga</h3>
+            <p>Initiated the unification of Japan near the end of the Sengoku period through innovative military tactics and early adoption of firearms.</p>
+          </div>
+
+          <div class="figure-card reveal">
+            <div class="figure-kanji">家康</div>
+            <span class="figure-role">First Tokugawa Shogun</span>
+            <h3 class="figure-name">Tokugawa Ieyasu</h3>
+            <p>Consolidated absolute power after the Battle of Sekigahara (1600), establishing the Tokugawa Shogunate which ushered in two centuries of peace.</p>
+          </div>
+
+          <div class="figure-card reveal">
+            <div class="figure-kanji">紫</div>
+            <span class="figure-role">Heian Novelist</span>
+            <h3 class="figure-name">Murasaki Shikibu</h3>
+            <p>Noblewoman and lady-in-waiting who penned <em>The Tale of Genji</em>, widely considered the world's first novel, capturing Heian court psychology.</p>
+          </div>
+
+          <div class="figure-card reveal">
+            <div class="figure-kanji">龍馬</div>
+            <span class="figure-role">Meiji Reformer</span>
+            <h3 class="figure-name">Sakamoto Ryōma</h3>
+            <p>Key political negotiator who brokered the alliance between feudal domains to overthrow the Shogunate, setting up modern democratic foundations.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Legacy & Interactive Map Section -->
+    <section id="legacy">
+      <div class="container">
+        <h2 class="reveal">Global Legacy & Heritage</h2>
+        <p class="reveal">Discover iconic historical sites that connect Japan's historic roots to present global impact.</p>
+
+        <div class="legacy-container">
+          <div class="legacy-text reveal">
+            <h3>Timeless Resonance</h3>
+            <p>Japan's cultural impact bridges ancient philosophy and futuristic design. From tea ceremony aesthetics influencing modern minimalism, to anime, cuisine, and automotive ingenuity shaping global lifestyles—the country continuously transforms while honoring its lineage.</p>
+            <p>Click the interactive nodes on the map to explore UNESCO World Heritage landmarks across the archipelago.</p>
+          </div>
+
+          <div class="map-interactive reveal">
+            <div class="map-svg-container">
+              <!-- Stylized Vector Map Outline -->
+              <svg class="map-svg" viewBox="0 0 400 500" aria-label="Map of Japan showing historical sites">
+                <!-- Main Islands Abstract Vector Paths -->
+                <path d="M 120 380 Q 150 360 180 340 T 220 280 T 260 220 T 300 120 T 320 60" stroke="rgba(224, 201, 166, 0.2)" stroke-width="4" stroke-linecap="round"/>
+                <path d="M 280 80 Q 320 90 310 140 T 270 200" fill="none"/>
+                <path d="M 200 290 Q 240 270 270 220 T 240 180 T 190 260 Z" fill="rgba(224, 201, 166, 0.05)"/>
+              </svg>
+
+              <!-- Pins -->
+              <button class="map-pin active" style="top: 58%; left: 45%;" data-title="Kyoto (Kinkaku-ji)" data-desc="Heart of classic traditional culture, home to thousands of historic temples, Zen gardens, and imperial villas." aria-label="Kyoto Pin"></button>
+              <button class="map-pin" style="top: 52%; left: 58%;" data-title="Tokyo (Edo Castle & Shibuya)" data-desc="The modern capital blending former Edo power structures with ultra-modern urban commercial epicenters." aria-label="Tokyo Pin"></button>
+              <button class="map-pin" style="top: 68%; left: 32%;" data-title="Hiroshima Peace Memorial" data-desc="A global monument advocating for world peace and resilience amid historic war transformations." aria-label="Hiroshima Pin"></button>
+              <button class="map-pin" style="top: 25%; left: 75%;" data-title="Hokkaido Jōmon Sites" data-desc="Archaeological excavation areas showing prehistoric settlements and distinctive ancient pottery traditions." aria-label="Hokkaido Pin"></button>
+            </div>
+
+            <div class="map-info-box">
+              <div id="map-title" class="map-info-title">Kyoto (Kinkaku-ji)</div>
+              <div id="map-desc" style="font-size: 0.9rem; margin-bottom: 0;">Heart of classic traditional culture, home to thousands of historic temples, Zen gardens, and imperial villas.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">
+            <img src="logo.svg" alt="" width="36" height="36">
+            <span>Japan History</span>
+          </div>
+          <p style="font-size: 0.9rem;">Dedicated to preserving and sharing the rich historical narrative, artistic tradition, and dynamic cultural heritage of Japan.</p>
+        </div>
+        <div>
+          <h4 class="footer-links-title">Quick Links</h4>
+          <ul class="footer-links-list">
+            <li><a href="#hero">Overview</a></li>
+            <li><a href="#timeline">Eras</a></li>
+            <li><a href="#culture">Arts & Bushido</a></li>
+            <li><a href="#legacy">Heritage Sites</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-links-title">Cultural Themes</h4>
+          <ul class="footer-links-list">
+            <li><a href="#culture">Jōmon Pottery</a></li>
+            <li><a href="#culture">Samurai Heritage</a></li>
+            <li><a href="#figures">Historic Leaders</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; Chronicles of Japan. Built for educational exploration.</div>
+        <div style="font-size: 0.8rem; color: var(--color-sand);">Photos: Wikimedia Commons</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mobile Menu Toggle
+      const toggleBtn = document.querySelector('.mobile-menu-toggle');
+      const navLinks = document.querySelector('.nav-links');
+
+      toggleBtn.addEventListener('click', () => {
+        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        toggleBtn.setAttribute('aria-expanded', !expanded);
+        navLinks.classList.toggle('open');
+      });
+
+      // Close menu when clicking link
+      document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          toggleBtn.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      // Scroll Observer for Animations
+      const observerOptions = {
+        threshold: 0.15,
+        rootMargin: "0px 0px -50px 0px"
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      // Interactive Map Logic
+      const pins = document.querySelectorAll('.map-pin');
+      const titleBox = document.getElementById('map-title');
+      const descBox = document.getElementById('map-desc');
+
+      pins.forEach(pin => {
+        pin.addEventListener('click', () => {
+          pins.forEach(p => p.classList.remove('active'));
+          pin.classList.add('active');
+          
+          titleBox.textContent = pin.getAttribute('data-title');
+          descBox.textContent = pin.getAttribute('data-desc');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
