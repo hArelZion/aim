@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="apple-mobile-web-app-title" content="China History">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="atlas-build" content="trrqnyyusaqffk4r6q3q">
+  <title>The Story of China | Five Millennia of Civilization</title>
+  <meta name="description" content="Explore the immersive history of China through five millennia of imperial dynasties, transformative inventions, and profound cultural heritage.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #0a0a0a;
+      --bg-ink: #1a0d0d;
+      --bg-card: rgba(26, 13, 13, 0.85);
+      --bg-paper: #f5f0e1;
+      --primary-red: #b22222;
+      --primary-red-glow: rgba(178, 34, 34, 0.4);
+      --jade-green: #2e8b57;
+      --gold: #d4af37;
+      --gold-light: #f3e5ab;
+      --text-light: #f5f0e1;
+      --text-muted: #a0988c;
+      --text-dark: #1a0d0d;
+      --border-gold: rgba(212, 175, 55, 0.3);
+      --font-display: 'Noto Serif SC', serif;
+      --font-body: 'Noto Sans SC', sans-serif;
+      --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+    }
+
+    body {
+      line-height: 1.7;
+      background: radial-gradient(circle at top, #241010 0%, #0a0a0a 70%);
+      min-height: 100vh;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4, .font-serif {
+      font-family: var(--font-display);
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 0.5rem;
+      letter-spacing: 1px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+      max-width: 650px;
+      margin: 0 auto 3.5rem auto;
+      font-family: var(--font-display);
+      font-style: italic;
+    }
+
+    a {
+      color: var(--gold);
+      text-decoration: none;
+      transition: color 0.3s var(--transition-smooth);
+    }
+
+    a:hover, a:focus-visible {
+      color: var(--gold-light);
+    }
+
+    /* Accessibility Focus */
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 4px;
+    }
+
+    /* Utility */
+    .container {
+      width: 90%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.85rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      background: rgba(212, 175, 55, 0.15);
+      color: var(--gold);
+      border: 1px solid var(--border-gold);
+    }
+
+    /* Header / Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-gold);
+      transition: all 0.4s var(--transition-smooth);
+    }
+
+    .navbar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--gold-light);
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      font-weight: 500;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--gold);
+      transition: width 0.3s var(--transition-smooth);
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 100px 0 60px;
+    }
+
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.35) contrast(1.1);
+      transform: scale(1.05);
+      animation: heroZoom 25s infinite alternate ease-in-out;
+    }
+
+    @keyframes heroZoom {
+      0% { transform: scale(1.05); }
+      100% { transform: scale(1.15); }
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(26, 13, 13, 0.4) 0%, rgba(10, 10, 10, 0.85) 90%);
+      z-index: 2;
+    }
+
+    #inkCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 4;
+      text-align: center;
+      max-width: 900px;
+      padding: 2rem;
+    }
+
+    .hero-title-cn {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      color: var(--primary-red);
+      letter-spacing: 6px;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 20px rgba(178, 34, 34, 0.6);
+    }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      color: var(--gold-light);
+      margin-bottom: 1.5rem;
+      text-shadow: 0 4px 15px rgba(0,0,0,0.8);
+      background: linear-gradient(135deg, #ffffff 0%, var(--gold-light) 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2vw, 1.5rem);
+      color: var(--text-light);
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+      max-width: 750px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.8;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.9rem 2.2rem;
+      background: linear-gradient(135deg, var(--primary-red) 0%, #800000 100%);
+      color: var(--text-light);
+      border: 1px solid var(--gold);
+      border-radius: 4px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 20px var(--primary-red-glow);
+      transition: all 0.3s var(--transition-smooth);
+    }
+
+    .hero-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(212, 175, 55, 0.4);
+      background: linear-gradient(135deg, #c42727 0%, var(--primary-red) 100%);
+      color: #fff;
+    }
+
+    /* Scroll Indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+    }
+
+    .scroll-indicator .mouse {
+      width: 24px;
+      height: 38px;
+      border: 2px solid var(--border-gold);
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .scroll-indicator .wheel {
+      width: 4px;
+      height: 8px;
+      background: var(--gold);
+      border-radius: 2px;
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: scrollWheel 2s infinite;
+    }
+
+    @keyframes scrollWheel {
+      0% { opacity: 1; top: 6px; }
+      100% { opacity: 0; top: 22px; }
+    }
+
+    /* Timeline Section */
+    .timeline-section {
+      padding: 100px 0;
+      position: relative;
+      background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-ink) 50%, var(--bg-dark) 100%);
+    }
+
+    .timeline {
+      position: relative;
+      max-width: 1000px;
+      margin: 3rem auto 0;
+      padding: 2rem 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: linear-gradient(180deg, transparent 0%, var(--gold) 15%, var(--primary-red) 50%, var(--gold) 85%, transparent 100%);
+      transform: translateX(-50%);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 4rem;
+      width: 50%;
+      padding-right: 3rem;
+      box-sizing: border-box;
+    }
+
+    .timeline-item:nth-child(even) {
+      left: 50%;
+      padding-right: 0;
+      padding-left: 3rem;
+    }
+
+    .timeline-node {
+      position: absolute;
+      top: 24px;
+      right: -10px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--bg-dark);
+      border: 3px solid var(--gold);
+      box-shadow: 0 0 10px var(--gold);
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    .timeline-item:nth-child(even) .timeline-node {
+      right: auto;
+      left: -10px;
+    }
+
+    .timeline-item:hover .timeline-node {
+      background: var(--primary-red);
+      transform: scale(1.3);
+      box-shadow: 0 0 15px var(--primary-red);
+    }
+
+    .timeline-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-gold);
+      border-radius: 8px;
+      padding: 1.8rem;
+      position: relative;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: transform 0.4s var(--transition-smooth), border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .timeline-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--gold);
+      box-shadow: 0 15px 35px rgba(212, 175, 55, 0.15);
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px dashed rgba(212, 175, 55, 0.2);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .dynasty-name {
+      font-size: 1.6rem;
+      color: var(--gold-light);
+    }
+
+    .dynasty-date {
+      font-size: 0.85rem;
+      color: var(--gold);
+      font-weight: 600;
+      background: rgba(212, 175, 55, 0.1);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    .timeline-desc {
+      color: #d1c7bd;
+      font-size: 0.95rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .achievement-box {
+      background: rgba(46, 139, 87, 0.1);
+      border-left: 3px solid var(--jade-green);
+      padding: 0.75rem 1rem;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .achievement-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--jade-green);
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .achievement-text {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    /* Visual Showcase Banner */
+    .showcase-banner {
+      padding: 80px 0;
+      background: radial-gradient(circle at center, #2e1010 0%, var(--bg-dark) 80%);
+      border-top: 1px solid var(--border-gold);
+      border-bottom: 1px solid var(--border-gold);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .gallery-card {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-gold);
+      aspect-ratio: 4/3;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    }
+
+    .gallery-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s var(--transition-smooth);
+    }
+
+    .gallery-card:hover img {
+      transform: scale(1.08);
+    }
+
+    .gallery-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 1.5rem 1rem 0.8rem;
+      background: linear-gradient(to top, rgba(10, 10, 10, 0.95) 0%, rgba(10, 10, 10, 0) 100%);
+      color: var(--gold-light);
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      text-align: center;
+    }
+
+    /* Inventions Section */
+    .inventions-section {
+      padding: 100px 0;
+      position: relative;
+      background: var(--bg-dark);
+    }
+
+    .inventions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .invention-card {
+      background: linear-gradient(145deg, rgba(26, 13, 13, 0.9) 0%, rgba(15, 10, 10, 0.95) 100%);
+      border: 1px solid var(--border-gold);
+      border-radius: 8px;
+      padding: 2.2rem 1.8rem;
+      text-align: center;
+      position: relative;
+      transition: all 0.4s var(--transition-smooth);
+    }
+
+    .invention-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--gold);
+      box-shadow: 0 12px 30px rgba(212, 175, 55, 0.2);
+    }
+
+    .invention-icon-wrapper {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 1.5rem;
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      transition: all 0.3s ease;
+    }
+
+    .invention-card:hover .invention-icon-wrapper {
+      background: var(--gold);
+      color: var(--bg-dark);
+      box-shadow: 0 0 20px var(--gold);
+    }
+
+    .invention-title {
+      font-size: 1.4rem;
+      color: var(--gold-light);
+      margin-bottom: 0.8rem;
+    }
+
+    .invention-desc {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Facts Grid Section */
+    .facts-section {
+      padding: 100px 0;
+      background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-ink) 100%);
+    }
+
+    .facts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .fact-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-gold);
+      border-radius: 8px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s var(--transition-smooth);
+    }
+
+    .fact-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--primary-red);
+      transition: width 0.3s ease;
+    }
+
+    .fact-card:hover::before {
+      width: 8px;
+    }
+
+    .fact-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      border-color: var(--gold);
+    }
+
+    .fact-number {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: rgba(212, 175, 55, 0.2);
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      line-height: 1;
+    }
+
+    .fact-title {
+      font-size: 1.25rem;
+      color: var(--gold-light);
+      margin-bottom: 0.8rem;
+      padding-right: 2rem;
+    }
+
+    .fact-body {
+      color: #c9c0b5;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .footer {
+      background: #050505;
+      border-top: 1px solid var(--border-gold);
+      padding: 60px 0 30px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand .brand-logo {
+      margin-bottom: 1rem;
+    }
+
+    .footer-text {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .footer-title {
+      color: var(--gold-light);
+      font-size: 1.1rem;
+      margin-bottom: 1.2rem;
+      font-family: var(--font-display);
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.6rem;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+    }
+
+    .footer-links a:hover {
+      color: var(--gold);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(212, 175, 55, 0.1);
+      padding-top: 1.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.82rem;
+    }
+
+    .credits {
+      color: var(--gold);
+    }
+
+    /* Animations Scroll Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s var(--transition-smooth), transform 0.8s var(--transition-smooth);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Media Queries */
+    @media (max-width: 868px) {
+      .timeline::before {
+        left: 20px;
+      }
+
+      .timeline-item {
+        width: 100%;
+        padding-left: 50px !important;
+        padding-right: 0 !important;
+      }
+
+      .timeline-item:nth-child(even) {
+        left: 0;
+      }
+
+      .timeline-node, .timeline-item:nth-child(even) .timeline-node {
+        left: 10px;
+        right: auto;
+      }
+
+      .nav-links {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: rgba(10, 10, 10, 0.98);
+        flex-direction: column;
+        padding: 2rem 0;
+        gap: 1.5rem;
+        transform: translateY(-150%);
+        transition: transform 0.4s var(--transition-smooth);
+        border-bottom: 1px solid var(--border-gold);
+      }
+
+      .nav-links.active {
+        transform: translateY(0);
+      }
+
+      .nav-toggle {
+        display: block;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="container navbar-container">
+      <a href="#hero" class="brand-logo" aria-label="The Story of China Homepage">
+        <img src="logo.svg" alt="" width="36" height="36">
+        <span>Story of China</span>
+      </a>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#hero" class="nav-link">Home</a></li>
+        <li><a href="#timeline" class="nav-link">Dynasties</a></li>
+        <li><a href="#inventions" class="nav-link">Inventions</a></li>
+        <li><a href="#facts" class="nav-link">Amazing Facts</a></li>
+        <li><a href="#gallery" class="nav-link">Heritage</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero" id="hero">
+    <div class="hero-bg">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Terracotta_Army_%2848815640098%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled" alt="Terracotta Army of China" decoding="async">
+    </div>
+    <div class="hero-overlay"></div>
+    <canvas id="inkCanvas"></canvas>
+
+    <div class="hero-content reveal">
+      <div class="hero-title-cn">中華五千年</div>
+      <h1 class="hero-title">The Story of China</h1>
+      <p class="hero-subtitle">Journey through five millennia of unbroken civilization, legendary dynasties, revolutionary ideas, and an enduring cultural legacy that shaped human history.</p>
+      <a href="#timeline" class="hero-cta">
+        <span>Explore The Dynasties</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div class="scroll-indicator">
+      <span>SCROLL</span>
+      <div class="mouse">
+        <div class="wheel"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Timeline Section -->
+  <section class="timeline-section" id="timeline">
+    <div class="container">
+      <span class="badge" style="display: block; width: fit-content; margin: 0 auto 0.8rem;">Chronology</span>
+      <h2>Chronicles of Dynasties</h2>
+      <p class="section-subtitle">Walk through the rise and fall of imperial houses that forged China’s culture, philosophy, and boundaries across millennia.</p>
+
+      <div class="timeline">
+        
+        <!-- Xia -->
+        <div class="timeline-item reveal">
+          <div class="timeline-node"></div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3 class="dynasty-name">Xia Dynasty</h3>
+              <span class="dynasty-date">c. 2070 – 1600 BCE</span>
+            </div>
+            <p class="timeline-desc">The legendary first dynasty of traditional Chinese history, established by Yu the Great following his miraculous taming of the Yellow River floods.</p>
+            <div class="achievement-box">
+              <div class="achievement-title">Key Achievement</div>
+              <div class="achievement-text">Transition from tribal chiefdoms to hereditary monarchy and bronze casting.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shang -->
+        <div class="timeline-item reveal">
+          <div class="timeline-node"></div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3 class="dynasty-name">Shang Dynasty</h3>
+              <span class="dynasty-date">c. 1600 – 1046 BCE</span>
+            </div>
+            <p class="timeline-desc">The earliest dynasty attested by archaeological evidence, famous for intricate bronze metallurgy and oracle bone divinations.</p>
+            <div class="achievement-box">
+              <div class="achievement-title">Key Achievement</div>
+              <div class="achievement-text">Creation of oracle bone script, the direct ancestor of modern Chinese characters.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zhou -->
+        <div class="timeline-item reveal">
+          <div class="timeline-node"></div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3 class="dynasty-name">Zhou Dynasty</h3>
+              <span class="dynasty-date">1046 – 256 BCE</span>
+            </div>
+            <p class="timeline-desc">The longest-lasting dynasty in Chinese history, introducing the concept of the "Mandate of Heaven" and giving birth to the golden age of Chinese philosophy.</p>
+            <div class="achievement-box">
+              <div class="achievement-title">Key Achievement</div>
+              <div class="achievement-text">Philosophical foundations of Confucianism, Daoism, and Legalism.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Qin -->
+        <div class="timeline-item reveal">
+          <div class="timeline-node"></div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3 class="dynasty-name">Qin Dynasty</h3>
+              <span class="dynasty-date">221 – 206 BCE</span>
+            </div>
+            <p class="timeline-desc">Founded by Qin Shi Huang, China's first Emperor who unified rival warring states into a centralized empire with standardized writing, currency, and weights.</p>
+            <div class="achievement-box">
+              <div class="achievement-title">Key Achievement</div>
+              <div class="achievement-text">Construction of the first Great Wall and the creation of the Terracotta Army.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Han -->
+        <div class="timeline-item reveal">
+          <div class="timeline-node"></div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3 class="dynasty-name">Han Dynasty</h3>
+              <span class="dynasty-date">202 BCE – 220 CE</span>
+            </div>
+            <p class="timeline-desc">A golden age of economic prosperity and cultural expansion. The ethnic majority of modern China still calls themselves the "Han people."</p>
+            <div class="achievement-box">
+              <div class="achievement-title">Key Achievement</div>
+              <div class="achievement-text">Opening of the Silk Road trade route and invention of papermaking.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tang -->
+        <div class="timeline-item reveal">
+          <div class="timeline-node"></div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3 class="dynasty-name">Tang Dynasty</h3>
+              <span class="dynasty-date">618 – 907 CE</span>
+            </div>
+            <p class="timeline-desc">Renowned as a cosmopolitan high point of Chinese civilization, celebrated for unprecedented flourishing of poetry, arts, and global trade.</p>
+            <div class="achievement-box">
+              <div class="achievement-title">Key Achievement</div>
+              <div class="achievement-text">Golden Age of Chinese Poetry (Li Bai, Du Fu) and woodblock printing.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Song -->
+        <div class="timeline-item reveal">
+          <div class="timeline-node"></div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3 class="dynasty-name">Song Dynasty</h3>
+              <span class="dynasty-date">960 – 1279 CE</span>
+            </div>
+            <p class="timeline-desc">An era of extraordinary intellectual and technological advancement, commercial revolution, and landscape painting mastery.</p>
+            <div class="achievement-box">
+              <div class="achievement-title">Key Achievement</div>
+              <div class="achievement-text">Invention of movable type printing, paper bank notes, and the magnetic compass.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Yuan -->
+        <div class="timeline-item reveal">
+          <div class="timeline-node"></div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3 class="dynasty-name">Yuan Dynasty</h3>
+              <span class="dynasty-date">1271 – 1368 CE</span>
+            </div>
+            <p class="timeline-desc">Established by Kublai Khan of the Mongol Empire, making Beijing its capital and welcoming foreign travelers like Marco Polo.</p>
+            <div class="achievement-box">
+              <div class="achievement-title">Key Achievement</div>
+              <div class="achievement-text">Unification of Eurasian trade networks and dramatic flourishing of Chinese opera.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ming -->
+        <div class="timeline-item reveal">
+          <div class="timeline-node"></div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3 class="dynasty-name">Ming Dynasty</h3>
+              <span class="dynasty-date">1368 – 1644 CE</span>
+            </div>
+            <p class="timeline-desc">A period of intense restoration of native Han rule, massive naval expeditions led by Zheng He, and exquisite porcelain production.</p>
+            <div class="achievement-box">
+              <div class="achievement-title">Key Achievement</div>
+              <div class="achievement-text">Construction of the Forbidden City and restoration of the Great Wall.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Qing -->
+        <div class="timeline-item reveal">
+          <div class="timeline-node"></div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3 class="dynasty-name">Qing Dynasty</h3>
+              <span class="dynasty-date">1644 – 1912 CE</span>
+            </div>
+            <p class="timeline-desc">China's last imperial dynasty, established by the Manchu people, expanding China's territorial footprint to its modern vast shape.</p>
+            <div class="achievement-box">
+              <div class="achievement-title">Key Achievement</div>
+              <div class="achievement-text">Compilation of the Siku Quanshu and territorial unification of modern frontiers.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modern China -->
+        <div class="timeline-item reveal">
+          <div class="timeline-node"></div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3 class="dynasty-name">Modern Era</h3>
+              <span class="dynasty-date">1912 – Present</span>
+            </div>
+            <p class="timeline-desc">From the end of imperial rule to today's global powerhouse, transforming into an economic leader in technological innovation and high-speed infrastructure.</p>
+            <div class="achievement-box">
+              <div class="achievement-title">Key Achievement</div>
+              <div class="achievement-text">Poverty alleviation, space exploration programs, and global economic leadership.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Showcase Gallery Section -->
+  <section class="showcase-banner" id="gallery">
+    <div class="container">
+      <span class="badge" style="display: block; width: fit-content; margin: 0 auto 0.8rem;">Visual Heritage</span>
+      <h2>Relics & Monuments</h2>
+      <p class="section-subtitle">Glimpse the craftsmanship and architectural marvels surviving across thousands of years.</p>
+
+      <div class="gallery-grid">
+        <div class="gallery-card reveal">
+          <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Qin_Terracotta_Warriors%2C_Pit_1_%289892900544%29.jpg/1280px-Qin_Terracotta_Warriors%2C_Pit_1_%289892900544%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="Qin Terracotta Warriors Pit 1" loading="lazy" decoding="async">
+          <div class="gallery-caption">Terracotta Army, Xi'an</div>
+        </div>
+
+        <div class="gallery-card reveal">
+          <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Chinese_Dragon_Pendant_TT-25.jpg/1280px-Chinese_Dragon_Pendant_TT-25.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="Ancient Jade Dragon Pendant" loading="lazy" decoding="async">
+          <div class="gallery-caption">Ancient Jade Dragon Artifact</div>
+        </div>
+
+        <div class="gallery-card reveal">
+          <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/4/42/Temple_In_Kaoshiung_%28263527991%29.jpeg/1280px-Temple_In_Kaoshiung_%28263527991%29.jpeg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="Traditional Pagoda and Temple" loading="lazy" decoding="async">
+          <div class="gallery-caption">Traditional Imperial Architecture</div>
+        </div>
+
+        <div class="gallery-card reveal">
+          <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Tuyyalar_karvoni.png/1280px-Tuyyalar_karvoni.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="Silk Road Caravan Depiction" loading="lazy" decoding="async">
+          <div class="gallery-caption">Silk Road Overland Trade</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Four Great Inventions Section -->
+  <section class="inventions-section" id="inventions">
+    <div class="container">
+      <span class="badge" style="display: block; width: fit-content; margin: 0 auto 0.8rem;">Innovation</span>
+      <h2>The Four Great Inventions</h2>
+      <p class="section-subtitle">Discover the four ancient discoveries of China that revolutionized global warfare, learning, navigation, and literature.</p>
+
+      <div class="inventions-grid">
+        
+        <!-- Paper -->
+        <div class="invention-card reveal">
+          <div class="invention-icon-wrapper">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <h3 class="invention-title">Paper Making</h3>
+          <p class="invention-desc">Perfected by Cai Lun during the Han Dynasty (c. 105 CE) using tree bark, hemp, and rags, replacing cumbersome bamboo strips and costly silk.</p>
+        </div>
+
+        <!-- Printing -->
+        <div class="invention-card reveal">
+          <div class="invention-icon-wrapper">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7zM14 14h3v3h-3z"/></svg>
+          </div>
+          <h3 class="invention-title">Printing Technique</h3>
+          <p class="invention-desc">Woodblock printing developed in Tang Dynasty, followed by Bi Sheng’s ceramic movable type printing in the Song Dynasty, accelerating global literacy.</p>
+        </div>
+
+        <!-- Gunpowder -->
+        <div class="invention-card reveal">
+          <div class="invention-icon-wrapper">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          </div>
+          <h3 class="invention-title">Gunpowder</h3>
+          <p class="invention-desc">Accidentally discovered by Daoist alchemists seeking immortality elixirs in the 9th century, transforming warfare and celebration fireworks globally.</p>
+        </div>
+
+        <!-- Compass -->
+        <div class="invention-card reveal">
+          <div class="invention-icon-wrapper">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          </div>
+          <h3 class="invention-title">Magnetic Compass</h3>
+          <p class="invention-desc">First created using lodestone in the Han Dynasty for feng shui, and later perfected into magnetic needles during the Song Dynasty for maritime navigation.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Amazing Facts Grid -->
+  <section class="facts-section" id="facts">
+    <div class="container">
+      <span class="badge" style="display: block; width: fit-content; margin: 0 auto 0.8rem;">Did You Know?</span>
+      <h2>Amazing Historical Facts</h2>
+      <p class="section-subtitle">Surprising milestones and curious secrets hidden within China's vast timeline.</p>
+
+      <div class="facts-grid">
+        <div class="fact-card reveal">
+          <div class="fact-number">01</div>
+          <h3 class="fact-title">World's Oldest Paper Money</h3>
+          <p class="fact-body">During the Song Dynasty, Chinese merchants introduced "Jiaozi", the first official government paper currency, 500 years before Europe adopted paper money.</p>
+        </div>
+
+        <div class="fact-card reveal">
+          <div class="fact-number">02</div>
+          <h3 class="fact-title">The Grand Canal Legend</h3>
+          <p class="fact-body">Spanning over 1,700 kilometers, China's Grand Canal is the longest and oldest artificial river in the world, built to ship grain directly to northern imperial capitals.</p>
+        </div>
+
+        <div class="fact-card reveal">
+          <div class="fact-number">03</div>
+          <h3 class="fact-title">Ice Cream Originated in China</h3>
+          <p class="fact-body">Around 200 BCE, a frozen mixture of milk, rice, and snow was served in China, laying the early groundwork for modern frozen desserts.</p>
+        </div>
+
+        <div class="fact-card reveal">
+          <div class="fact-number">04</div>
+          <h3 class="fact-title">The Great Wall Mortar Secret</h3>
+          <p class="fact-body">Ming Dynasty builders mixed sticky rice flour into mortar, creating a durable compound that helped the stone walls withstand centuries of earthquakes and erosion.</p>
+        </div>
+
+        <div class="fact-card reveal">
+          <div class="fact-number">05</div>
+          <h3 class="fact-title">The Giant Seismograph</h3>
+          <p class="fact-body">In 132 CE, polymath Zhang Heng invented the first seismoscope—a bronze vessel that dropped a bronze ball into a toad's mouth to indicate the direction of an earthquake.</p>
+        </div>
+
+        <div class="fact-card reveal">
+          <div class="fact-number">06</div>
+          <h3 class="fact-title">Ancient Tea Culture</h3>
+          <p class="fact-body">Tea was originally discovered as a medicinal herb around 2737 BCE before evolving into the refined cultural ceremony enjoyed around the world today.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#hero" class="brand-logo">
+            <img src="logo.svg" alt="" width="36" height="36">
+            <span>Story of China</span>
+          </a>
+          <p class="footer-text">An interactive digital museum experience bringing millennia of Eastern philosophy, technology, and art to the world stage.</p>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#timeline">Dynasty Timeline</a></li>
+            <li><a href="#inventions">Four Inventions</a></li>
+            <li><a href="#facts">Surprising Facts</a></li>
+            <li><a href="#gallery">Heritage Gallery</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Historical Eras</h4>
+          <ul class="footer-links">
+            <li><a href="#timeline">Classical Age (Zhou & Qin)</a></li>
+            <li><a href="#timeline">Imperial Expansion (Han & Tang)</a></li>
+            <li><a href="#timeline">Cultural Renaissance (Song)</a></li>
+            <li><a href="#timeline">Late Dynastic Era (Ming & Qing)</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; <span id="currentYear"></span> The Story of China. Museum-Grade Interactive Experience.</div>
+        <div class="credits">Photos: Wikimedia Commons</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile Nav Toggle
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    navToggle.addEventListener('click', () => {
+      const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+      navToggle.setAttribute('aria-expanded', !expanded);
+      navLinks.classList.toggle('active');
+    });
+
+    // Close nav on click
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        navToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Intersection Observer for Scroll Reveals
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.12
+    };
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => {
+      revealObserver.observe(el);
+    });
+
+    // Set Footer Year
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // Canvas Background Ink Animation (Subtile Ink Drops / Canvas Effect)
+    const canvas = document.getElementById('inkCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class InkParticle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 80 + 20;
+        this.alpha = Math.random() * 0.15 + 0.05;
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = (Math.random() - 0.5) * 0.3;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.beginPath();
+        let gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+        gradient.addColorStop(0, `rgba(178, 34, 34, ${this.alpha})`);
+        gradient.addColorStop(0.6, `rgba(26, 13, 13, ${this.alpha * 0.5})`);
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = gradient;
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    const particles = Array.from({ length: 25 }, () => new InkParticle());
+
+    function animateInk() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateInk);
+    }
+    animateInk();
+  </script>
+</body>
+</html>
