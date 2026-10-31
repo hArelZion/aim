@@ -1,8 +1,8 @@
 /* Atlas service worker: the app shell offline (network first for pages, stale-while-revalidate for css/js/fonts),
    and notifications that always show something (iOS drops subscriptions after silent pushes). */
-const CACHE = "atlas-20261031.2013";
-const SHELL = ["./", "index.html", "css/app.css?v=20261031.2013", "js/app.js?v=20261031.2013", "js/live.js?v=20261031.2013", "js/theater.js?v=20261031.2013",
-  "js/highlight.js?v=20261031.2013", "js/orb.js?v=20261031.2013", "js/reactors.js?v=20261031.2013", "skins/index.json", "worklets/mic.js", "worklets/player.js", "icons/icon-192.png", "manifest.webmanifest"];
+const CACHE = "atlas-20261031.2019";
+const SHELL = ["./", "index.html", "css/app.css?v=20261031.2019", "js/app.js?v=20261031.2019", "js/live.js?v=20261031.2019", "js/theater.js?v=20261031.2019",
+  "js/highlight.js?v=20261031.2019", "js/orb.js?v=20261031.2019", "js/reactors.js?v=20261031.2019", "skins/index.json", "worklets/mic.js", "worklets/player.js", "icons/icon-192.png", "manifest.webmanifest"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).catch(() => {})); self.skipWaiting(); });
 self.addEventListener("activate", (e) => e.waitUntil((async () => {
   for (const k of await caches.keys()) if (k !== CACHE) await caches.delete(k);
@@ -13,7 +13,7 @@ self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET" || /supabase\.co|googleapis\.com\/(v1|ws)|generativelanguage/.test(u.host + u.pathname)) return;
   if (u.origin === location.origin && !u.pathname.includes("/atlas")) return;   // other pages of the site (AIM, built sites)
   if (e.request.mode === "navigate") {
-    e.respondWith(fetch(e.request).then((r) => { const c = r.clone(); caches.open(CACHE).then((x) => x.put("index.html", c)); return r; })
+    e.respondWith(fetch(e.request, { cache: "no-store" }).then((r) => { const c = r.clone(); caches.open(CACHE).then((x) => x.put("index.html", c)); return r; })   // no-store: Pages pages are HTTP-cached for 10 min
       .catch(() => caches.match("index.html")));
     return;
   }
