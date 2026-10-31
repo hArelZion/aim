@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="apple-mobile-web-app-title" content="US History">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore the history of the United States: an interactive journey through pivotal eras, key historical figures, regional milestones, and curated historical archives.">
+  <meta name="atlas-build" content="5pz7bw4miod2scq7qznx">
+  <title>US History — An Interactive Historical Journey</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Playfair+Display:ital,wght@0,600;0,800;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy: #0A1F44;
+      --parchment: #F5E9D3;
+      --charcoal: #212529;
+      --gold: #D4AF37;
+      --crimson: #B22234;
+      --parchment-light: #FAF4E8;
+      --navy-light: #142E5C;
+      --navy-dark: #051024;
+      
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body: 'Merriweather', serif;
+
+      --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 100%;
+    }
+
+    body {
+      background-color: var(--parchment);
+      color: var(--charcoal);
+      font-family: var(--font-body);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* Accessibility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      line-height: 1.2;
+      color: var(--navy);
+    }
+
+    h1 { font-size: clamp(2.5rem, 5vw + 1rem, 4.5rem); }
+    h2 { font-size: clamp(1.8rem, 3vw + 1rem, 3rem); }
+    h3 { font-size: clamp(1.3rem, 2vw + 0.5rem, 1.8rem); }
+
+    p {
+      margin-bottom: 1.25rem;
+      font-size: clamp(0.95rem, 0.5vw + 0.8rem, 1.1rem);
+    }
+
+    /* Layout & Utilities */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    section {
+      padding: 5rem 0;
+      position: relative;
+    }
+
+    @media (min-width: 768px) {
+      section { padding: 7rem 0; }
+    }
+
+    .section-title-wrap {
+      text-align: center;
+      max-width: 750px;
+      margin: 0 auto 3.5rem;
+    }
+
+    .section-subtitle {
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.85rem;
+      color: var(--crimson);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .gold-divider {
+      height: 3px;
+      width: 80px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 1rem auto;
+    }
+
+    /* Header & Navigation */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(10, 31, 68, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      border-bottom: 2px solid var(--gold);
+      transition: all 0.3s ease;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--parchment);
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: 1px;
+    }
+
+    .brand img {
+      display: block;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--parchment);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-family: var(--font-body);
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      transition: color 0.2s ease;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--gold);
+      transition: width 0.3s var(--transition-smooth);
+    }
+
+    .nav-links a:hover {
+      color: var(--gold);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--parchment);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    /* Hero Section */
+    #hero {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, var(--navy-light) 100%);
+      color: var(--parchment);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 100px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg-pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.05;
+      background-image: radial-gradient(var(--gold) 1px, transparent 1px);
+      background-size: 30px 30px;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 850px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 0.35rem 1.25rem;
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      background: rgba(212, 175, 55, 0.05);
+    }
+
+    .hero h1 {
+      color: var(--parchment);
+      margin-bottom: 1.5rem;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    .hero h1 span {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .hero-lead {
+      font-size: clamp(1.1rem, 1vw + 0.9rem, 1.35rem);
+      color: var(--parchment-light);
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background-color: var(--crimson);
+      color: var(--parchment);
+      padding: 1rem 2rem;
+      border-radius: 2px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: 0 4px 15px rgba(178, 34, 52, 0.4);
+      transition: all 0.3s var(--transition-smooth);
+    }
+
+    .cta-button:hover {
+      background-color: #8c1a28;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(178, 34, 52, 0.6);
+      color: var(--parchment);
+    }
+
+    /* Timeline Section */
+    #timeline {
+      background-color: var(--parchment-light);
+      border-bottom: 1px solid rgba(10, 31, 68, 0.1);
+    }
+
+    .timeline-container {
+      position: relative;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 0;
+    }
+
+    .timeline-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: linear-gradient(180deg, var(--gold) 0%, var(--navy) 50%, var(--gold) 100%);
+      transform: translateX(-50%);
+    }
+
+    .timeline-item {
+      display: flex;
+      justify-content: flex-end;
+      padding-right: 30px;
+      position: relative;
+      margin-bottom: 4rem;
+      width: 50%;
+    }
+
+    .timeline-item:nth-child(even) {
+      align-self: flex-end;
+      justify-content: flex-start;
+      padding-left: 30px;
+      padding-right: 0;
+      margin-left: 50%;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      top: 20px;
+      right: -10px;
+      width: 20px;
+      height: 20px;
+      background: var(--gold);
+      border: 4px solid var(--navy);
+      border-radius: 50%;
+      z-index: 2;
+      transition: transform 0.3s ease;
+    }
+
+    .timeline-item:nth-child(even) .timeline-dot {
+      right: auto;
+      left: -10px;
+    }
+
+    .timeline-card {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 4px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+      border-top: 4px solid var(--navy);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .timeline-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+
+    .timeline-card:hover + .timeline-dot,
+    .timeline-item:hover .timeline-dot {
+      transform: scale(1.3);
+      background: var(--crimson);
+    }
+
+    .timeline-year {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--crimson);
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-art {
+      width: 100%;
+      height: 140px;
+      margin: 1rem 0;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--navy-dark);
+      color: var(--gold);
+    }
+
+    /* Key Figures Section */
+    #keyfigures {
+      background-color: var(--parchment);
+    }
+
+    .figures-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .figure-card {
+      background: var(--parchment-light);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 4px;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+      transition: all 0.3s var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .figure-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 25px rgba(10, 31, 68, 0.15);
+      border-color: var(--gold);
+    }
+
+    .figure-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin-bottom: 1.5rem;
+      border: 3px solid var(--gold);
+      padding: 5px;
+      background: var(--navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--parchment);
+    }
+
+    .figure-role {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--crimson);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .figure-quote {
+      font-style: italic;
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px dashed rgba(10, 31, 68, 0.2);
+    }
+
+    /* Interactive Map Section */
+    #interactivemap {
+      background: var(--navy);
+      color: var(--parchment);
+    }
+
+    #interactivemap h2, 
+    #interactivemap p {
+      color: var(--parchment);
+    }
+
+    .map-wrapper {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    @media (min-width: 992px) {
+      .map-wrapper {
+        grid-template-columns: 1.2fr 0.8fr;
+      }
+    }
+
+    .svg-map-container {
+      width: 100%;
+      background: var(--navy-dark);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .us-map-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .map-region {
+      fill: var(--navy-light);
+      stroke: var(--gold);
+      stroke-width: 1.5;
+      cursor: pointer;
+      transition: fill 0.3s ease, transform 0.2s ease;
+    }
+
+    .map-region:hover, .map-region.active {
+      fill: var(--crimson);
+    }
+
+    .map-info-panel {
+      background: var(--parchment-light);
+      color: var(--charcoal);
+      padding: 2.5rem;
+      border-radius: 6px;
+      border-left: 6px solid var(--gold);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .map-info-panel h3 {
+      color: var(--navy);
+      margin-bottom: 0.5rem;
+    }
+
+    .map-info-panel .region-tag {
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--crimson);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .map-milestones {
+      list-style-type: none;
+      margin-top: 1rem;
+    }
+
+    .map-milestones li {
+      position: relative;
+      padding-left: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }
+
+    .map-milestones li::before {
+      content: '★';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-size: 0.8rem;
+      top: 2px;
+    }
+
+    /* Resources Section */
+    #resources {
+      background-color: var(--parchment-light);
+    }
+
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .resource-card {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 4px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .resource-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    .resource-type {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 0.25rem 0.6rem;
+      background: var(--parchment);
+      color: var(--navy);
+      font-weight: 700;
+      border-radius: 2px;
+      align-self: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .resource-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .resource-link {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--crimson);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: gap 0.2s ease;
+    }
+
+    .resource-link:hover {
+      gap: 0.8rem;
+    }
+
+    /* Footer */
+    .footer {
+      background-color: var(--navy-dark);
+      color: var(--parchment);
+      padding: 4rem 0 2rem;
+      border-top: 3px solid var(--gold);
+      font-size: 0.9rem;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--parchment);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .footer-links h4,
+    .footer-quote-box h4 {
+      color: var(--gold);
+      font-size: 1.1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.6rem;
+    }
+
+    .footer-links a {
+      color: var(--parchment-light);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--gold);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      color: rgba(245, 233, 211, 0.6);
+      font-size: 0.85rem;
+    }
+
+    /* Animations & Scroll Reveals */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s var(--transition-smooth);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Mobile Responsive Adjustments */
+    @media (max-width: 767px) {
+      .nav-links {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background-color: var(--navy);
+        flex-direction: column;
+        padding: 2rem;
+        gap: 1.5rem;
+        transform: translateY(-150%);
+        transition: transform 0.4s ease;
+        border-bottom: 2px solid var(--gold);
+      }
+
+      .nav-links.active {
+        transform: translateY(0);
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .timeline-container::before {
+        left: 20px;
+      }
+
+      .timeline-item, 
+      .timeline-item:nth-child(even) {
+        width: 100%;
+        padding-left: 50px;
+        padding-right: 0;
+        margin-left: 0;
+        justify-content: flex-start;
+      }
+
+      .timeline-dot,
+      .timeline-item:nth-child(even) .timeline-dot {
+        left: 10px;
+        right: auto;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header & Navigation -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="#hero" class="brand">
+        <img src="logo.svg" alt="" width="36" height="36">
+        <span>US HISTORY</span>
+      </a>
+      <button class="mobile-menu-btn" aria-label="Toggle navigation menu" id="menuBtn">
+        &#9776;
+      </button>
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#hero">Overview</a></li>
+          <li><a href="#timeline">Timeline</a></li>
+          <li><a href="#keyfigures">Key Figures</a></li>
+          <li><a href="#interactivemap">Regional Map</a></li>
+          <li><a href="#resources">Resources</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section id="hero">
+      <div class="hero-bg-pattern"></div>
+      <div class="container hero-content">
+        <span class="hero-badge">An Interactive Chronicle</span>
+        <h1>The Epic Story of <span>America</span></h1>
+        <p class="hero-lead">
+          From the foundational ideals of liberty and democratic governance to modern cultural and industrial milestones, explore the complex, dynamic narrative of the United States.
+        </p>
+        <a href="#timeline" class="cta-button">
+          Explore The Timeline
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section id="timeline">
+      <div class="container">
+        <div class="section-title-wrap reveal">
+          <span class="section-subtitle">Chronological Journey</span>
+          <h2>Pivotal Moments in Time</h2>
+          <div class="gold-divider"></div>
+          <p>Key historical events that defined a nation's evolution, struggles, and triumphs.</p>
+        </div>
+
+        <div class="timeline-container">
+          
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-year">1776</span>
+              <h3>Declaration of Independence</h3>
+              <div class="timeline-art" aria-hidden="true">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              </div>
+              <p>The Thirteen Colonies declared independence from Great Britain, adopting Thomas Jefferson's document articulating unalienable rights to life, liberty, and the pursuit of happiness.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-year">1787</span>
+              <h3>The U.S. Constitution</h3>
+              <div class="timeline-art" aria-hidden="true">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+              </div>
+              <p>Delegates met in Philadelphia to frame a supreme law establishing a federal system with distinct separation of executive, legislative, and judicial powers.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-year">1861–1865</span>
+              <h3>The American Civil War</h3>
+              <div class="timeline-art" aria-hidden="true">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              </div>
+              <p>A devastating national conflict testing whether the Union would endure, ultimately resulting in the abolition of slavery and preservation of the United States.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-year">1920</span>
+              <h3>Women's Suffrage</h3>
+              <div class="timeline-art" aria-hidden="true">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
+              </div>
+              <p>The ratification of the 19th Amendment granted American women the constitutional right to vote after decades of organized advocacy and public assembly.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <span class="timeline-year">1969</span>
+              <h3>Apollo 11 Moon Landing</h3>
+              <div class="timeline-art" aria-hidden="true">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </div>
+              <p>Astronaut Neil Armstrong became the first human to step onto the lunar surface, marking a technological milestone during the space race age.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Figures Section -->
+    <section id="keyfigures">
+      <div class="container">
+        <div class="section-title-wrap reveal">
+          <span class="section-subtitle">Architects of Change</span>
+          <h2>Influential Historical Personalities</h2>
+          <div class="gold-divider"></div>
+          <p>Leaders, activists, and thinkers who profoundly shaped the American experience.</p>
+        </div>
+
+        <div class="figures-grid">
+          
+          <div class="figure-card reveal">
+            <div class="figure-avatar">
+              <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <span class="figure-role">1st US President</span>
+            <h3>George Washington</h3>
+            <p>Commander of the Continental Army and first President, establishing critical precedents for republican leadership and democratic transitions.</p>
+            <div class="figure-quote">"Observe good faith and justice toward all nations."</div>
+          </div>
+
+          <div class="figure-card reveal">
+            <div class="figure-avatar">
+              <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <span class="figure-role">16th US President</span>
+            <h3>Abraham Lincoln</h3>
+            <p>Guided the nation through the Civil War, preserved the Union, and issued the Emancipation Proclamation initiating the end of slavery.</p>
+            <div class="figure-quote">"Government of the people, by the people, for the people."</div>
+          </div>
+
+          <div class="figure-card reveal">
+            <div class="figure-avatar">
+              <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <span class="figure-role">Abolitionist & Author</span>
+            <h3>Frederick Douglass</h3>
+            <p>Escaped enslavement to become an orator, writer, and statesman advocating tirelessly for abolition and universal civil rights.</p>
+            <div class="figure-quote">"If there is no struggle, there is no progress."</div>
+          </div>
+
+          <div class="figure-card reveal">
+            <div class="figure-avatar">
+              <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <span class="figure-role">Civil Rights Leader</span>
+            <h3>Dr. Martin Luther King Jr.</h3>
+            <p>Championed nonviolent resistance during the Civil Rights Movement, inspiring sweeping legislation protecting voting rights and equality.</p>
+            <div class="figure-quote">"The arc of the moral universe is long, but it bends toward justice."</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Map Section -->
+    <section id="interactivemap">
+      <div class="container">
+        <div class="section-title-wrap reveal">
+          <span class="section-subtitle">Regional Discoveries</span>
+          <h2>Interactive Historical Map</h2>
+          <div class="gold-divider"></div>
+          <p>Select a region below to reveal localized historical milestones and cultural developments.</p>
+        </div>
+
+        <div class="map-wrapper reveal">
+          <div class="svg-map-container">
+            <svg class="us-map-svg" viewBox="0 0 800 500" aria-label="Interactive map of US Regions">
+              <!-- Schematic Regional Map Paths -->
+              <!-- Northeast -->
+              <path class="map-region active" data-region="ne" d="M620,100 L750,80 L780,160 L680,200 L620,150 Z" />
+              <!-- South -->
+              <path class="map-region" data-region="south" d="M480,250 L680,200 L720,380 L520,420 L480,320 Z" />
+              <!-- Midwest -->
+              <path class="map-region" data-region="mw" d="M400,120 L620,100 L620,250 L480,250 Z" />
+              <!-- West / Pacific -->
+              <path class="map-region" data-region="west" d="M100,80 L400,120 L480,320 L150,400 L80,200 Z" />
+            </svg>
+          </div>
+
+          <div class="map-info-panel" id="mapPanel">
+            <span class="region-tag" id="regionTag">Selected Region</span>
+            <h3 id="regionTitle">Northeast Region</h3>
+            <p id="regionDesc">The cradle of the American Revolution and early industrial expansion, characterized by maritime commerce, political assembly, and intellectual centers.</p>
+            <ul class="map-milestones" id="regionMilestones">
+              <li>1773: Boston Tea Party protest against colonial taxation</li>
+              <li>1787: Constitutional Convention held in Philadelphia</li>
+              <li>1800s: Rise of textile mills along New England rivers</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources">
+      <div class="container">
+        <div class="section-title-wrap reveal">
+          <span class="section-subtitle">Further Learning</span>
+          <h2>Curated Historical Archives</h2>
+          <div class="gold-divider"></div>
+          <p>Explore recommended primary documents, literature, and digital archives for deeper study.</p>
+        </div>
+
+        <div class="resources-grid">
+          
+          <div class="resource-card reveal">
+            <span class="resource-type">National Archives</span>
+            <h3>Founding Documents</h3>
+            <p>Access high-resolution scans and transcriptions of the Declaration of Independence, Constitution, and Bill of Rights.</p>
+            <a href="#resources" class="resource-link">
+              Explore Documents 
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+          </div>
+
+          <div class="resource-card reveal">
+            <span class="resource-type">Library of Congress</span>
+            <h3>Prints & Photographs</h3>
+            <p>Browse over a million digital photographs, maps, and illustrations spanning four centuries of American history.</p>
+            <a href="#resources" class="resource-link">
+              Browse Collection 
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+          </div>
+
+          <div class="resource-card reveal">
+            <span class="resource-type">Audio & Video</span>
+            <h3>Oral History Project</h3>
+            <p>Listen to recorded audio narratives and interviews from eyewitnesses to significant 20th-century events.</p>
+            <a href="#resources" class="resource-link">
+              Listen to Recordings 
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div>
+          <div class="footer-brand">
+            <img src="logo.svg" alt="" width="36" height="36">
+            <span>US History</span>
+          </div>
+          <p style="color: rgba(245, 233, 211, 0.8);">An interactive educational showcase dedicated to preserving and exploring the story of the United States.</p>
+        </div>
+
+        <div class="footer-links">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#hero">Overview</a></li>
+            <li><a href="#timeline">Timeline</a></li>
+            <li><a href="#keyfigures">Key Figures</a></li>
+            <li><a href="#interactivemap">Regional Map</a></li>
+            <li><a href="#resources">Resources</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-quote-box">
+          <h4>Historical Reflection</h4>
+          <p style="font-style: italic; color: rgba(245, 233, 211, 0.8);">"History, despite its wrenching pain, cannot be unlived, but if faced with courage, it need not be lived again."</p>
+          <span style="color: var(--gold); font-weight: 700;">— Maya Angelou</span>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; US History Educational Portal. Designed for modern interactive exploration.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mobile Navigation Toggle
+      const menuBtn = document.getElementById('menuBtn');
+      const navLinks = document.getElementById('navLinks');
+
+      menuBtn.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        const expanded = navLinks.classList.contains('active');
+        menuBtn.setAttribute('aria-expanded', expanded);
+      });
+
+      // Close mobile menu on link click
+      navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('active');
+        });
+      });
+
+      // Scroll Reveal Observer
+      const reveals = document.querySelectorAll('.reveal');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      }, { threshold: 0.15 });
+
+      reveals.forEach(el => observer.observe(el));
+
+      // Interactive Map Data & Logic
+      const regionData = {
+        ne: {
+          tag: "Northeast Region",
+          title: "Colonial Era & Constitutional Cradle",
+          desc: "The cradle of the American Revolution and early industrial expansion, characterized by maritime commerce, political assembly, and intellectual centers.",
+          milestones: [
+            "1773: Boston Tea Party protest against taxation",
+            "1787: Constitutional Convention held in Philadelphia",
+            "1800s: Rise of textile mills along New England rivers"
+          ]
+        },
+        south: {
+          tag: "Southern Region",
+          title: "Agrarian Foundations & Transformation",
+          desc: "Defined by rich agrarian traditions, complex social struggles, pivotal Civil War battlefields, and the birthplace of the Civil Rights Movement.",
+          milestones: [
+            "1863: Battle of Gettysburg and Gettysburg Address",
+            "1955: Montgomery Bus Boycott sparking national action",
+            "1964: Civil Rights Act transforming American law"
+          ]
+        },
+        mw: {
+          tag: "Midwest Region",
+          title: "Industrial Heartland & Expansion",
+          desc: "Known as America's agricultural and manufacturing engine, fostering major transportation networks, steel production, and cultural music hubs.",
+          milestones: [
+            "1803: Lewis & Clark expedition departs near St. Louis",
+            "1860s: Expansion of transcontinental rail networks",
+            "1908: Introduction of the Model T automobile in Detroit"
+          ]
+        },
+        west: {
+          tag: "Western Region",
+          title: "Frontier & Modern Innovation",
+          desc: "Marked by rapid migration during the Gold Rush, majestic national park preservation, and 20th-century technological breakthroughs.",
+          milestones: [
+            "1848: California Gold Rush accelerates westward settlement",
+            "1872: Yellowstone established as world's first national park",
+            "1970s: Rise of Silicon Valley technological innovation"
+          ]
+        }
+      };
+
+      const mapRegions = document.querySelectorAll('.map-region');
+      const regionTag = document.getElementById('regionTag');
+      const regionTitle = document.getElementById('regionTitle');
+      const regionDesc = document.getElementById('regionDesc');
+      const regionMilestones = document.getElementById('regionMilestones');
+
+      mapRegions.forEach(region => {
+        region.addEventListener('click', () => {
+          mapRegions.forEach(r => r.classList.remove('active'));
+          region.classList.add('active');
+
+          const key = region.getAttribute('data-region');
+          const data = regionData[key];
+
+          if (data) {
+            regionTag.textContent = data.tag;
+            regionTitle.textContent = data.title;
+            regionDesc.textContent = data.desc;
+            
+            regionMilestones.innerHTML = '';
+            data.milestones.forEach(item => {
+              const li = document.createElement('li');
+              li.textContent = item;
+              regionMilestones.appendChild(li);
+            });
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
