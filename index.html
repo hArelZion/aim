@@ -749,9 +749,12 @@ html[lang="en"] body.dr-open header, html[lang="en"] body.dr-open #glyphs, html[
 /* the pages behind Projects / Code / Files */
 #navBody { width: 100%; max-width: 480px; display: grid; gap: 6px; text-align: start; }
 #navBody .pgrp { color: var(--muted); font-size: .9rem; padding: 14px 4px 4px; display: flex; justify-content: space-between; }
-#navBody .ngrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-#navBody .ngrid button { aspect-ratio: 1; border: 0; padding: 0; border-radius: 10px; overflow: hidden; background: var(--surface); }
-#navBody .ngrid img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#navBody { min-width: 0; overflow: hidden; }
+#navBody .ngrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; width: 100%; }
+#navBody .ngrid button { position: relative; aspect-ratio: 1; border: 0; padding: 0; border-radius: 8px; overflow: hidden; background: var(--surface); min-width: 0; }
+#navBody .ngrid img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+#navBody .nsec { color: var(--muted); font-size: .9rem; padding: 12px 4px 2px; display: flex; justify-content: space-between; }
+#navBody .nfile small { color: var(--muted); flex: none; font-size: .8rem; }
 #navBody .nfile { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--ink); font: inherit; text-align: start; width: 100%; }
 #navBody .nfile svg { width: 20px; height: 20px; flex: none; color: var(--muted); }
 #navBody .nfile span, #navBody .nfile bdi { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
@@ -1076,7 +1079,7 @@ const I18N = {
     searchConvs: "חיפוש בכל השיחות…", noHits: "לא נמצא כלום.", pin: "הצמדה", unpin: "ביטול הצמדה", rename: "שינוי שם", renameAsk: "שם חדש לשיחה:", share: "ייצוא ושיתוף", exported: "השיחה נשמרה כקובץ",
     queued: "ממתין לרשת", queuedNote: "אין רשת. ההודעה תישלח לבד כשהחיבור יחזור.", fileErr: "הקובץ גדול מדי (עד 500MB).", upPart: "מעלה %s…",
     nudgeTxt: "הפעל התראות כדי לקבל רטט כשמשהו מסתיים, גם כשהאפליקציה סגורה.", nudgeGo: "הפעל",
-    pcTitle: "מצב המחשב", pcRefresh: "רענון", pcRefreshing: "מרענן…", pcNoAnswer: "המחשב לא ענה. האם הקו מחובר?", pcTokNote: "את ניצול הטוקנים רק Claude יכול לקרוא, והוא מתעדכן כש-Claude עובד.", battery: "סוללה", charging: "בטעינה", cpu: "מעבד", ram: "זיכרון", use5h: "ניצול 5 שעות", useWeek: "ניצול שבועי", resetsIn: "מתאפס ", lines: "מי מחובר", lineOn: "מחובר", lineWork: "עובד", lineOff: "לא מחובר", linePaused: "מושהה", pcOld: "עודכן ",
+    pcTitle: "מצב המחשב", pcRefresh: "רענון", pcRefreshing: "מרענן…", pcNoAnswer: "המחשב לא ענה. האם הקו מחובר?", pcTokNote: "את ניצול הטוקנים רק Claude יכול לקרוא: רענון מעיר אותו לקרוא אותו (עולה מעט מהמגבלה).", battery: "סוללה", charging: "בטעינה", cpu: "מעבד", ram: "זיכרון", use5h: "ניצול 5 שעות", useWeek: "ניצול שבועי", resetsIn: "מתאפס ", lines: "מי מחובר", lineOn: "מחובר", lineWork: "עובד", lineOff: "לא מחובר", linePaused: "מושהה", pcOld: "עודכן ",
   },
   en: {
     locale: "en-GB", yesterday: "Yesterday",
@@ -1126,7 +1129,7 @@ const I18N = {
     searchConvs: "Search all conversations…", noHits: "Nothing found.", pin: "Pin", unpin: "Unpin", rename: "Rename", renameAsk: "New name for the conversation:", share: "Export and share", exported: "Conversation saved as a file",
     queued: "Waiting for network", queuedNote: "No network. The message sends by itself when you're back online.", fileErr: "The file is too big (500MB max).", upPart: "Uploading %s…",
     nudgeTxt: "Turn on notifications to get a buzz when something finishes, even with the app closed.", nudgeGo: "Turn on",
-    pcTitle: "Computer", pcRefresh: "Refresh", pcRefreshing: "Refreshing…", pcNoAnswer: "The computer didn't answer. Is the line on?", pcTokNote: "Only Claude can read token usage; it updates while Claude works.", battery: "Battery", charging: "charging", cpu: "CPU", ram: "Memory", use5h: "5-hour usage", useWeek: "Weekly usage", resetsIn: "resets ", lines: "Who is connected", lineOn: "online", lineWork: "working", lineOff: "offline", linePaused: "paused", pcOld: "updated ",
+    pcTitle: "Computer", pcRefresh: "Refresh", pcRefreshing: "Refreshing…", pcNoAnswer: "The computer didn't answer. Is the line on?", pcTokNote: "Only Claude can read token usage: Refresh wakes Claude to read it (uses a little of the limit).", battery: "Battery", charging: "charging", cpu: "CPU", ram: "Memory", use5h: "5-hour usage", useWeek: "Weekly usage", resetsIn: "resets ", lines: "Who is connected", lineOn: "online", lineWork: "working", lineOff: "offline", linePaused: "paused", pcOld: "updated ",
   },
 };
 let lang = "he";
@@ -1392,11 +1395,12 @@ function usageTiles(k, head) {
 let pcAsk = 0, pcErr = false, pcTimer = null;
 function refreshPc() {
   pcAsk = Date.now(); pcErr = false; putCtl("pc-req", { at: pcAsk }); renderPc();
-  clearTimeout(pcTimer); pcTimer = setTimeout(() => { if (pcAsk) { pcAsk = 0; pcErr = true; renderPc(); } }, 20000);
+  clearTimeout(pcTimer); pcTimer = setTimeout(() => { if (pcAsk) { pcErr = +pc.req !== pcAsk; pcAsk = 0; renderPc(); } }, 60000);
 }
 function renderPc() {
   const box = $("pc"); if (!box) return; box.replaceChildren();
-  if (pcAsk && +pc.req === pcAsk) { pcAsk = 0; clearTimeout(pcTimer); }
+  // done when the computer answered AND Claude wrote the token usage after the press (the line wakes Claude for it)
+  if (pcAsk && +pc.req === pcAsk && (src() !== "claude" || toMs(pc.useAt) >= pcAsk - 2000)) { pcAsk = 0; clearTimeout(pcTimer); }
   const bar = el("div", "pcbar");
   bar.append(el("small", null, pcErr ? t("pcNoAnswer") : pc.at ? t("pcOld") + ago(Date.now() - toMs(pc.at)) : ""));
   const rb = el("button", "pcref" + (pcAsk ? " spin" : "")); rb.type = "button"; rb.disabled = !!pcAsk;
@@ -1419,7 +1423,7 @@ function renderPc() {
     list.append(r);
   });
   ln.append(list);
-  ln.append(el("small", null, t("pcTokNote")));
+  ln.append(el("small", null, t("pcTokNote") + (pc.useAt ? " · " + t("pcOld") + ago(Date.now() - toMs(pc.useAt)) : "")));
   box.append(ln);
 }
 
@@ -2311,13 +2315,23 @@ async function loadNavFiles(body) {
   if (navOpen !== "files") return;
   const paths = []; (error ? [] : data || []).forEach((m) => (Array.isArray(m.images) ? m.images : []).forEach((p) => paths.push({ p, conv: m.conv })));
   if (!paths.length) { body.append(el("div", "nohits", L.noFiles)); return; }
-  const pics = paths.filter((x) => IMG_EXT.test(x.p)).slice(0, 90), others = paths.filter((x) => !IMG_EXT.test(x.p)).slice(0, 60);
+  const seen = new Set(), uniq = paths.filter((x) => { const k = x.p.replace(PARTS_RE, ""); if (seen.has(k)) return false; seen.add(k); return true; });
+  const pics = uniq.filter((x) => IMG_EXT.test(x.p)).slice(0, 90), others = uniq.filter((x) => !IMG_EXT.test(x.p)).slice(0, 60);
+  const sec = (name, n) => { const h = el("div", "nsec"); h.append(el("b", null, name), el("span", null, String(n))); body.append(h); };
   if (pics.length) {
+    sec(lang === "en" ? "Photos" : "תמונות", pics.length);
     const grid = el("div", "ngrid"); body.append(grid);
     const urls = await signedUrls(pics.map((x) => x.p));
     pics.forEach((x, i) => { if (!urls[i]) return; const b = document.createElement("button"); b.type = "button"; const im = document.createElement("img"); im.loading = "lazy"; im.src = urls[i]; im.alt = ""; b.append(im); b.onclick = () => openConv(x.conv); grid.append(b); });
   }
-  others.forEach((x) => { const b = document.createElement("button"); b.type = "button"; b.className = "nfile"; b.innerHTML = ICON_FILE; b.append(el("span", null, fileName(x.p))); b.onclick = () => openConv(x.conv); body.append(b); });
+  if (others.length) sec(lang === "en" ? "Files" : "קבצים", others.length);
+  const cname = new Map(convs.map((c) => [c.id, c.title || t("untitled")]));
+  others.forEach((x) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "nfile"; b.innerHTML = ICON_FILE;
+    const bi = document.createElement("bdi"); bi.textContent = fileName(x.p); b.append(bi);
+    b.append(el("small", null, (fileName(x.p).split(".").pop() || "").toUpperCase().slice(0, 4)));
+    b.title = cname.get(x.conv) || ""; b.onclick = () => openConv(x.conv); body.append(b);
+  });
 }
 $("drScrim").onclick = closeDrawer;
 $("drChats").onclick = () => { closeDrawer(); $("convSheet").hidden = false; loadConvs(); };
