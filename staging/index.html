@@ -715,6 +715,47 @@ button:not(.send), .conv, .qopt { transition: transform 180ms cubic-bezier(.34, 
 .is-pressed:not(.toggle):not(summary) { transform: scale(.93); transition-duration: 80ms; }
 summary.is-pressed { opacity: .6; }
 @media (prefers-reduced-motion: reduce) { .is-pressed { transform: none !important; } }
+
+/* ---------- side drawer, like the Claude app: the page slides aside, the drawer has the sections, recent chats,
+   the account circle (settings) and a floating New chat ---------- */
+:root { --drw: min(80vw, 330px); }
+#drawer { position: fixed; inset-block: 0; right: 0; width: var(--drw); z-index: 70; background: var(--bg); display: flex; flex-direction: column;
+  transform: translateX(100%); transition: transform .32s cubic-bezier(.2,.8,.2,1), visibility 0s .32s; visibility: hidden;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+html[lang="en"] #drawer { right: auto; left: 0; transform: translateX(-100%); }
+body.dr-open #drawer { transform: none; visibility: visible; transition: transform .32s cubic-bezier(.2,.8,.2,1); }
+#drScrim { position: fixed; inset: 0; z-index: 69; background: rgba(0,0,0,.28); border-radius: 30px; border: 1px solid var(--line); opacity: 0; pointer-events: none;
+  transition: opacity .32s, transform .32s cubic-bezier(.2,.8,.2,1); }
+body.dr-open #drScrim { opacity: 1; pointer-events: auto; }
+header, #glyphs, #scroller, footer { transition: transform .32s cubic-bezier(.2,.8,.2,1); }
+body.dr-open header, body.dr-open #glyphs, body.dr-open #scroller, body.dr-open footer, body.dr-open #drScrim { transform: translateX(calc(-1 * var(--drw))); }
+html[lang="en"] body.dr-open header, html[lang="en"] body.dr-open #glyphs, html[lang="en"] body.dr-open #scroller, html[lang="en"] body.dr-open footer, html[lang="en"] body.dr-open #drScrim { transform: translateX(var(--drw)); }
+#drawer .dhead { font-family: var(--font-serif, Georgia, serif); font-size: 1.85rem; font-weight: 500; padding: 22px 22px 14px; color: var(--ink); }
+#drawer .dnav, #drawer .drec { display: grid; grid-template-columns: minmax(0, 1fr); padding: 0 10px; }
+#drawer { overflow: hidden; }
+#drawer .dnav button, #drawer .drec button { display: flex; align-items: center; gap: 16px; width: 100%; min-height: 52px; padding: 0 12px; border: 0; border-radius: 12px; background: none; color: var(--ink); font: inherit; font-size: 1.12rem; text-align: start; cursor: pointer; }
+#drawer .dnav button:active, #drawer .drec button:active, #drawer .drec button[aria-current="true"] { background: var(--bubble); }
+#drawer svg { width: 24px; height: 24px; flex: none; }
+#drawer .dsec { color: var(--muted); font-size: .95rem; padding: 18px 22px 6px; }
+#drawer .dscroll { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 96px; -webkit-mask-image: linear-gradient(#000 calc(100% - 90px), transparent); mask-image: linear-gradient(#000 calc(100% - 90px), transparent); }
+#drawer .drec button { min-height: 48px; font-size: 1.05rem; }
+#drawer bdi { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
+#drawer .drec .pin { color: var(--muted); font-size: .8rem; }
+#drawer .dempty { color: var(--muted); padding: 8px 22px; font-size: .95rem; }
+#drawer .dfoot { position: absolute; inset-inline: 0; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; pointer-events: none; }
+#drawer .dfoot > * { pointer-events: auto; }
+#drawer .dav { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-weight: 600; font-size: 1.1rem; box-shadow: 0 4px 16px rgba(0,0,0,.25); }
+#drawer .dnew { display: inline-flex; align-items: center; gap: 10px; height: 52px; padding: 0 22px; border-radius: 999px; border: 0; background: var(--ink); color: var(--bg); font: inherit; font-size: 1.05rem; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,.3); }
+#drawer .dnew svg { width: 20px; height: 20px; }
+/* the pages behind Projects / Code / Files */
+#navBody { width: 100%; max-width: 480px; display: grid; gap: 6px; text-align: start; }
+#navBody .pgrp { color: var(--muted); font-size: .9rem; padding: 14px 4px 4px; display: flex; justify-content: space-between; }
+#navBody .ngrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+#navBody .ngrid button { aspect-ratio: 1; border: 0; padding: 0; border-radius: 10px; overflow: hidden; background: var(--surface); }
+#navBody .ngrid img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#navBody .nfile { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--ink); font: inherit; text-align: start; width: 100%; }
+#navBody .nfile svg { width: 20px; height: 20px; flex: none; color: var(--muted); }
+#navBody .nfile span, #navBody .nfile bdi { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
 </style>
 </head>
 <body>
@@ -770,6 +811,10 @@ summary.is-pressed { opacity: .6; }
       <div class="pcsess" id="pcSess"></div>
     </div>
   </div>
+  <div class="sheet" id="navSheet" hidden>
+    <div class="sbar2"><button type="button" class="icon-btn sclose" data-t-aria="closeX"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button><b id="navTitle"></b></div>
+    <div class="wrap sheet-in"><h2 id="navH"></h2><div id="navBody"></div></div>
+  </div>
   <div class="sheet" id="sheet" hidden>
     <div class="sbar2"><button type="button" class="icon-btn sclose" data-t-aria="closeX"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button><b data-t="settings"></b></div>
     <div class="wrap sheet-in">
@@ -805,6 +850,25 @@ summary.is-pressed { opacity: .6; }
     </div>
   </div>
 </header>
+<div id="drScrim" aria-hidden="true"></div>
+<aside id="drawer" aria-hidden="true">
+  <div class="dhead" id="drTitle">Claude</div>
+  <div class="dscroll">
+    <nav class="dnav">
+      <button type="button" id="drChats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a7 7 0 1 1 2.8 5.6L4 18l.9-3A7 7 0 0 1 4 11z"/><circle cx="17" cy="17" r="3.2"/><path d="m19.4 19.4 1.8 1.8"/></svg><span></span></button>
+      <button type="button" id="drProjects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10M5.5 7h13"/><rect x="4" y="10" width="16" height="10" rx="2"/></svg><span></span></button>
+      <button type="button" id="drCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg><span></span></button>
+      <button type="button" id="drFiles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="12" height="14" rx="2"/><path d="M8 7H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2"/></svg><span></span></button>
+    </nav>
+    <div class="dsec" id="drRecentsT"></div>
+    <div class="drec" id="drRecents"></div>
+  </div>
+  <div class="dfoot">
+    <button type="button" class="dav" id="drAvatar">H</button>
+    <button type="button" class="dnew" id="drNew"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span></span></button>
+  </div>
+</aside>
+
 
 <canvas id="glyphs" aria-hidden="true"></canvas>
 <main id="scroller">
@@ -1219,7 +1283,7 @@ function autoTitle(row) {
   sb.from("conversations").update({ title }).eq("id", id).then(() => loadConvs(), () => {});
 }
 $("newBtn").onclick = newChat;
-function closeSheets() { $("sheet").hidden = true; $("convSheet").hidden = true; $("gear").setAttribute("aria-expanded", "false"); $("convBtn").setAttribute("aria-expanded", "false"); }
+function closeSheets() { $("sheet").hidden = true; $("convSheet").hidden = true; $("navSheet").hidden = true; navOpen = null; $("gear").setAttribute("aria-expanded", "false"); $("convBtn").setAttribute("aria-expanded", "false"); }
 document.querySelectorAll(".sclose").forEach((b) => { b.onclick = closeSheets; });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheets(); });
 $("moreBtn").onclick = (e) => { e.stopPropagation(); const open = $("menu").hidden; $("menu").hidden = !open; $("moreBtn").setAttribute("aria-expanded", String(open)); };
@@ -1638,10 +1702,12 @@ function toast(s) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { n.hidden = true; }, 1800);
 }
 /* the Claude app's sidebar, read by the computer (aim_model.py state, control row "model".sessions) */
-function renderSessions() {
-  const box = $("pcSess"); if (!box) return; box.replaceChildren();
+function renderSessions(target) {
+  if (!target && navOpen === "code") renderSessions($("navBody"));
+  const box = target || $("pcSess"); if (!box) return; box.replaceChildren();
   const list = Array.isArray(mstate.sessions) ? mstate.sessions : [];
-  box.previousElementSibling.hidden = !list.length;
+  if (!target) box.previousElementSibling.hidden = !list.length;
+  if (target && !list.length) box.append(el("div", "nohits", DL().noCode));
   let folder = null;
   list.forEach((x) => {
     if (x.folder !== folder) { folder = x.folder; box.append(el("div", "sfold", folder || t("pinnedS"))); }
@@ -2155,8 +2221,9 @@ function iconBtn(cls, svg, label, fn, pressed) {
   b.onclick = (e) => { e.stopPropagation(); fn(); };
   return b;
 }
-const openConv = (id) => { viewConv = id; $("convSheet").hidden = true; $("convBtn").setAttribute("aria-expanded", "false"); $("convSearch").value = ""; loadMessages(); renderConvs(); };
+const openConv = (id) => { viewConv = id; $("convSheet").hidden = true; $("navSheet").hidden = true; navOpen = null; closeDrawer(); $("convBtn").setAttribute("aria-expanded", "false"); $("convSearch").value = ""; loadMessages(); renderConvs(); };
 function renderConvs() {
+  renderDrawer();
   const list = $("convList"); list.replaceChildren();
   $("convSearch").placeholder = t("searchConvs");
   if ($("convSearch").value.trim().length >= 2) { renderHits(); return; }
@@ -2178,6 +2245,101 @@ function renderConvs() {
     list.append(row);
   });
 }
+
+/* ---------- side drawer (☰): sections, recent chats, account circle, New chat ---------- */
+const DLS = {
+  he: { chats: "שיחות", projects: "פרויקטים", code: "קוד", files: "קבצים", recents: "אחרונות", newChat: "שיחה חדשה", none: "אין עדיין שיחות", noProj: "בלי פרויקט", noCode: "אין כרגע רשימה מהמחשב. פתח את הקו במחשב (/phone).", noFiles: "עוד לא נשלחו תמונות או קבצים בשיחות האלה.", codeH: "השיחות של Claude Code במחשב", filesH: "תמונות וקבצים מהשיחות" },
+  en: { chats: "Chats", projects: "Projects", code: "Code", files: "Files", recents: "Recents", newChat: "New chat", none: "No chats yet", noProj: "No project", noCode: "No list from the computer yet. Turn the line on there (/phone).", noFiles: "No photos or files in these chats yet.", codeH: "Claude Code sessions on the computer", filesH: "Photos and files from your chats" }
+};
+const DL = () => DLS[lang] || DLS.he;
+let navOpen = null, userInitial = "H";
+const I_BUBBLE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 1 3.2 6.4L4 20l1-3.4A7.9 7.9 0 0 1 4 12z"/></svg>';
+function openDrawer() {
+  closeSheets(); renderDrawer();
+  document.body.classList.add("dr-open"); $("drawer").setAttribute("aria-hidden", "false"); $("convBtn").setAttribute("aria-expanded", "true");
+  loadConvs();
+}
+function closeDrawer() {
+  document.body.classList.remove("dr-open"); $("drawer").setAttribute("aria-hidden", "true"); $("convBtn").setAttribute("aria-expanded", "false");
+}
+function sortedConvs() {
+  const mine = convs.filter((cv) => convKind(cv.id) === model);
+  return mine.sort((a, b) => (pins.includes(b.id) ? 1 : 0) - (pins.includes(a.id) ? 1 : 0));
+}
+function convBtnEl(cv) {
+  const b = document.createElement("button"); b.type = "button"; b.innerHTML = I_BUBBLE;
+  b.setAttribute("aria-current", String(cv.id === viewConv));
+  const bi = document.createElement("bdi"); bi.textContent = cv.title || t("untitled"); b.append(bi);
+  if (pins.includes(cv.id)) b.append(el("span", "pin", "📌"));
+  b.onclick = () => openConv(cv.id);
+  return b;
+}
+function renderDrawer() {
+  if (!$("drawer")) return;
+  const L = DL();
+  $("drTitle").textContent = model === "team" ? "AIM" : (AUTHORS[model] || AUTHORS.claude).name;
+  [["drChats", "chats"], ["drProjects", "projects"], ["drCode", "code"], ["drFiles", "files"]].forEach(([id, k]) => { $(id).querySelector("span").textContent = L[k]; });
+  $("drRecentsT").textContent = L.recents; $("drNew").querySelector("span").textContent = L.newChat;
+  $("drAvatar").textContent = userInitial; $("drAvatar").setAttribute("aria-label", t("settings"));
+  const box = $("drRecents"); box.replaceChildren();
+  const list = sortedConvs().slice(0, 40);
+  if (!list.length) box.append(el("div", "dempty", L.none));
+  list.forEach((cv) => box.append(convBtnEl(cv)));
+}
+function openNav(kind) {
+  const L = DL(); closeDrawer(); closeSheets(); navOpen = kind;
+  $("navTitle").textContent = L[kind]; $("navH").textContent = kind === "code" ? L.codeH : kind === "files" ? L.filesH : L[kind];
+  const body = $("navBody"); body.replaceChildren();
+  $("navSheet").hidden = false;
+  if (kind === "projects") {
+    const groups = new Map();
+    sortedConvs().forEach((cv) => { const k = cv.project || ""; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(cv); });
+    if (!groups.size) body.append(el("div", "nohits", L.none));
+    [...groups.entries()].sort((a, b) => (a[0] ? 0 : 1) - (b[0] ? 0 : 1)).forEach(([k, cvs]) => {
+      const h = el("div", "pgrp"); h.append(el("b", null, k || L.noProj), el("span", null, String(cvs.length))); body.append(h);
+      cvs.forEach((cv) => { const b = convBtnEl(cv); b.className = "nfile"; body.append(b); });
+    });
+  } else if (kind === "code") {
+    renderSessions(body);
+  } else if (kind === "files") {
+    loadNavFiles(body);
+  }
+}
+async function loadNavFiles(body) {
+  const L = DL(), ids = sortedConvs().map((c) => c.id);
+  if (!ids.length) { body.append(el("div", "nohits", L.noFiles)); return; }
+  const { data, error } = await sb.from("messages").select("id,conv,images,ts").in("conv", ids.slice(0, 150)).not("images", "is", null).order("ts", { ascending: false }).limit(120);
+  if (navOpen !== "files") return;
+  const paths = []; (error ? [] : data || []).forEach((m) => (Array.isArray(m.images) ? m.images : []).forEach((p) => paths.push({ p, conv: m.conv })));
+  if (!paths.length) { body.append(el("div", "nohits", L.noFiles)); return; }
+  const pics = paths.filter((x) => IMG_EXT.test(x.p)).slice(0, 90), others = paths.filter((x) => !IMG_EXT.test(x.p)).slice(0, 60);
+  if (pics.length) {
+    const grid = el("div", "ngrid"); body.append(grid);
+    const urls = await signedUrls(pics.map((x) => x.p));
+    pics.forEach((x, i) => { if (!urls[i]) return; const b = document.createElement("button"); b.type = "button"; const im = document.createElement("img"); im.loading = "lazy"; im.src = urls[i]; im.alt = ""; b.append(im); b.onclick = () => openConv(x.conv); grid.append(b); });
+  }
+  others.forEach((x) => { const b = document.createElement("button"); b.type = "button"; b.className = "nfile"; b.innerHTML = ICON_FILE; b.append(el("span", null, fileName(x.p))); b.onclick = () => openConv(x.conv); body.append(b); });
+}
+$("drScrim").onclick = closeDrawer;
+$("drChats").onclick = () => { closeDrawer(); $("convSheet").hidden = false; loadConvs(); };
+$("drProjects").onclick = () => openNav("projects");
+$("drCode").onclick = () => openNav("code");
+$("drFiles").onclick = () => openNav("files");
+$("drNew").onclick = () => { closeDrawer(); newChat(); };
+$("drAvatar").onclick = () => { closeDrawer(); $("gear").onclick(); };
+/* swipe the drawer (or the dimmed page) back toward its edge to close it */
+(function drawerSwipe() {
+  let x0 = null, y0 = 0;
+  const start = (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; };
+  const end = (e) => {
+    if (x0 == null) return; const t0 = e.changedTouches[0], dx = t0.clientX - x0, dy = t0.clientY - y0; x0 = null;
+    if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
+    const rtl = getComputedStyle(document.documentElement).direction === "rtl";
+    if ((rtl && dx > 0) || (!rtl && dx < 0)) closeDrawer();
+  };
+  [$("drawer"), $("drScrim")].forEach((n) => { n.addEventListener("touchstart", start, { passive: true }); n.addEventListener("touchend", end, { passive: true }); });
+})();
+sb.auth.getSession().then(({ data }) => { const em = data && data.session && data.session.user && data.session.user.email; if (em) { userInitial = em[0].toUpperCase(); renderDrawer(); } });
 async function togglePin(id) {
   pins = pins.includes(id) ? pins.filter((x) => x !== id) : [id].concat(pins);
   renderConvs();
@@ -2914,7 +3076,7 @@ $("autoRead").checked = autoRead();
 $("autoRead").hidden = $("autoRead").parentNode.hidden = !window.speechSynthesis;
 $("autoRead").onchange = () => { try { localStorage.setItem("aim-autoread", $("autoRead").checked ? "1" : "0"); } catch (e) {} if (!$("autoRead").checked) stopSpeak(); };
 $("gear").onclick = () => { const open = $("sheet").hidden; if (open) renderMembers(); $("sheet").hidden = !open; $("gear").setAttribute("aria-expanded", String(open)); $("convSheet").hidden = true; $("convBtn").setAttribute("aria-expanded", "false"); };
-$("convBtn").onclick = () => { const open = $("convSheet").hidden; $("convSheet").hidden = !open; $("convBtn").setAttribute("aria-expanded", String(open)); $("sheet").hidden = true; $("gear").setAttribute("aria-expanded", "false"); if (open) loadConvs(); };
+$("convBtn").onclick = () => openDrawer();
 $("pauseBtn").onclick = () => saveSettings({ [modeKey()]: isOff() ? "on" : "off" });
 $("signOutBtn").onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
