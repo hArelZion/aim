@@ -1243,7 +1243,20 @@ function conn() {
   return "offline";
 }
 function near() { const sc = $("scroller"); return sc.scrollHeight - sc.scrollTop - sc.clientHeight < 140; }
-function toBottom() { const sc = $("scroller"); sc.scrollTop = sc.scrollHeight; }
+/* while the finger is on the chat (and the fling after it) nothing pulls the view to the bottom: a new message,
+   the typing animation, the thinking row or the iOS toolbar resizing no longer throw you back down mid-scroll */
+let touching = false, lastUserScroll = 0;
+function userScrolling() { return touching || Date.now() - lastUserScroll < 900; }
+(function trackUserScroll() {
+  const sc = $("scroller"), mark = () => { lastUserScroll = Date.now(); };
+  sc.addEventListener("touchstart", () => { touching = true; mark(); }, { passive: true });
+  sc.addEventListener("touchmove", mark, { passive: true });
+  const up = () => { touching = false; mark(); };
+  sc.addEventListener("touchend", up, { passive: true }); sc.addEventListener("touchcancel", up, { passive: true });
+  sc.addEventListener("wheel", mark, { passive: true });
+  sc.addEventListener("scroll", () => { if (touching || Date.now() - lastUserScroll < 900) mark(); }, { passive: true });   // the fling keeps it alive
+})();
+function toBottom(force) { if (!force && userScrolling()) return; const sc = $("scroller"); sc.scrollTop = sc.scrollHeight; }
 
 function renderHeader() {
   const c = ready ? conn() : "connecting";
@@ -1567,7 +1580,7 @@ function renderThread() {
   renderFiles();
   msgs.forEach((m) => known.add(m.id));
   firstLoad = false;
-  if (stick) toBottom(); else $("scroller").scrollTop = keepTop;
+  if (stick) toBottom(); else if (!userScrolling()) $("scroller").scrollTop = keepTop;
   animate.forEach((b) => typeOut(b, stick));
 }
 /* editing a message I sent: the text is corrected in place and, if it was already read, marked unread again so the model reads the corrected version */
@@ -1960,7 +1973,7 @@ function typeOut(node, stick) {
   const step = (ts) => {
     let k = Math.ceil(total * Math.min(1, (ts - start) / dur));
     for (const [tn, full] of parts) { const take = Math.min(k, full.length); tn.nodeValue = full.slice(0, take); k -= take; }
-    if (stick) toBottom();
+    if (stick && near()) toBottom();
     if (ts - start < dur) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
@@ -2917,15 +2930,17 @@ const MAX_PICS = 10;
   const set = () => {
     const was = stuck;
     document.documentElement.style.setProperty("--app-h", vv.height + "px"); document.body.style.top = vv.offsetTop + "px";
-    if (was) requestAnimationFrame(() => { sc.scrollTop = sc.scrollHeight; stuck = true; });
+    const h = vv.height, grew = h !== lastH; lastH = h;
+    if (was && grew && !userScrolling()) requestAnimationFrame(() => { sc.scrollTop = sc.scrollHeight; stuck = true; });
   };
+  let lastH = 0;
   vv.addEventListener("resize", set); vv.addEventListener("scroll", set); set();
   /* turning the phone: iOS reports the new size late and leaves the page scrolled or zoomed, so measure again a few
      times after the turn and put the page back at the top */
   const turned = () => { [60, 250, 600].forEach((ms) => setTimeout(() => { window.scrollTo(0, 0); set(); }, ms)); };
   window.addEventListener("orientationchange", turned);
   if (screen.orientation) screen.orientation.addEventListener("change", turned);
-  if (window.ResizeObserver) new ResizeObserver(() => { if (stuck) sc.scrollTop = sc.scrollHeight; }).observe(sc);
+  if (window.ResizeObserver) new ResizeObserver(() => { if (stuck && !userScrolling()) sc.scrollTop = sc.scrollHeight; }).observe(sc);
 })();
 /* press feedback: Safari on iOS runs :active only with a touch listener, so presses are tracked here; a pressed
    control sinks a little (.is-pressed stays at least 120 ms so a quick tap still shows) and every tap gives a light
@@ -3318,7 +3333,7 @@ async function sendMsg(text, pics, fromComposer) {
   if (lastAi && lastAi.kind === "question" && !msgs.slice(msgs.indexOf(lastAi) + 1).some((m) => m.sender === "me")) { row.kind = "answer"; row.reply_to = lastAi.id; }
   const done = () => {
     if (!fromComposer) return;
-    ta.value = ""; fit(); toBottom();
+    ta.value = ""; fit(); toBottom(true);
     pics.forEach((p) => { if (p.preview) URL.revokeObjectURL(p.preview); }); picked = []; renderPicked();
     try { localStorage.removeItem(draftKey()); } catch (e2) {}
   };
