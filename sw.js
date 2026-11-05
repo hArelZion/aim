@@ -7,8 +7,10 @@ self.addEventListener("push", (e) => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch (_) {}
   e.waitUntil((async () => {
+    // Always show something: iOS revokes the subscription after pushes that show nothing. The computer already skips
+    // the device that has the app on screen (presence per device), so this is quiet when it still happens.
     const list = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
-    if (list.some((c) => c.visibilityState === "visible")) return;   // already looking at the app
+    const looking = list.some((c) => c.visibilityState === "visible");
     const o = {
       body: d.body || "", tag: "aim-" + (d.conv || "x"), renotify: true,
       icon: "icon-192.png?v=3", badge: "favicon-32.png?v=3", vibrate: [250, 120, 250],
@@ -18,6 +20,7 @@ self.addEventListener("push", (e) => {
     if (d.url) {}   // a link: one tap opens it
     else if (d.style === "code") o.image = "notif-code.png";
     else o.actions = [{ action: "open", title: "פתח" }, { action: "reply", title: "השב" }];
+    if (looking) { o.silent = true; o.renotify = false; delete o.vibrate; }
     await self.registration.showNotification(d.title || "AIM", o);
   })());
 });
