@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="apple-mobile-web-app-title" content="Breath of the Wild">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Legend of Zelda: Breath of the Wild | Step into Hyrule</title>
+  <meta name="description" content="Explore a boundless open world, awaken ancient powers, and reclaim a ruined kingdom in The Legend of Zelda: Breath of the Wild.">
+  <meta name="atlas-build" content="imowt7dzwfbpmh3qt2h9">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #071927;
+      --navy-deep: #0B3D91;
+      --blue-hyrule: #1E5F9A;
+      --sand-light: #F5F5F5;
+      --crimson-accent: #E63946;
+      --amber-gold: #F4A261;
+      --sheikah-cyan: #00f0ff;
+      --card-bg: rgba(11, 61, 145, 0.25);
+      --card-border: rgba(244, 162, 97, 0.3);
+      --font-display: 'Press Start 2P', monospace;
+      --font-body: 'Space Grotesk', sans-serif;
+      --max-width: 1200px;
+      --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      color-scheme: dark;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--sand-light);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Typography & Utilities */
+    h1, h2, h3 {
+      line-height: 1.2;
+    }
+
+    .display-font {
+      font-family: var(--font-display);
+      letter-spacing: -0.05em;
+    }
+
+    .accent-text {
+      color: var(--amber-gold);
+    }
+
+    .glow-text {
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Focus Visible */
+    :focus-visible {
+      outline: 3px solid var(--sheikah-cyan);
+      outline-offset: 4px;
+    }
+
+    /* Navigation */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(7, 25, 39, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(244, 162, 97, 0.2);
+      transition: var(--transition-normal);
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      color: var(--sand-light);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: var(--transition-normal);
+    }
+
+    .nav-links a:hover {
+      color: var(--amber-gold);
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 70px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+    }
+
+    .hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.7);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(11, 61, 145, 0.4) 0%, rgba(7, 25, 39, 0.9) 80%),
+                  linear-gradient(to bottom, rgba(7,25,39,0.3), var(--bg-dark));
+      z-index: -1;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      padding: 3rem 0;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(0.7rem, 2vw, 0.9rem);
+      color: var(--sheikah-cyan);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-size: clamp(1.4rem, 4.5vw, 2.5rem);
+      margin-bottom: 1.5rem;
+      color: #fff;
+      line-height: 1.3;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    }
+
+    .hero-tagline {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      margin-bottom: 2.5rem;
+      color: rgba(245, 245, 245, 0.9);
+      max-width: 600px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1rem 2rem;
+      border-radius: 4px;
+      font-weight: 700;
+      transition: var(--transition-normal);
+      cursor: pointer;
+      border: none;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--amber-gold), var(--crimson-accent));
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(230, 57, 70, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid var(--amber-gold);
+      color: var(--sand-light);
+      margin-left: 1rem;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(244, 162, 97, 0.2);
+    }
+
+    /* Story Section */
+    .story {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .story-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 2.5rem;
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .story-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      width: 20px;
+      height: 20px;
+      border-top: 3px solid var(--sheikah-cyan);
+      border-left: 3px solid var(--sheikah-cyan);
+    }
+
+    .section-title {
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      margin-bottom: 1.5rem;
+      color: var(--amber-gold);
+    }
+
+    .character-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .char-badge {
+      background: rgba(30, 95, 154, 0.3);
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    /* Features Section */
+    .features {
+      padding: 6rem 0;
+      background: linear-gradient(180deg, var(--bg-dark), rgba(11, 61, 145, 0.15), var(--bg-dark));
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 2rem;
+      border-radius: 8px;
+      transition: var(--transition-normal);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--sheikah-cyan);
+      box-shadow: 0 10px 30px rgba(0, 240, 255, 0.15);
+    }
+
+    .feature-icon {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 1.5rem;
+      fill: var(--amber-gold);
+    }
+
+    /* Gallery Carousel */
+    .gallery {
+      padding: 6rem 0;
+      overflow: hidden;
+    }
+
+    .carousel-container {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 2rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--amber-gold) var(--bg-dark);
+    }
+
+    .carousel-item {
+      flex: 0 0 clamp(300px, 60vw, 500px);
+      scroll-snap-align: start;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      position: relative;
+      background: #000;
+    }
+
+    .carousel-item img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      display: block;
+      transition: var(--transition-normal);
+    }
+
+    .carousel-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .carousel-caption {
+      padding: 1rem;
+      background: rgba(7, 25, 39, 0.9);
+      font-size: 0.9rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Download Section */
+    .download {
+      padding: 6rem 0;
+      background: radial-gradient(circle at center, rgba(30, 95, 154, 0.3) 0%, var(--bg-dark) 70%);
+      text-align: center;
+    }
+
+    .download-box {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      background: var(--card-bg);
+      border: 2px solid var(--amber-gold);
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(244, 162, 97, 0.2);
+    }
+
+    .price-tag {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--amber-gold);
+      margin: 1.5rem 0;
+    }
+
+    .rating {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      color: #ffd700;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 3rem 0 2rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.85rem;
+      color: rgba(245, 245, 245, 0.6);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    /* Scroll animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal {
+        transition: none;
+        opacity: 1;
+        transform: none;
+      }
+      .carousel-item:hover img {
+        transform: none;
+      }
+      .btn-primary:hover {
+        transform: none;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .story-grid {
+        grid-template-columns: 1fr;
+      }
+      .nav-links {
+        display: none;
+      }
+      .btn-secondary {
+        margin-left: 0;
+        margin-top: 1rem;
+      }
+      .hero-content {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container nav-container">
+      <a href="#" class="brand">
+        <img src="logo.svg" alt="" width="36" height="36">
+        <span>ZELDA: BOTW</span>
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#story">Story</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#download">Get Game</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero">
+    <div class="hero-bg">
+      <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/Scioto_Audubon_-_Climbing_Tower_1.jpg/1280px-Scioto_Audubon_-_Climbing_Tower_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="Scioto Audubon Climbing Tower representing Link's ascent up a Sheikah Tower at sunrise" decoding="async">
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="container">
+      <div class="hero-content reveal">
+        <p class="hero-subtitle display-font glow-text">Open World Adventure</p>
+        <h1 class="hero-title display-font">STEP INTO HYRULE’S SUN-LIT HORIZONS</h1>
+        <p class="hero-tagline">Forget everything you know about The Legend of Zelda games. Step into a world of discovery, exploration, and adventure in a groundbreaking open-air realm.</p>
+        <div>
+          <a href="#download" class="btn btn-primary">Buy Now</a>
+          <a href="#story" class="btn btn-secondary">Explore World</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story Section -->
+  <section id="story" class="story">
+    <div class="container">
+      <div class="story-grid">
+        <div class="reveal">
+          <h2 class="section-title display-font">A REAWAKENED HERO</h2>
+          <p>After a 100-year slumber, Link awakens alone in a secluded chamber, his memories lost. Guided only by a mysterious voice and the Sheikah Slate, he emerges into a vast, ruined kingdom of Hyrule overrun by Calamity Ganon.</p>
+          <p style="margin-top: 1rem;">Travel across vast fields, through dense forests, and to mountain peaks to discover what became of the ruined kingdom and restore peace before Ganon breaks free completely.</p>
+          
+          <div class="character-list">
+            <div class="char-badge">
+              <strong>Link</strong><br><small>Hero of Time</small>
+            </div>
+            <div class="char-badge">
+              <strong>Zelda</strong><br><small>Princess of Hyrule</small>
+            </div>
+            <div class="char-badge">
+              <strong>Calamity Ganon</strong><br><small>Ancient Evil</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="story-card reveal">
+          <h3 class="display-font accent-text" style="font-size: 0.9rem; margin-bottom: 1rem;">THE SHEIKAH SLATE</h3>
+          <p>An ancient relic equipped with mystical runes. Use Remote Bombs to clear obstacles, Magnesis to manipulate metallic objects, Cryonis to freeze water into ice pillars, and Stasis to freeze object momentum.</p>
+          <div style="margin-top: 1.5rem; height: 4px; background: linear-gradient(90deg, var(--sheikah-cyan), transparent);"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="container">
+      <h2 class="section-title display-font reveal" style="text-align: center;">GAMEPLAY PILLARS</h2>
+      
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feature-card reveal">
+          <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2L2 19h20L12 2zm0 3.8L18.4 17H5.6L12 5.8z"/>
+          </svg>
+          <h3 class="display-font" style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--sand-light);">Boundless Exploration</h3>
+          <p style="font-size: 0.95rem;">Climb any mountain peak, glide over wide valleys, and forge your own path through the expansive lands of Hyrule using dynamic stamina mechanics.</p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card reveal">
+          <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm-7 12v-1.62c0-1.92 3.33-2.9 5-2.9 1.67 0 5 .98 5 2.9V18H5z"/>
+          </svg>
+          <h3 class="display-font" style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--sand-light);">Ancient Shrines</h3>
+          <p style="font-size: 0.95rem;">Over 120 Shrines of Trials await. Solve complex physical puzzles, manipulate environmental elements, and earn Spirit Orbs to upgrade health and stamina.</p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card reveal">
+          <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M14.5 13.5L11 10 4 17l-1 4 4-1 7-7zm5-11l-3.5 3.5-2.5-2.5-2 2 2.5 2.5-7 7 1.5 1.5 7-7 2.5 2.5 2-2-2.5-2.5L21.5 4.5l-2-2z"/>
+          </svg>
+          <h3 class="display-font" style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--sand-light);">Dynamic Combat</h3>
+          <p style="font-size: 0.95rem;">Master weapons, bows, and shields. Time your dodges for devastating Perfect Dodges and Flurry Rushes against diverse enemy factions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section id="gallery" class="gallery">
+    <div class="container">
+      <h2 class="section-title display-font reveal">HYRULE GALLERY</h2>
+      
+      <div class="carousel-container reveal">
+        <div class="carousel-item">
+          <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/Scioto_Audubon_-_Climbing_Tower_1.jpg/1280px-Scioto_Audubon_-_Climbing_Tower_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="Scioto Audubon Climbing Tower 1" loading="lazy" decoding="async">
+          <div class="carousel-caption">
+            <strong>Sheikah Tower Ascent</strong><br>
+            <small>Surmounting high towers to map unexplored regions of Hyrule.</small>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/Scioto_Audubon_-_Climbing_Tower_2.jpg/1280px-Scioto_Audubon_-_Climbing_Tower_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="Scioto Audubon Climbing Tower 2" loading="lazy" decoding="async">
+          <div class="carousel-caption">
+            <strong>Ancient Pillars & Architecture</strong><br>
+            <small>Discovering remnants of Hyrule's glorious past hidden across the wild.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Section -->
+  <section id="download" class="download">
+    <div class="container">
+      <div class="download-box reveal">
+        <h2 class="display-font" style="font-size: 1.2rem; margin-bottom: 1rem;">AVAILABLE NOW</h2>
+        <p>Compatible with Nintendo Switch™</p>
+        
+        <div class="rating" aria-label="5 star rating">
+          ★★★★★
+        </div>
+        <p style="font-size: 0.85rem; color: var(--sheikah-cyan);">"A masterclass in open-world design." — 10/10 Universal Acclaim</p>
+
+        <div class="price-tag">$59.99</div>
+
+        <button class="btn btn-primary" aria-label="Purchase The Legend of Zelda: Breath of the Wild">Buy Digital Version</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div>
+        <p>&copy; Nintendo. The Legend of Zelda is a trademark of Nintendo.</p>
+        <p style="margin-top: 0.25rem;"><small>Photos: Wikimedia Commons</small></p>
+      </div>
+      <div style="display: flex; gap: 1rem;">
+        <a href="#" aria-label="Privacy Policy">Privacy</a>
+        <a href="#" aria-label="Terms of Service">Terms</a>
+        <a href="#" aria-label="Support">Support</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Intersection Observer for scroll reveal effect
+    document.addEventListener('DOMContentLoaded', () => {
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15
+      };
+
+      const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.reveal').forEach(element => {
+        observer.observe(element);
+      });
+    });
+  </script>
+</body>
+</html>
