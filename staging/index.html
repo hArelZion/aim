@@ -719,6 +719,14 @@ summary.is-pressed { opacity: .6; }
 /* ---------- side drawer, like the Claude app: the page slides aside, the drawer has the sections, recent chats,
    the account circle (settings) and a floating New chat ---------- */
 :root { --drw: min(80vw, 330px); }
+.rnScrim { position: fixed; inset: 0; z-index: 200; background: rgb(0 0 0 / .4); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.rnBox { width: min(100%, 360px); background: var(--surface); color: var(--ink); border-radius: 16px; padding: 18px; display: grid; gap: 12px; box-shadow: 0 10px 40px rgb(0 0 0 / .25); }
+.rnBox input { font: inherit; font-size: 16px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); width: 100%; box-sizing: border-box; }
+.rnRow { display: flex; gap: 8px; justify-content: flex-end; }
+.rnRow button { font: inherit; border: 0; border-radius: 999px; padding: 8px 18px; cursor: pointer; }
+.rnOk { background: var(--accent); color: var(--accent-ink); }
+.rnNo { background: var(--bubble); color: var(--ink); }
+#modelName { cursor: pointer; }
 #drawer { position: fixed; inset-block: 0; right: 0; width: var(--drw); z-index: 70; background: var(--bg); display: flex; flex-direction: column;
   transform: translateX(100%); transition: transform .32s cubic-bezier(.2,.8,.2,1), visibility 0s .32s; visibility: hidden;
   padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -1326,6 +1334,7 @@ function userScrolling() { return touching || Date.now() - lastUserScroll < 900;
 })();
 function toBottom(force) { if (!force && userScrolling()) return; const sc = $("scroller"); sc.scrollTop = sc.scrollHeight; }
 
+$("modelName").addEventListener("click", () => { const cv = convs.find((x) => x.id === (viewConv || currentConv)); if (cv) renameConv(cv); });
 function renderHeader() {
   const c = ready ? conn() : "connecting";
   $("dot").dataset.s = c === "working" || c === "waiting" || c === "live" ? "live" : "off";
@@ -2276,7 +2285,11 @@ function convBtnEl(cv) {
   b.setAttribute("aria-current", String(cv.id === viewConv));
   const bi = document.createElement("bdi"); bi.textContent = cv.title || t("untitled"); b.append(bi);
   if (pins.includes(cv.id)) b.append(el("span", "pin", "📌"));
-  b.onclick = () => openConv(cv.id);
+  b.onclick = () => { if (b.dataset.lp) { delete b.dataset.lp; return; } openConv(cv.id); };
+  let lpT = 0;   // long press = rename
+  b.addEventListener("pointerdown", () => { clearTimeout(lpT); lpT = setTimeout(() => { b.dataset.lp = "1"; renameConv(cv); }, 550); });
+  ["pointerup", "pointerleave", "pointercancel", "pointermove"].forEach((ev) => b.addEventListener(ev, (e) => { if (ev !== "pointermove" || Math.abs(e.movementY) > 4) clearTimeout(lpT); }));
+  b.addEventListener("contextmenu", (e) => e.preventDefault());
   return b;
 }
 function renderDrawer() {
@@ -2361,12 +2374,33 @@ async function togglePin(id) {
   const { error } = await putCtl("pins", { ids: pins });
   if (error) showErr(t("sendErr"));
 }
+/* Rename: an in-page dialog (window.prompt is unreliable in the home-screen app on iPhone). Reached from the ✏️ in the
+   conversations list, a tap on the title in the header, or a long press on a chat in the side drawer. */
+function askText(title, value) {
+  return new Promise((done) => {
+    const scrim = el("div", "rnScrim"), box = el("div", "rnBox");
+    box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true");
+    const h = el("b", null, title), inp = document.createElement("input");
+    inp.type = "text"; inp.value = value || ""; inp.dir = "auto"; inp.maxLength = 80; inp.setAttribute("enterkeyhint", "done");
+    const row = el("div", "rnRow"), ok = el("button", "rnOk", lang === "en" ? "Save" : "שמור"), no = el("button", "rnNo", t("mNo"));
+    ok.type = no.type = "button";
+    const end = (v) => { scrim.remove(); done(v); };
+    ok.onclick = () => end(inp.value); no.onclick = () => end(null);
+    scrim.onclick = (e) => { if (e.target === scrim) end(null); };
+    inp.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); end(inp.value); } else if (e.key === "Escape") end(null); };
+    row.append(no, ok); box.append(h, inp, row); scrim.append(box); document.body.append(scrim);
+    setTimeout(() => { inp.focus(); inp.select(); }, 30);
+  });
+}
 async function renameConv(cv) {
-  const v = window.prompt(t("renameAsk"), cv.title || "");
+  if (!cv) return;
+  const v = await askText(t("renameAsk"), cv.title || "");
   if (v === null || !v.trim()) return;
-  const { error } = await sb.from("conversations").update({ title: v.trim() }).eq("id", cv.id);
-  if (error) { showErr(t("sendErr")); return; }
-  cv.title = v.trim(); renderConvs();
+  const title = v.trim().slice(0, 80);
+  const { error } = await sb.from("conversations").update({ title }).eq("id", cv.id);
+  if (error) { showErr(t("sendErr") + " (" + (error.message || "rename") + ")"); return; }
+  convs.forEach((x) => { if (x.id === cv.id) x.title = title; });
+  cv.title = title; renderConvs(); renderHeader();
 }
 async function shareConv(cv) {
   const { data, error } = await sb.from("messages").select("id,sender,kind,text,ts").eq("conv", cv.id).order("ts", { ascending: true }).limit(2000);
