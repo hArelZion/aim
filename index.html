@@ -438,6 +438,25 @@ textarea:focus, textarea:focus-visible { outline: none; box-shadow: none; }
 /* empty chat: a faint field of characters drifting behind the welcome, like the Claude app's new-session screen; fades out at the first message */
 #glyphs { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; opacity: 0; transition: opacity .8s ease; }
 body.is-empty #glyphs { opacity: 1; }
+body.glyphs-chat #glyphs { opacity: 1; }   /* the welcome's drifting letters kept behind a running chat too (setting "glyphsChat") */
+
+/* opening effects: every sheet, menu, popup and full-screen view eases in instead of popping onto the screen.
+   An animation restarts each time an element goes from hidden (display: none) to shown, so no JS is needed. */
+@keyframes aimSheetIn { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes aimPopIn { from { opacity: 0; transform: translateY(-6px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes aimPopUp { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes aimFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes aimZoomIn { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+@keyframes aimDrop { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+.sheet:not([hidden]) { animation: aimSheetIn .34s cubic-bezier(.2,.8,.2,1) backwards; }
+.menu:not([hidden]) { animation: aimPopIn .2s cubic-bezier(.2,.8,.2,1) backwards; transform-origin: top right; }
+html[lang="en"] .menu:not([hidden]) { transform-origin: top left; }
+.mpick:not([hidden]), .slash:not([hidden]), .fpanel:not([hidden]), .qeditor:not([hidden]), .previews:not([hidden]) { animation: aimPopUp .22s cubic-bezier(.2,.8,.2,1) backwards; transform-origin: bottom center; }
+.camview:not([hidden]), .screenview:not([hidden]) { animation: aimZoomIn .32s cubic-bezier(.2,.8,.2,1) backwards; }
+.alert:not([hidden]), .nudge:not([hidden]), .target:not([hidden]), .fchg:not([hidden]), .err:not([hidden]) { animation: aimDrop .26s ease-out backwards; }
+.rnScrim { animation: aimFade .2s ease-out backwards; }
+.rnBox { animation: aimPopUp .26s cubic-bezier(.2,.8,.2,1) backwards; }
+#app:not([hidden]), .login:not([hidden]) { animation: aimFade .4s ease-out backwards; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .shimmer { color: var(--muted); background: none; } }
 /* Claude app look: title + project in the header with a menu, flowing replies without a logo per message,
    blue inline code, step lines with +/- badges, a running row with a timer, background tasks, a two-row composer */
@@ -718,6 +737,14 @@ summary.is-pressed { opacity: .6; }
 /* ---------- side drawer, like the Claude app: the page slides aside, the drawer has the sections, recent chats,
    the account circle (settings) and a floating New chat ---------- */
 :root { --drw: min(80vw, 330px); }
+.rnScrim { position: fixed; inset: 0; z-index: 200; background: rgb(0 0 0 / .4); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.rnBox { width: min(100%, 360px); background: var(--surface); color: var(--ink); border-radius: 16px; padding: 18px; display: grid; gap: 12px; box-shadow: 0 10px 40px rgb(0 0 0 / .25); }
+.rnBox input { font: inherit; font-size: 16px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); width: 100%; box-sizing: border-box; }
+.rnRow { display: flex; gap: 8px; justify-content: flex-end; }
+.rnRow button { font: inherit; border: 0; border-radius: 999px; padding: 8px 18px; cursor: pointer; }
+.rnOk { background: var(--accent); color: var(--accent-ink); }
+.rnNo { background: var(--bubble); color: var(--ink); }
+#modelName { cursor: pointer; }
 #drawer { position: fixed; inset-block: 0; right: 0; width: var(--drw); z-index: 70; background: var(--bg); display: flex; flex-direction: column;
   transform: translateX(100%); transition: transform .32s cubic-bezier(.2,.8,.2,1), visibility 0s .32s; visibility: hidden;
   padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -825,6 +852,7 @@ html[lang="en"] body.dr-open header, html[lang="en"] body.dr-open #glyphs, html[
       <div class="pc" id="pc"></div>
       <label class="toggle"><input type="checkbox" id="autoRead"><span data-t="autoRead"></span></label>
       <label class="toggle"><input type="checkbox" id="showSteps"><span data-t="showSteps"></span></label>
+      <label class="toggle"><input type="checkbox" id="glyphsChat"><span data-t="glyphsChat"></span></label>
       <label class="toggle"><input type="checkbox" id="fastOnly"><span data-t="fastOnly"></span></label>
       <span class="lang-label" data-t="camVoice"></span>
       <div class="seg" role="group" id="camVoiceSeg">
@@ -1075,7 +1103,7 @@ const I18N = {
     edited: "נערכה", editMsg: "עריכת ההודעה", saveEdit: "שמירה ושליחה מחדש",
     quickHint: "כפתור בכל שורה. לחיצה על כפתור שולחת את הטקסט שלו מיד.", save: "שמירה", cancel: "ביטול", reset: "ברירת מחדל", editQuick: "עריכת הכפתורים",
     quickDefault: ["המשך", "מה המצב?", "עצור", "תסכם בקצרה", "פרסם", "תבדוק שוב ותתקן"],
-    autoRead: "הקראה אוטומטית של תשובות", showSteps: "הצגת הצעדים של Claude (פקודות, עריכות, חיפושים)", mic: "הקלטה קולית", micErr: "המיקרופון לא זמין. אשר גישה בהגדרות הדפדפן.",
+    autoRead: "הקראה אוטומטית של תשובות", showSteps: "הצגת הצעדים של Claude (פקודות, עריכות, חיפושים)", glyphsChat: "רקע האותיות בגלים גם בתוך שיחה", mic: "הקלטה קולית", micErr: "המיקרופון לא זמין. אשר גישה בהגדרות הדפדפן.",
     copy: "העתקה", copied: "הועתק", speak: "הקראה", stopSpeak: "עצור הקראה",
     searchConvs: "חיפוש בכל השיחות…", noHits: "לא נמצא כלום.", pin: "הצמדה", unpin: "ביטול הצמדה", rename: "שינוי שם", renameAsk: "שם חדש לשיחה:", share: "ייצוא ושיתוף", exported: "השיחה נשמרה כקובץ",
     queued: "ממתין לרשת", queuedNote: "אין רשת. ההודעה תישלח לבד כשהחיבור יחזור.", fileErr: "הקובץ גדול מדי (עד 500MB).", upPart: "מעלה %s…",
@@ -1125,7 +1153,7 @@ const I18N = {
     edited: "edited", editMsg: "Edit message", saveEdit: "Save and resend",
     quickHint: "One button per line. Tapping a button sends its text right away.", save: "Save", cancel: "Cancel", reset: "Defaults", editQuick: "Edit buttons",
     quickDefault: ["Continue", "What's the status?", "Stop", "Summarize briefly", "Publish", "Check again and fix"],
-    autoRead: "Read replies aloud automatically", showSteps: "Show Claude's steps (commands, edits, searches)", mic: "Voice input", micErr: "The microphone isn't available. Allow it in the browser settings.",
+    autoRead: "Read replies aloud automatically", showSteps: "Show Claude's steps (commands, edits, searches)", glyphsChat: "Keep the wave-of-letters background in chats", mic: "Voice input", micErr: "The microphone isn't available. Allow it in the browser settings.",
     copy: "Copy", copied: "Copied", speak: "Read aloud", stopSpeak: "Stop reading",
     searchConvs: "Search all conversations…", noHits: "Nothing found.", pin: "Pin", unpin: "Unpin", rename: "Rename", renameAsk: "New name for the conversation:", share: "Export and share", exported: "Conversation saved as a file",
     queued: "Waiting for network", queuedNote: "No network. The message sends by itself when you're back online.", fileErr: "The file is too big (500MB max).", upPart: "Uploading %s…",
@@ -1325,6 +1353,7 @@ function userScrolling() { return touching || Date.now() - lastUserScroll < 900;
 })();
 function toBottom(force) { if (!force && userScrolling()) return; const sc = $("scroller"); sc.scrollTop = sc.scrollHeight; }
 
+$("modelName").addEventListener("click", () => { const cv = convs.find((x) => x.id === (viewConv || currentConv)); if (cv) renameConv(cv); });
 function renderHeader() {
   const c = ready ? conn() : "connecting";
   $("dot").dataset.s = c === "working" || c === "waiting" || c === "live" ? "live" : "off";
@@ -1531,7 +1560,7 @@ const glyphs = (() => {
   size();
   return {
     set(v) {
-      document.body.classList.toggle("is-empty", v);
+      document.body.classList.toggle("glyphs-on", v);
       if (v === on) return; on = v; cancelAnimationFrame(raf);
       if (!on) return;
       size(); draw(performance.now());
@@ -1565,7 +1594,9 @@ function renderThread() {
   liveTools = msgs.slice(liveFrom).filter((m) => m.kind === "tool");
   const thread = { list: [], append(...ns) { this.list.push(...ns); } };   // collected first, then only what changed touches the page
   const isEmpty = !msgs.some((m) => m.kind !== "system" && m.kind !== "tool");
-  glyphs.set(isEmpty);
+  document.body.classList.toggle("is-empty", isEmpty);
+  document.body.classList.toggle("glyphs-chat", glyphsChat());
+  glyphs.set(isEmpty || glyphsChat());
   if (isEmpty) {   // only connect/pause notes so far: still show the welcome
     const e = el("div", "empty"); e.append(logoEl());
     e.append(el("span", "brand", "AIM"));
@@ -2020,6 +2051,7 @@ function elapsed(ms) {
   return h ? h + "h " + m + "m" : m ? m + "m " + s2 + "s" : s2 + "s";
 }
 setInterval(() => document.querySelectorAll(".st-time").forEach((x) => { x.textContent = elapsed(Date.now() - +x.dataset.at); }), 1000);
+const glyphsChat = () => { try { return localStorage.getItem("aim-glyphs-chat") === "1"; } catch (e) { return false; } };
 const showSteps = () => { try { return localStorage.getItem("aim-steps") !== "0"; } catch (e) { return true; } };
 function agentEl(m, au) {
   let text = m.text || "", to = "";
@@ -2275,7 +2307,11 @@ function convBtnEl(cv) {
   b.setAttribute("aria-current", String(cv.id === viewConv));
   const bi = document.createElement("bdi"); bi.textContent = cv.title || t("untitled"); b.append(bi);
   if (pins.includes(cv.id)) b.append(el("span", "pin", "📌"));
-  b.onclick = () => openConv(cv.id);
+  b.onclick = () => { if (b.dataset.lp) { delete b.dataset.lp; return; } openConv(cv.id); };
+  let lpT = 0;   // long press = rename
+  b.addEventListener("pointerdown", () => { clearTimeout(lpT); lpT = setTimeout(() => { b.dataset.lp = "1"; renameConv(cv); }, 550); });
+  ["pointerup", "pointerleave", "pointercancel", "pointermove"].forEach((ev) => b.addEventListener(ev, (e) => { if (ev !== "pointermove" || Math.abs(e.movementY) > 4) clearTimeout(lpT); }));
+  b.addEventListener("contextmenu", (e) => e.preventDefault());
   return b;
 }
 function renderDrawer() {
@@ -2360,12 +2396,33 @@ async function togglePin(id) {
   const { error } = await putCtl("pins", { ids: pins });
   if (error) showErr(t("sendErr"));
 }
+/* Rename: an in-page dialog (window.prompt is unreliable in the home-screen app on iPhone). Reached from the ✏️ in the
+   conversations list, a tap on the title in the header, or a long press on a chat in the side drawer. */
+function askText(title, value) {
+  return new Promise((done) => {
+    const scrim = el("div", "rnScrim"), box = el("div", "rnBox");
+    box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true");
+    const h = el("b", null, title), inp = document.createElement("input");
+    inp.type = "text"; inp.value = value || ""; inp.dir = "auto"; inp.maxLength = 80; inp.setAttribute("enterkeyhint", "done");
+    const row = el("div", "rnRow"), ok = el("button", "rnOk", lang === "en" ? "Save" : "שמור"), no = el("button", "rnNo", t("mNo"));
+    ok.type = no.type = "button";
+    const end = (v) => { scrim.remove(); done(v); };
+    ok.onclick = () => end(inp.value); no.onclick = () => end(null);
+    scrim.onclick = (e) => { if (e.target === scrim) end(null); };
+    inp.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); end(inp.value); } else if (e.key === "Escape") end(null); };
+    row.append(no, ok); box.append(h, inp, row); scrim.append(box); document.body.append(scrim);
+    setTimeout(() => { inp.focus(); inp.select(); }, 30);
+  });
+}
 async function renameConv(cv) {
-  const v = window.prompt(t("renameAsk"), cv.title || "");
+  if (!cv) return;
+  const v = await askText(t("renameAsk"), cv.title || "");
   if (v === null || !v.trim()) return;
-  const { error } = await sb.from("conversations").update({ title: v.trim() }).eq("id", cv.id);
-  if (error) { showErr(t("sendErr")); return; }
-  cv.title = v.trim(); renderConvs();
+  const title = v.trim().slice(0, 80);
+  const { error } = await sb.from("conversations").update({ title }).eq("id", cv.id);
+  if (error) { showErr(t("sendErr") + " (" + (error.message || "rename") + ")"); return; }
+  convs.forEach((x) => { if (x.id === cv.id) x.title = title; });
+  cv.title = title; renderConvs(); renderHeader();
 }
 async function shareConv(cv) {
   const { data, error } = await sb.from("messages").select("id,sender,kind,text,ts").eq("conv", cv.id).order("ts", { ascending: true }).limit(2000);
@@ -3085,6 +3142,8 @@ async function saveSettings(patch) {
 /* ---------- settings sheet ---------- */
 const autoRead = () => { try { return localStorage.getItem("aim-autoread") === "1"; } catch (e) { return false; } };
 $("showSteps").checked = showSteps();
+$("glyphsChat").checked = glyphsChat();
+$("glyphsChat").onchange = () => { try { localStorage.setItem("aim-glyphs-chat", $("glyphsChat").checked ? "1" : "0"); } catch (e) {} renderThread(); };
 $("showSteps").onchange = () => { try { localStorage.setItem("aim-steps", $("showSteps").checked ? "1" : "0"); } catch (e) {} renderThread(); };
 $("autoRead").checked = autoRead();
 $("autoRead").hidden = $("autoRead").parentNode.hidden = !window.speechSynthesis;
