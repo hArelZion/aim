@@ -5,7 +5,7 @@ const SHELL = ["./", "index.html", "css/app.css?v=20261031.2139", "js/app.js?v=2
   "js/highlight.js?v=20261031.2139", "js/orb.js?v=20261031.2139", "js/reactors.js?v=20261031.2139", "skins/index.json", "worklets/mic.js", "worklets/player.js", "icons/icon-192.png", "manifest.webmanifest"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).catch(() => {})); self.skipWaiting(); });
 self.addEventListener("activate", (e) => e.waitUntil((async () => {
-  for (const k of await caches.keys()) if (k !== CACHE) await caches.delete(k);
+  for (const k of await caches.keys()) if (k !== CACHE && k.startsWith("atlas-")) await caches.delete(k);   // only our own: other apps share this origin
   await self.clients.claim();
 })()));
 self.addEventListener("fetch", (e) => {
