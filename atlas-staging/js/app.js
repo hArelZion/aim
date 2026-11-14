@@ -5,8 +5,8 @@
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
   const APP_VERSION = "20261031.2139";
-  const SUPABASE_URL = "https://wvadithsiwigftezhuzi.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_F2AyuOu523RP37Rhg3GeXw_5TNmRVxk";   // public by design; data is locked to one account
+  const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42";   // public by design; data is locked to one account
   const FN = /atlas-staging/.test(location.pathname) || /localhost|127\.0\.0\.1/.test(location.hostname) ? "atlas-staging" : "atlas";
   const API = SUPABASE_URL + "/functions/v1/" + FN;
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
