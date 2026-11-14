@@ -798,7 +798,6 @@ html[lang="en"] body.dr-open header, html[lang="en"] body.dr-open #glyphs, html[
     <input class="field" id="email" type="email" autocomplete="username" placeholder="email" required>
     <input class="field" id="password" type="password" autocomplete="current-password" minlength="8" data-ph="password" required>
     <button class="btn-main" type="submit" data-t="signIn"></button>
-    <button class="btn-link" type="button" id="magicBtn" data-t="magicLink"></button>
     <button class="btn-link" type="button" id="signUpBtn" data-t="firstTime"></button>
     <div class="login-msg" id="loginMsg" hidden></div>
   </form>
@@ -985,8 +984,8 @@ html[lang="en"] body.dr-open header, html[lang="en"] body.dr-open #glyphs, html[
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
 <script>
-const SUPABASE_URL = "https://wvadithsiwigftezhuzi.supabase.co";
-const SUPABASE_KEY = "sb_publishable_F2AyuOu523RP37Rhg3GeXw_5TNmRVxk"; // public by design; the tables are locked to one account
+const SUPABASE_URL = "https://lumnwuxxcaksybrrksng.supabase.co";
+const SUPABASE_KEY = "sb_publishable_hoH-oI3ZtaFdfSCVvNyNqA_bPHmIj42"; // public by design; the tables are locked to one account
 const BUCKET = "aim-photos";
 // the staging build (/aim/staging/) keeps its own chats (ids "cs…", "gs…", "ms…", "ts…") and its own current row,
 // so what is written on main stays on main and what is written on staging stays there (the computer answers in the same chat)
@@ -1093,7 +1092,7 @@ const I18N = {
     pWorking: "Claude באמצע עבודה ויקרא את זה בין שלב לשלב.", pLive: "Claude יקבל את זה תוך שניות.",
     notifOffBtn: "הפעל התראות ורטט", notifOnBtn: "התראות פעילות · לחץ לכיבוי", notifDenied: "התראות חסומות בהגדרות הדפדפן", notifTest: "התראות פעילות. כך תקבל הודעה כשמשהו מסתיים.", notifTestPush: "התראות פעילות, גם כשהמסך נעול והאפליקציה סגורה.",
     sendErr: "ההודעה לא נשלחה. בדוק חיבור ונסה שוב.", picErr: "התמונה לא נשלחה. נסה תמונה אחרת או קטנה יותר.",
-    loginLead: "כניסה לצ'אט הפרטי שלך עם Claude.", signIn: "כניסה", firstTime: "פעם ראשונה? יצירת סיסמה", magicLink: "שלחו לי קישור כניסה למייל (בלי סיסמה)", magicSent: "שלחנו קישור כניסה למייל. לחץ עליו בטלפון הזה.",
+    loginLead: "כניסה לצ'אט הפרטי שלך עם Claude.", signIn: "כניסה", firstTime: "פעם ראשונה? יצירת סיסמה",
     signUpDone: "שלחנו מייל אישור. לחץ על הקישור שבו, וחזור לכאן להתחבר עם הסיסמה.",
     loginErr: "הכניסה נכשלה. בדוק אימייל וסיסמה, ואם זו פעם ראשונה, אשר קודם את המייל.",
     password: "סיסמה (8 תווים לפחות)",
@@ -1143,7 +1142,7 @@ const I18N = {
     pWorking: "Claude is mid-task and will read this between steps.", pLive: "Claude gets this within seconds.",
     notifOffBtn: "Turn on notifications and vibration", notifOnBtn: "Notifications on · tap to turn off", notifDenied: "Notifications are blocked in the browser settings", notifTest: "Notifications are on. This is how you will be told when something finishes.", notifTestPush: "Notifications are on, even when the screen is locked and the app is closed.",
     sendErr: "The message wasn't sent. Check your connection and try again.", picErr: "The photo wasn't sent. Try another or a smaller one.",
-    loginLead: "Sign in to your private chat with Claude.", signIn: "Sign in", firstTime: "First time? Create a password", magicLink: "Email me a sign-in link (no password)", magicSent: "We sent a sign-in link to your email. Tap it on this phone.",
+    loginLead: "Sign in to your private chat with Claude.", signIn: "Sign in", firstTime: "First time? Create a password",
     signUpDone: "We sent a confirmation email. Tap the link in it, then come back here and sign in with the password.",
     loginErr: "Sign-in failed. Check the email and password; if this is your first time, confirm the email first.",
     password: "Password (8+ characters)",
@@ -3642,12 +3641,6 @@ $("loginForm").addEventListener("submit", async (e) => {
   const { error } = await sb.auth.signInWithPassword({ email: $("email").value.trim(), password: $("password").value });
   if (error) loginMsg(t("loginErr"), true);
 });
-$("magicBtn").onclick = async () => {
-  loginMsg("");
-  if (!$("email").reportValidity()) return;
-  const { error } = await sb.auth.signInWithOtp({ email: $("email").value.trim(), options: { shouldCreateUser: false, emailRedirectTo: location.origin + location.pathname } });
-  loginMsg(error ? error.message : t("magicSent"), !!error);
-};
 $("signUpBtn").onclick = async () => {
   loginMsg("");
   if (!$("loginForm").reportValidity()) return;
