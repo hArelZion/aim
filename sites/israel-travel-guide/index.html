@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explore Israel – Travel Guide & Booking</title>
+<meta name="description" content="Discover Israel’s most iconic destinations, plan your itinerary, read traveler stories, and book your adventure with our immersive travel guide.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%230EA5E9'/%3E%3Ctext x='50' y='58' font-size='48' text-anchor='middle' fill='%23fff' font-family='Syne'%3E✈%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&family=Syne:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F0F9FF;
+  --fg:#0C4A6E;
+  --primary:#0EA5E9;
+  --secondary:#38BDF8;
+  --accent:#EA580C;
+  --font-display:'Syne',sans-serif;
+  --font-body:'Manrope',sans-serif;
+  --max-width:1200px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);
+  font-size:1.1rem;
+  line-height:1.6;
+  color:var(--fg);
+  background:var(--bg);
+  min-height:100vh;
+}
+h1,h2{
+  font-family:var(--font-display);
+  line-height:1.1;
+  margin-bottom:.5em;
+}
+h1{
+  font-size:clamp(2.8rem,7vw,6.5rem);
+  letter-spacing:-0.02em;
+}
+h2{
+  font-size:clamp(2rem,4.5vw,3.6rem);
+  letter-spacing:-0.01em;
+}
+p{max-width:80ch;margin-bottom:1em;}
+a{color:var(--primary);text-decoration:none;}
+a:focus{outline:2px solid var(--accent);outline-offset:2px;}
+button{
+  font-family:inherit;
+  cursor:pointer;
+  border:none;
+  background:var(--primary);
+  color:#fff;
+  padding:.75em 1.5em;
+  border-radius:4px;
+  transition:transform .2s;
+}
+button:hover,button:focus{transform:scale(1.05);}
+header{
+  position:sticky;
+  top:0;
+  background:#fff;
+  z-index:10;
+  box-shadow:0 2px 4px rgba(0,0,0,.1);
+}
+nav{
+  max-width:var(--max-width);
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:1rem clamp(1rem,5vw,3rem);
+}
+nav .logo{
+  font-family:var(--font-display);
+  font-size:1.5rem;
+  color:var(--primary);
+}
+nav ul{
+  list-style:none;
+  display:flex;
+  gap:1.5rem;
+}
+nav a{
+  font-weight:600;
+}
+nav .menu-toggle{
+  display:none;
+  background:none;
+  font-size:1.5rem;
+}
+@media (max-width:768px){
+  nav ul{display:none;flex-direction:column;background:#fff;padding:1rem;}
+  nav ul.active{display:flex;position:absolute;right:1rem;top:4rem;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+  nav .menu-toggle{display:block;}
+}
+
+/* Section layout */
+section{
+  padding:clamp(64px,10vw,150px) clamp(1rem,5vw,3rem);
+  max-width:var(--max-width);
+  margin:auto;
+}
+section:nth-of-type(even){background:var(--secondary);color:#fff;}
+section h2{margin-bottom:.75rem;}
+/* Hero */
+#hero{
+  position:relative;
+  padding:0;
+  height:100vh;
+  overflow:hidden;
+}
+#hero img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+#hero .caption{
+  position:absolute;
+  bottom:2rem;
+  left:2rem;
+  background:rgba(255,255,255,.8);
+  padding:.75rem 1.5rem;
+  max-width:90%;
+}
+#hero .caption h1{
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:typing 3s steps(30) forwards;
+  white-space:nowrap;
+  overflow:hidden;
+}
+#hero .caption button{
+  margin-top:.5rem;
+  background:var(--accent);
+}
+
+/* Timeline */
+#timeline{
+  display:flex;
+  flex-direction:column;
+  gap:4rem;
+}
+.timeline-item{
+  display:flex;
+  align-items:center;
+  gap:2rem;
+}
+.timeline-item:nth-child(even){flex-direction:row-reverse;}
+.timeline-item img{
+  flex:1;
+  max-height:60vh;
+  object-fit:cover;
+  border-radius:8px;
+}
+.timeline-item .text{
+  flex:1;
+}
+.timeline-item h3{
+  font-size:clamp(1.8rem,4vw,2.5rem);
+  margin-bottom:.5rem;
+}
+.timeline-marker{
+  position:absolute;
+  left:50%;
+  width:2rem;
+  height:2rem;
+  background:var(--primary);
+  border-radius:50%;
+  transform:translateX(-50%);
+}
+
+/* Destinations Grid */
+#destinations .grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:2rem;
+}
+.dest-card{
+  background:#fff;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+  transition:transform .3s;
+}
+.dest-card:hover{transform:translateY(-4px);}
+.dest-card img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+}
+.dest-card h3{
+  font-size:1.5rem;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  padding:1rem;
+}
+.dest-card p{padding:0 1rem 1rem;}
+.dest-card a{
+  display:block;
+  margin:0 1rem 1rem;
+  color:var(--primary);
+  font-weight:600;
+}
+
+/* Booking */
+#booking form{
+  display:grid;
+  gap:1rem;
+}
+#booking input, #booking select{
+  padding:.75rem;
+  border:1px solid #ccc;
+  border-radius:4px;
+}
+#booking button{
+  background:var(--primary);
+  justify-self:start;
+}
+
+/* Reviews */
+#reviews .carousel{
+  position:relative;
+  overflow:hidden;
+}
+.review-slide{
+  min-width:100%;
+  transition:opacity .5s;
+  opacity:0;
+}
+.review-slide.active{opacity:1;}
+.review-slide blockquote{
+  font-style:italic;
+  color:var(--accent);
+  margin-bottom:.5rem;
+}
+.review-slide footer{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+}
+.review-slide img{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+/* Inspiration Gallery */
+#inspiration .masonry{
+  column-count:1;
+  column-gap:1rem;
+}
+@media (min-width:600px){#inspiration .masonry{column-count:2;}}
+@media (min-width:900px){#inspiration .masonry{column-count:3;}}
+#inspiration .masonry img{
+  width:100%;
+  margin-bottom:1rem;
+  transition:transform .3s;
+}
+#inspiration .masonry img:hover{transform:scale(1.02);}
+
+/* Footer */
+footer{
+  background:var(--secondary);
+  color:#fff;
+  text-align:center;
+  padding:2rem clamp(1rem,5vw,3rem);
+}
+footer a{color:#fff;}
+footer .subscribe{
+  display:flex;
+  gap:.5rem;
+  justify-content:center;
+  margin-top:1rem;
+}
+footer .subscribe input{
+  padding:.5rem;
+  border:none;
+  border-radius:4px;
+}
+footer .subscribe button{
+  background:var(--accent);
+}
+
+/* Motion */
+@keyframes typing{
+  from{width:0;}
+  to{width:100%;}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important;}
+}
+</style>
+</head>
+<body>
+<header>
+  <nav aria-label="Main navigation">
+    <div class="logo">Israel Explorer</div>
+    <button class="menu-toggle" aria-controls="nav-list" aria-expanded="false">☰</button>
+    <ul id="nav-list">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#timeline">Journey</a></li>
+      <li><a href="#destinations">Places</a></li>
+      <li><a href="#booking">Book</a></li>
+      <li><a href="#reviews">Stories</a></li>
+      <li><a href="#inspiration">Gallery</a></li>
+      <li><a href="#footer">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section id="hero">
+  <img src="assets/hero.jpg" alt="Mediterranean shoreline at sunrise" width="1920" height="1080" data-brief="A panoramic view of the Mediterranean shoreline at sunrise, light soft, mood tranquil, captured with a wide‑angle lens.">
+  <div class="caption">
+    <h1>Discover Israel</h1>
+    <p>From ancient stone streets to vibrant coastal life, explore the land where history meets modernity.</p>
+    <button onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'});">Plan My Trip</button>
+  </div>
+</section>
+
+
+
+<section id="timeline">
+  <h2>Journey Through Time</h2>
+  <div class="timeline-container">
+    <div class="timeline-item">
+      <img src="assets/jerusalem.jpg" alt="Jerusalem" width="600" height="400" loading="lazy" data-brief="Jerusalem, golden hour, 50mm lens">
+      <div class="text">
+        <h3>Jerusalem</h3>
+        <p>Step back in time in the heart of Israel. Jerusalem is a city of ancient history, where the past and present collide. Explore the Western Wall, the Church of the Holy Sepulchre, and the Israel Museum, which houses one of the most comprehensive collections of Jewish art in the world. The city's vibrant atmosphere, rich culture, and spiritual significance make it a must-visit destination.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <img src="assets/telaviv.jpg" alt="Tel Aviv" width="600" height="400" loading="lazy" data-brief="Tel Aviv, sunset, 35mm lens">
+      <div class="text">
+        <h3>Tel Aviv</h3>
+        <p>Experience the vibrant energy of Tel Aviv, Israel's bustling coastal city. Known as the "White City" for its white buildings and blue domes, Tel Aviv is a hub of culture, nightlife, and innovation. Visit the iconic Carmel Market, enjoy fresh seafood at Jaffa Port, and explore the city's many museums and galleries. Tel Aviv's dynamic atmosphere and diverse culinary scene make it a perfect destination for foodies and culture enthusiasts alike.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <img src="assets/haifa.jpg" alt="Haifa" width="600" height="400" loading="lazy" data-brief="Haifa, coastal view, 24mm lens">
+      <div class="text">
+        <h3>Haifa</h3>
+        <p>Discover the beauty of Haifa, Israel's third-largest city and a gateway to the Mediterranean. Haifa is known for its stunning beaches, historic sites, and vibrant cultural scene. Visit the ancient port of Jaffa, explore the beautiful Bahai Gardens, and enjoy the city's many cafes and restaurants. Haifa's blend of history, culture, and natural beauty makes it a unique and unforgettable destination.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <img src="assets/eilat.jpg" alt="Eilat" width="600" height="400" loading="lazy" data-brief="Eilat, desert landscape, 24mm lens">
+      <div class="text">
+        <h3>Eilat</h3>
+        <p>Escape to the desert oasis of Eilat, where the Red Sea meets the Negev Desert. Eilat is a popular destination for water sports, diving, and relaxation. Visit the stunning coral reefs of the Red Sea, explore the ancient city of Timna, and enjoy the city's many luxury resorts and spas. Eilat's unique combination of natural beauty, adventure, and relaxation makes it a perfect destination for a memorable getaway.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <img src="assets/jerusalem.jpg" alt="Nazareth" width="600" height="400" loading="lazy" data-brief="Nazareth, sunset, 35mm lens">
+      <div class="text">
+        <h3>Nazareth</h3>
+        <p>Explore the historic city of Nazareth, the traditional birthplace of Jesus. Nazareth is a city of ancient history and religious significance, where the past and present collide. Visit the Church of Annunciation, the Nazareth Illumination Festival, and the many museums and galleries that showcase the city's rich heritage. Nazareth's vibrant atmosphere, rich culture, and spiritual significance make it a must-visit destination for history and culture enthusiasts alike.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="destinations">
+  <h2>Must-See Places</h2>
+  <div class="grid">
+    <div class="dest-card">
+      <img src="assets/jerusalem.jpg" alt="Jerusalem" width="300" height="200" loading="lazy" data-brief="Jerusalem, golden hour, 50mm lens">
+      <h3>Jerusalem</h3>
+      <p>Jerusalem is a city of ancient history, where the past and present collide. Explore the Western Wall, the Church of the Holy Sepulchre, and the Israel Museum, which houses one of the most comprehensive collections of Jewish art in the world. The city's vibrant atmosphere, rich culture, and spiritual significance make it a must-visit destination.</p>
+      <a href="#">Explore More</a>
+    </div>
+    <div class="dest-card">
+      <img src="assets/telaviv.jpg" alt="Tel Aviv" width="300" height="200" loading="lazy" data-brief="Tel Aviv, sunset, 35mm lens">
+      <h3>Tel Aviv</h3>
+      <p>Experience the vibrant energy of Tel Aviv, Israel's bustling coastal city. Known as the "White City" for its white buildings and blue domes, Tel Aviv is a hub of culture, nightlife, and innovation. Visit the iconic Carmel Market, enjoy fresh seafood at Jaffa Port, and explore the city's many museums and galleries. Tel Aviv's dynamic atmosphere and diverse culinary scene make it a perfect destination for foodies and culture enthusiasts alike.</p>
+      <a href="#">Explore More</a>
+    </div>
+    <div class="dest-card">
+      <img src="assets/haifa.jpg" alt="Haifa" width="300" height="200" loading="lazy" data-brief="Haifa, coastal view, 24mm lens">
+      <h3>Haifa</h3>
+      <p>Discover the beauty of Haifa, Israel's third-largest city and a gateway to the Mediterranean. Haifa is known for its stunning beaches, historic sites, and vibrant cultural scene. Visit the ancient port of Jaffa, explore the beautiful Bahai Gardens, and enjoy the city's many cafes and restaurants. Haifa's blend of history, culture, and natural beauty makes it a unique and unforgettable destination.</p>
+      <a href="#">Explore More</a>
+    </div>
+    <div class="dest-card">
+      <img src="assets/eilat.jpg" alt="Eilat" width="300" height="200" loading="lazy" data-brief="Eilat, desert landscape, 24mm lens">
+      <h3>Eilat</h3>
+      <p>Escape to the desert oasis of Eilat, where the Red Sea meets the Negev Desert. Eilat is a popular destination for water sports, diving, and relaxation. Visit the stunning coral reefs of the Red Sea, explore the ancient city of Timna, and enjoy the city's many luxury resorts and spas. Eilat's unique combination of natural beauty, adventure, and relaxation makes it a perfect destination for a memorable getaway.</p>
+      <a href="#">Explore More</a>
+    </div>
+    <div class="dest-card">
+      <img src="assets/jerusalem.jpg" alt="Nazareth" width="300" height="200" loading="lazy" data-brief="Nazareth, sunset, 35mm lens">
+      <h3>Nazareth</h3>
+      <p>Explore the historic city of Nazareth, the traditional birthplace of Jesus. Nazareth is a city of ancient history and religious significance, where the past and present collide. Visit the Church of Annunciation, the Nazareth Illumination Festival, and the many museums and galleries that showcase the city's rich heritage. Nazareth's vibrant atmosphere, rich culture, and spiritual significance make it a must-visit destination for history and culture enthusiasts alike.</p>
+      <a href="#">Explore More</a>
+    </div>
+    <div class="dest-card">
+      <img src="assets/telaviv.jpg" alt="Dead Sea" width="300" height="200" loading="lazy" data-brief="Dead Sea, shoreline, 24mm lens">
+      <h3>Dead Sea</h3>
+      <p>Experience the unique beauty of the Dead Sea, one of the saltiest bodies of water in the world. Known for its healing properties and stunning landscapes, the Dead Sea is a popular destination for relaxation, adventure, and cultural experiences. Visit the Dead Sea Spa, explore the ancient city of Masada, and enjoy the many luxury resorts and spas along the shoreline. The Dead Sea's unique combination of natural beauty, adventure, and relaxation makes it a perfect destination for a memorable getaway.</p>
+      <a href="#">Explore More</a>
+    </div>
+  </div>
+</section>
+
+<section id="booking">
+  <h2>Book Your Adventure</h2>
+  <form>
+    <label for="destination">Destination:</label>
+    <select id="destination" name="destination">
+      <option value="jerusalem">Jerusalem</option>
+      <option value="telaviv">Tel Aviv</option>
+      <option value="haifa">Haifa</option>
+      <option value="eilat">Eilat</option>
+      <option value="nazareth">Nazareth</option>
+      <option value="deadsea">Dead Sea</option>
+    </select>
+    <label for="checkin">Check-in Date:</label>
+    <input type="date" id="checkin" name="checkin">
+    <label for="checkout">Check-out Date:</label>
+    <input type="date" id="checkout" name="checkout">
+    <label for="guests">Number of Guests:</label>
+    <input type="number" id="guests" name="guests" min="1" max="10">
+    <button type="submit">Reserve Now</button>
+  </form>
+</section>
+
+<script>
+  // Text animation for timeline section
+  const timelineItems = document.querySelectorAll('#timeline .timeline-item');
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const text = entry.target.querySelector('.text');
+        const h3 = text.querySelector('h3');
+        const p = text.querySelector('p');
+        const h3Text = h3.textContent;
+        const pText = p.textContent;
+        h3.textContent = '';
+        p.textContent = '';
+
+        let i = 0;
+        const typingEffect = setInterval(() => {
+          if (i < h3Text.length) {
+            h3.textContent += h3Text.charAt(i);
+            i++;
+          } else {
+            clearInterval(typingEffect);
+            let j = 0;
+            const typingEffect2 = setInterval(() => {
+              if (j < pText.length) {
+                p.textContent += pText.charAt(j);
+                j++;
+              } else {
+                clearInterval(typingEffect2);
+              }
+            }, 20);
+          }
+        }, 50);
+
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  timelineItems.forEach(item => {
+    observer.observe(item);
+  });
+
+  // Form animation for booking section
+  const formFields = document.querySelectorAll('#booking form *');
+  formFields.forEach((field, index) => {
+    field.style.opacity = '0';
+    field.style.transform = 'translateY(20px)';
+    setTimeout(() => {
+      field.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      field.style.opacity = '1';
+      field.style.transform = 'translateY(0)';
+    }, index * 100);
+  });
+</script>
+<section id="reviews">
+  <h2>Traveler Stories</h2>
+  <div class="carousel" aria-label="Traveler testimonials">
+    <div class="review-slide active">
+      <blockquote>“The sunrise over the ancient stones of Jerusalem was unforgettable – a perfect blend of history and light.”</blockquote>
+      <footer>
+        <img src="assets/jerusalem.jpg" alt="Sarah K., smiling on a stone wall in Jerusalem" width="48" height="48" loading="lazy" data-brief="Jerusalem cityscape, soft morning light, 50mm portrait lens">
+        <div>
+          <strong>Sarah K.</strong>, USA<br>
+          <span>★★★★★</span>
+        </div>
+      </footer>
+    </div>
+    <div class="review-slide">
+      <blockquote>“Tel‑Aviv’s nightlife pulses with energy; the beachfront bars made every night feel like a celebration.”</blockquote>
+      <footer>
+        <img src="assets/telaviv.jpg" alt="Liam P., laughing on a Tel Aviv beach at dusk" width="48" height="48" loading="lazy" data-brief="Tel Aviv shoreline, golden hour, wide angle lens">
+        <div>
+          <strong>Liam P.</strong>, UK<br>
+          <span>★★★★☆</span>
+        </div>
+      </footer>
+    </div>
+    <div class="review-slide">
+      <blockquote>“Hiking the cliffs of Haifa gave me a breathtaking view of the Mediterranean – pure serenity.”</blockquote>
+      <footer>
+        <img src="assets/haifa.jpg" alt="Maya R., standing on a cliff in Haifa" width="48" height="48" loading="lazy" data-brief="Haifa cliffs, clear sky, telephoto lens">
+        <div>
+          <strong>Maya R.</strong>, Canada<br>
+          <span>★★★★★</span>
+        </div>
+      </footer>
+    </div>
+    <div class="review-slide">
+      <blockquote>“Eilat’s coral reefs are a kaleidoscope of colors; snorkeling there felt like swimming inside a painting.”</blockquote>
+      <footer>
+        <img src="assets/eilat.jpg" alt="Jonas M., underwater in Eilat reef" width="48" height="48" loading="lazy" data-brief="Eilat reef, vibrant colors, macro lens">
+        <div>
+          <strong>Jonas M.</strong>, Germany<br>
+          <span>★★★★☆</span>
+        </div>
+      </footer>
+    </div>
+  </div>
+</section>
+
+<section id="inspiration">
+  <h2>Gallery</h2>
+  <div class="masonry">
+    <img src="assets/jerusalem.jpg" alt="Sunlit Dome of the Rock in Jerusalem" width="800" height="600" loading="lazy" data-brief="Jerusalem Dome of the Rock, warm morning light, 24mm lens">
+    <img src="assets/telaviv.jpg" alt="Tel Aviv promenade at sunset" width="800" height="600" loading="lazy" data-brief="Tel Aviv promenade, pastel sunset, 35mm lens">
+    <img src="assets/haifa.jpg" alt="Haifa skyline with the Baha'i Gardens" width="800" height="600" loading="lazy" data-brief="Haifa cityscape, soft evening light, 50mm lens">
+    <img src="assets/eilat.jpg" alt="Red desert dunes near Eilat" width="800" height="600" loading="lazy" data-brief="Eilat desert dunes, golden hour, wide angle lens">
+    <img src="assets/hero.jpg" alt="Aerial view of Israel’s coastline" width="800" height="600" loading="lazy" data-brief="Israeli coastline, aerial perspective, drone lens">
+  </div>
+</section>
+
+<footer>
+  <h2>Connect</h2>
+  <p>Stay in the loop with the latest travel guides, events, and exclusive offers.</p>
+  <div class="social">
+    <a href="#" aria-label="Facebook"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 5 3.657 9.128 8.438 9.877v-6.987H7.898v-2.89h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.242 0-1.63.771-1.63 1.562v1.875h2.773l-.443 2.89h-2.33v6.987C18.343 21.128 22 17 22 12z"/></svg></a>
+    <a href="#" aria-label="Instagram"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2C4.243 2 2 4.243 2 7v10c0 2.757 2.243 5 5 5h10c2.757 0 5-2.243 5-5V7c0-2.757-2.243-5-5-5H7zm10 2c1.654 0 3 1.346 3 3v10c0 1.654-1.346 3-3 3H7c-1.654 0-3-1.346-3-3V7c0-1.654 1.346-3 3-3h10zm-5 3a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6zm4.5-.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/></svg></a>
+    <a href="#" aria-label="Twitter"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22.46 6c-.77.35-1.6.58-2.46.69a4.28 4.28 0 001.88-2.36 8.59 8.59 0 01-2.71 1.04 4.26 4.26 0 00-7.26 3.88A12.07 12.07 0 013 5.16a4.26 4.26 0 001.32 5.68c-.66-.02-1.28-.2-1.82-.5v.05c0 2.02 1.44 3.71 3.35 4.09-.35.1-.72.15-1.1.15-.27 0-.53-.03-.78-.07a4.27 4.27 0 003.98 2.96A8.55 8.55 0 012 19.54a12.07 12.07 0 006.55 1.92c7.86 0 12.16-6.51 12.16-12.16 0-.19-.01-.38-.02-.57A8.68 8.68 0 0024 5.5a8.44 8.44 0 01-2.54.7z"/></svg></a>
+  </div>
+  <div class="subscribe">
+    <input type="email" placeholder="Your email address" aria-label="Email address">
+    <button type="button">Subscribe</button>
+  </div>
+  <p>&copy; 2026 Explore Israel Tours. All rights reserved.</p>
+</footer>
+
+<script>
+  // Mobile menu toggle
+  const menuToggle = document.querySelector('.menu-toggle');
+  const navList = document.querySelector('nav ul');
+  if (menuToggle && navList) {
+    menuToggle.addEventListener('click', () => {
+      navList.classList.toggle('active');
+    });
+  }
+
+  // Simple carousel navigation (auto‑rotate)
+  const carousel = document.querySelector('#reviews .carousel');
+  const slides = carousel ? carousel.querySelectorAll('.review-slide') : [];
+  let current = 0;
+  function showSlide(index) {
+    slides.forEach((s, i) => s.classList.toggle('active', i === index));
+  }
+  if (slides.length > 1) {
+    setInterval(() => {
+      current = (current + 1) % slides.length;
+      showSlide(current);
+    }, 8000);
+  }
+
+  // Intersection Observer for scroll‑triggered text morph
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('morph');
+      }
+    });
+  }, {threshold: 0.5});
+
+  document.querySelectorAll('#reviews h2, #inspiration h2').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
