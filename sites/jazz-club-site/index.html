@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Crescent City Jazz Club – Live Music & Nightlife</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Experience the heartbeat of New Orleans at the Crescent City Jazz Club. Live bands, intimate ambience, and a curated lineup every night. Reserve your seat now.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22 font-family=%22Poiret+One%22 fill=%22%237C3AED%22>♩</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Didact+Gothic:wght@400;700&family=Poiret+One:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#FAF5FF;
+  --fg:#4C1D95;
+  --primary:#7C3AED;
+  --secondary:#A78BFA;
+  --accent:#EA580C;
+  --font-display:'Poiret One',cursive;
+  --font-body:'Didact Gothic',sans-serif;
+  --max-width:1200px;
+}
+
+/* Reset & base */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:100%;scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);
+  font-size:clamp(1.1rem,1.2vw,1.2rem);
+  line-height:1.6;
+  color:var(--fg);
+  background:var(--bg);
+  min-height:100vh;
+}
+img{display:block;max-width:100%;height:auto;}
+a{color:var(--primary);text-decoration:none;}
+a:focus{outline:3px solid var(--accent);outline-offset:2px;}
+button, [role="button"]{
+  font-family:inherit;
+  cursor:pointer;
+  background:none;
+  border:none;
+}
+button:focus{outline:3px solid var(--accent);outline-offset:2px;}
+h1,h2,h3{
+  font-family:var(--font-display);
+  line-height:1.1;
+  margin-bottom:.5em;
+}
+h1{font-size:clamp(2.8rem,7vw,6.5rem);letter-spacing:-.02em;}
+h2{font-size:clamp(2rem,4.5vw,3.6rem);letter-spacing:-.01em;}
+section{padding:clamp(64px,10vw,150px) 5vw;}
+.container{max-width:var(--max-width);margin:auto;}
+/* Header */
+header{
+  position:sticky;
+  top:0;
+  background:rgba(255,255,255,.9);
+  backdrop-filter:blur(6px);
+  z-index:1000;
+  border-bottom:1px solid rgba(0,0,0,.1);
+}
+nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 5vw;}
+nav .logo{font-size:1.5rem;font-weight:700;color:var(--primary);}
+nav ul{display:flex;gap:1.5rem;list-style:none;}
+nav a{font-weight:500;}
+nav .menu-toggle{display:none;background:none;font-size:1.5rem;}
+@media (max-width:768px){
+  nav ul{position:absolute;top:100%;left:0;width:100%;background:var(--bg);flex-direction:column;display:none;}
+  nav ul.show{display:flex;}
+  nav .menu-toggle{display:block;}
+}
+
+/* Hero */
+#hero{
+  position:relative;
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  color:#fff;
+}
+#hero .bg-layer{
+  position:absolute;
+  inset:0;
+  background:url('assets/hero.jpg') center/cover no-repeat;
+  transform:translateZ(-1px) scale(1.5);
+  will-change:transform;
+}
+#hero .content{
+  position:relative;
+  max-width:var(--max-width);
+  margin:auto;
+  text-align:left;
+  padding:2rem;
+  display:grid;
+  grid-template-columns:1fr minmax(300px,400px);
+  gap:2rem;
+  align-items:center;
+}
+#hero .content h1{
+  color:var(--primary);
+  text-shadow:0 2px 4px rgba(0,0,0,.5);
+}
+#hero .content .cta{
+  display:inline-block;
+  padding:.75rem 1.5rem;
+  background:var(--accent);
+  color:#fff;
+  border-radius:4px;
+  font-weight:700;
+  margin-top:1rem;
+  transition:background .3s;
+}
+#hero .content .cta:hover,
+#hero .content .cta:focus{
+  background:var(--primary);
+}
+#hero .ticket-frame{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  overflow:hidden;
+  border-radius:2rem;
+  box-shadow:0 8px 20px rgba(0,0,0,.4);
+  background:url('assets/ticket.jpg') center/cover no-repeat;
+}
+#hero .ticket-frame::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.6));
+}
+
+/* Value section */
+#value{
+  background:var(--secondary);
+  color:#fff;
+}
+#value .benefits{
+  display:grid;
+  gap:2rem;
+  max-width:var(--max-width);
+  margin:auto;
+}
+#value .benefit{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+#value .benefit i{
+  font-size:3rem;
+  margin-bottom:.5rem;
+}
+
+/* Agenda (bento) */
+#agenda{
+  background:#fff;
+}
+#agenda .grid{
+  display:grid;
+  gap:1rem;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  max-width:var(--max-width);
+  margin:auto;
+}
+#agenda .card{
+  background:#f9f9f9;
+  border-radius:8px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+#agenda .card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
+#agenda .card .info{
+  padding:1rem;
+}
+
+/* Sponsors */
+#sponsors{
+  background:var(--bg);
+}
+#sponsors .carousel{
+  display:flex;
+  overflow-x:auto;
+  gap:2rem;
+  scroll-snap-type:x mandatory;
+}
+#sponsors .carousel img{
+  height:80px;
+  width:auto;
+  scroll-snap-align:center;
+  filter:grayscale(100%) contrast(1.2);
+}
+
+/* Countdown */
+#countdown{
+  background:var(--primary);
+  color:#fff;
+  text-align:center;
+}
+#countdown .timer{
+  font-size:clamp(3rem,8vw,6rem);
+  font-weight:700;
+  margin-top:.5rem;
+}
+
+/* CTA */
+#cta{
+  background:var(--accent);
+  color:#fff;
+  text-align:center;
+}
+#cta .btn{
+  display:inline-block;
+  margin-top:1rem;
+  padding:.75rem 2rem;
+  background:#fff;
+  color:var(--accent);
+  border-radius:4px;
+  font-weight:700;
+  transition:background .3s;
+}
+#cta .btn:hover,
+#cta .btn:focus{
+  background:#f0f0f0;
+}
+
+/* Motion preferences */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important;}
+}
+      </style>
+      <style>
+        /* Parallax Storytelling Styles */
+        body {
+          perspective: 1px;
+          height: 100%;
+          overflow-x: hidden;
+          overflow-y: auto;
+        }
+
+        section {
+          position: relative;
+          display: block;
+          width: 100%;
+          height: 100vh;
+          scroll-snap-align: start;
+        }
+
+        #hero {
+          position: relative;
+          height: 100vh;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          color: #fff;
+        }
+
+        #hero .bg-layer {
+          position: absolute;
+          inset: 0;
+          background: url('assets/hero.jpg') center/cover no-repeat;
+          transform: translateZ(-1px) scale(1.5);
+          will-change: transform;
+        }
+
+        #hero .content {
+          position: relative;
+          max-width: var(--max-width);
+          margin: auto;
+          text-align: left;
+          padding: 2rem;
+          display: grid;
+          grid-template-columns: 1fr minmax(300px, 400px);
+          gap: 2rem;
+          align-items: center;
+        }
+
+        #hero .content h1 {
+          color: var(--primary);
+          text-shadow: 0 2px 4px rgba(0, 0, 0, .5);
+        }
+
+        #hero .content .cta {
+          display: inline-block;
+          padding: .75rem 1.5rem;
+          background: var(--accent);
+          color: #fff;
+          border-radius: 4px;
+          font-weight: 700;
+          margin-top: 1rem;
+          transition: background .3s;
+        }
+
+        #hero .content .cta:hover,
+        #hero .content .cta:focus {
+          background: var(--primary);
+        }
+
+        #hero .ticket-frame {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 16/9;
+          overflow: hidden;
+          border-radius: 2rem;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, .4);
+        }
+
+        #hero .ticket-frame::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, rgba(0, 0, 0, .3), rgba(0, 0, 0, .6));
+          z-index: 1;
+        }
+
+        #hero .ticket-frame img {
+          position: relative;
+          z-index: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        #value {
+          position: relative;
+          background: var(--secondary);
+          color: #fff;
+          z-index: 2;
+        }
+
+        #value .container {
+          position: relative;
+          z-index: 2;
+        }
+
+        #value .benefits {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 2rem;
+          position: relative;
+          z-index: 2;
+        }
+
+        #value .benefit {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          animation: slideIn 0.5s ease-out forwards;
+        }
+
+        #value .benefit i {
+          font-size: 3rem;
+          margin-bottom: .5rem;
+        }
+
+        #agenda {
+          position: relative;
+          background: #fff;
+          z-index: 3;
+        }
+
+        #agenda .container {
+          position: relative;
+          z-index: 3;
+        }
+
+        #agenda .grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+          gap: 1rem;
+          position: relative;
+          z-index: 3;
+        }
+
+        #agenda .card {
+          position: relative;
+          z-index: 3;
+          background: #f9f9f9;
+          border-radius: 8px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+
+        #agenda .card img {
+          width: 100%;
+          height: 180px;
+          object-fit: cover;
+        }
+
+        #agenda .card .info {
+          padding: 1rem;
+        }
+
+        #sponsors {
+          position: relative;
+          background: var(--bg);
+          z-index: 4;
+        }
+
+        #sponsors .container {
+          position: relative;
+          z-index: 4;
+        }
+
+        #sponsors .carousel {
+          display: flex;
+          overflow-x: auto;
+          gap: 2rem;
+          scroll-snap-type: x mandatory;
+          position: relative;
+          z-index: 4;
+        }
+
+        #sponsors .carousel img {
+          height: 80px;
+          width: auto;
+          scroll-snap-align: center;
+          filter: grayscale(100%) contrast(1.2);
+        }
+
+        #countdown {
+          position: relative;
+          background: var(--primary);
+          color: #fff;
+          text-align: center;
+          z-index: 5;
+        }
+
+        #countdown .container {
+          position: relative;
+          z-index: 5;
+        }
+
+        #countdown .timer {
+          font-size: clamp(3rem, 8vw, 6rem);
+          font-weight: 700;
+          margin-top: .5rem;
+        }
+
+        #cta {
+          position: relative;
+          background: var(--accent);
+          color: #fff;
+          text-align: center;
+          z-index: 6;
+        }
+
+        #cta .container {
+          position: relative;
+          z-index: 6;
+        }
+
+        #cta .btn {
+          display: inline-block;
+          margin-top: 1rem;
+          padding: .75rem 2rem;
+          background: #fff;
+          color: var(--accent);
+          border-radius: 4px;
+          font-weight: 700;
+          transition: background .3s;
+        }
+
+        #cta .btn:hover,
+        #cta .btn:focus {
+          background: #f0f0f0;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation: none !important;
+            transition: none !important;
+          }
+        }
+
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      </style>
+</head>
+<body>
+<header>
+  <nav>
+    <div class="logo">Crescent City Jazz</div>
+    <button class="menu-toggle" aria-label="Toggle menu" aria-controls="nav-list" aria-expanded="false">☰</button>
+    <ul id="nav-list">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#value">Why Jazz</a></li>
+      <li><a href="#agenda">Lineup</a></li>
+      <li><a href="#sponsors">Partners</a></li>
+      <li><a href="#cta">Reserve</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section id="hero">
+  <div class="bg-layer" aria-hidden="true"></div>
+  <div class="content container">
+    <div>
+      <h1>Welcome to the Crescent City’s Beat</h1>
+      <p>Step into the soul of New Orleans where midnight melodies drift through intimate rooms, and every note tells a story. Join us for live sets, classic standards, and the vibrant pulse that only a true jazz haven can deliver.</p>
+      <a href="#agenda" class="cta">View Tonight’s Lineup</a>
+    </div>
+      <div class="ticket-frame" role="img" aria-label="Ticket-shaped hero image of the club interior" data-brief="A dimly lit jazz club interior, warm amber lighting, a spotlight on a saxophone, shot with a 35mm lens, evoking intimacy and rhythm." style="position: relative; overflow: hidden; border-radius: 2rem; box-shadow: 0 8px 20px rgba(0,0,0,.4);">
+        <div style="position: absolute; inset: 0; background: linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.6)); z-index: 1;"></div>
+        <img src="assets/ticket.jpg" alt="Ticket-shaped hero image of the club interior" style="position: relative; z-index: 0; width: 100%; height: 100%; object-fit: cover;">
+      </div></div>
+  </div>
+</section>
+
+<section id="value">
+  <div class="container">
+    <h2>Why Jazz Here?</h2>
+    <div class="benefits">
+      <div class="benefit" style="position: relative; z-index: 2;">
+        <i class="fas fa-music" style="font-size: 3rem; margin-bottom: .5rem;"></i>
+        <h3>Exceptional Sound</h3>
+        <p>Our venue is acoustically engineered to deliver crystal-clear sound, ensuring every note is heard with precision and clarity.</p>
+      </div>
+      <div class="benefit">
+        <i class="fas fa-glass-cheers"></i>
+        <h3>Premium Experience</h3>
+        <p>Enjoy a premium experience with top-notch amenities, including a lounge area, gourmet food options, and premium beverages.</p>
+      </div>
+      <div class="benefit">
+        <i class="fas fa-users"></i>
+        <h3>Vibrant Community</h3>
+        <p>Join a vibrant community of jazz enthusiasts who share your passion for live music and cultural experiences.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="agenda">
+  <div class="container">
+    <h2>Tonight’s Lineup</h2>
+    <div class="grid">
+      <div class="card" style="position: relative; z-index: 2;">
+        <img src="assets/event1.jpg" alt="Jazz Night" width="300" height="180" loading="lazy" style="width: 100%; height: 180px; object-fit: cover;">
+        <div class="info" style="padding: 1rem;">
+          <h3>Jazz Night</h3>
+          <p>7:00 PM - 10:00 PM</p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="assets/sponsor.jpg" alt="Smooth Jazz" width="300" height="180" loading="lazy">
+        <div class="info">
+          <h3>Smooth Jazz</h3>
+          <p>10:30 PM - 1:30 AM</p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="assets/ticket.jpg" alt="Blues Night" width="300" height="180" loading="lazy">
+        <div class="info">
+          <h3>Blues Night</h3>
+          <p>2:00 PM - 5:00 PM</p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="assets/countdown.jpg" alt="Speaker Spotlight" width="300" height="180" loading="lazy">
+        <div class="info">
+          <h3>Speaker Spotlight</h3>
+          <p>John Doe, a renowned jazz musician and educator, will share his insights and experiences in the world of jazz.</p>
+        </div>
+      </div>
+      <div class="card" style="position: relative; z-index: 2;">
+        <div class="info" style="padding: 1rem;">
+          <h3>Get Your Tickets</h3>
+          <form id="ticket-form" style="display: flex; flex-direction: column; gap: 1rem;">
+            <label for="name" style="font-weight: 500;">Name:</label>
+            <input type="text" id="name" name="name" required style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+            <label for="email" style="font-weight: 500;">Email:</label>
+            <input type="email" id="email" name="email" required style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+            <button type="submit" style="padding: 0.5rem 1rem; background: var(--accent); color: #fff; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s;">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sponsors">
+  <div class="container">
+    <h2>Our Partners</h2>
+    <div class="carousel">
+      <a href="#"><img src="assets/sponsor.jpg" alt="Sponsor 1" width="150" height="80" loading="lazy"></a>
+      <a href="#"><img src="assets/sponsor.jpg" alt="Sponsor 2" width="150" height="80" loading="lazy"></a>
+      <a href="#"><img src="assets/sponsor.jpg" alt="Sponsor 3" width="150" height="80" loading="lazy"></a>
+      <a href="#"><img src="assets/sponsor.jpg" alt="Sponsor 4" width="150" height="80" loading="lazy"></a>
+      <a href="#"><img src="assets/sponsor.jpg" alt="Sponsor 5" width="150" height="80" loading="lazy"></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Additional styles for the sections */
+  #value .benefits {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  #agenda .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  #sponsors .carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 2rem;
+    scroll-snap-type: x mandatory;
+  }
+
+  #sponsors .carousel img {
+    scroll-snap-align: center;
+  }
+
+  /* Animation for the benefits */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  #value .benefit {
+    animation: slideIn 0.5s ease-out forwards;
+  }
+
+  #value .benefit:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+
+  #value .benefit:nth-child(2) {
+    animation-delay: 0.4s;
+  }
+
+  #value .benefit:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+
+  /* Parallax effect for the sponsors */
+  #sponsors {
+    position: relative;
+    overflow: hidden;
+  }
+
+  #sponsors::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3));
+    z-index: 1;
+  }
+
+  #sponsors .carousel {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Interactive ticket form */
+  #agenda #ticket-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  #agenda #ticket-form label {
+    font-weight: 500;
+  }
+
+  #agenda #ticket-form input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  #agenda #ticket-form button {
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  #agenda #ticket-form button:hover,
+  #agenda #ticket-form button:focus {
+    background: var(--primary);
+  }
+</style>
+
+<script>
+  // JavaScript for the interactive ticket form
+  document.getElementById('ticket-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    alert('Thank you for your interest! We will contact you soon.');
+  });
+
+  // JavaScript for the parallax effect on the sponsors section
+  window.addEventListener('scroll', function() {
+    const sponsorsSection = document.getElementById('sponsors');
+    const scrollPosition = window.scrollY;
+    const sponsorsPosition = sponsorsSection.offsetTop;
+    const sponsorsHeight = sponsorsSection.offsetHeight;
+
+    if (scrollPosition > sponsorsPosition && scrollPosition < sponsorsPosition + sponsorsHeight) {
+      const parallaxSpeed = 0.5;
+      const offset = (scrollPosition - sponsorsPosition) * parallaxSpeed;
+      sponsorsSection.style.backgroundPositionY = offset + 'px';
+    }
+  });
+
+  // JavaScript for the slide-in animation on the benefits
+  const benefits = document.querySelectorAll('#value .benefit');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  benefits.forEach(benefit => {
+    benefit.style.animationPlayState = 'paused';
+    observer.observe(benefit);
+  });
+</script>
+<section id="countdown">
+  <div class="container">
+    <h2>Countdown to the Next Set</h2>
+    <p class="lead">The next immersive experience begins in:</p>
+    <div class="timer" aria-live="polite" data-target="2025-03-15T19:00:00Z">00d 00h 00m 00s</div>
+    <p>Mark your calendar and join us for a night of curated sound, light, and storytelling.</p>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="container">
+    <h2>Reserve Your Seat</h2>
+    <p class="lead">Spaces are limited – secure your place now and be part of the journey.</p>
+    <a href="/reserve" class="btn">Book My Ticket</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2024 Aurora Experiences. All rights reserved.</p>
+    <nav class="footer-nav">
+      <ul>
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#value">Why Attend</a></li>
+        <li><a href="#agenda">Program</a></li>
+        <li><a href="#sponsors">Partners</a></li>
+        <li><a href="#cta">Reserve</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu toggle
+  const menuToggle = document.querySelector('.menu-toggle');
+  const navList = document.querySelector('nav ul');
+  if (menuToggle && navList) {
+    menuToggle.addEventListener('click', () => {
+      navList.classList.toggle('show');
+      menuToggle.setAttribute('aria-expanded', navList.classList.contains('show'));
+    });
+  }
+
+  // Simple countdown logic (no external libs)
+  const timerEl = document.querySelector('#countdown .timer');
+  if (timerEl && timerEl.dataset.target) {
+    const targetDate = new Date(timerEl.dataset.target);
+    const updateTimer = () => {
+      const now = new Date();
+      const diff = targetDate - now;
+      if (diff <= 0) {
+        timerEl.textContent = 'Event Started';
+        return;
+      }
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      timerEl.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    };
+    updateTimer();
+    const interval = setInterval(() => {
+      updateTimer();
+      if (new Date() >= targetDate) clearInterval(interval);
+    }, 1000);
+  }
+</script>
+</body>
+</html>
