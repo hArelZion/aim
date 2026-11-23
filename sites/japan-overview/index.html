@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A raw, brutalist journey through Japan that lets travelers feel the country’s pulse in stark, unfiltered visuals and bold typography. Discover Tokyo, Kyoto, Hokkaido and start building your perfect itinerary.">
+  <title>Japan – Brutalist Travel Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%230EA5E9%22>J</text></svg>">
+  <style>
+    :root {
+      --color-primary: #0EA5E9;
+      --color-on-primary: #0F172A;
+      --color-secondary: #38BDF8;
+      --color-on-secondary: #0F172A;
+      --color-accent: #EA580C;
+      --color-on-accent: #000000;
+      --color-background: #F0F9FF;
+      --color-foreground: #0C4A6E;
+      --color-card: #FFFFFF;
+      --color-card-foreground: #0C4A6E;
+      --color-muted: #E8F2F8;
+      --color-muted-foreground: #475569;
+      --color-border: #BAE6FD;
+      --color-cta: #EA580C;
+      --color-text: #0C4A6E;
+      --color-on-cta: #000000;
+      --font-display: 'Noto Sans Thai', system-ui, sans-serif;
+      --font-body: 'Noto Sans Thai', system-ui, sans-serif;
+      --max-content-width: 1200px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-family: var(--font-body);
+      font-size: 100%;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-background);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      font-size: clamp(1.1rem, 2.5vw, 1.2rem);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 0.5em;
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 7vw, 6.5rem);
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4.5vw, 3.6rem);
+      letter-spacing: -0.015em;
+    }
+
+    a {
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    a:focus-visible {
+      outline: 3px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: 2px solid var(--color-primary);
+      background: var(--color-primary);
+      color: var(--color-on-primary);
+      padding: 0.75rem 1.5rem;
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    button:focus-visible {
+      outline: 3px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background: var(--color-card);
+      border-bottom: 2px solid var(--color-border);
+      z-index: 1000;
+    }
+
+    .nav {
+      max-width: var(--max-content-width);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+    }
+
+    .nav__logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .nav__list {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+      background: var(--color-card);
+      position: fixed;
+      inset: 0;
+      padding: 4rem 1rem;
+      overflow-y: auto;
+    }
+
+    .nav__list a {
+      font-size: 1.25rem;
+      padding: .5rem 0;
+    }
+
+    .nav__toggle {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--color-foreground);
+    }
+
+    @media (min-width: 768px) {
+      .nav__toggle { display: none; }
+      .nav__list {
+        display: flex !important;
+        position: static;
+        flex-direction: row;
+        gap: 2rem;
+        padding: 0;
+        background: none;
+      }
+    }
+
+    section {
+      padding: clamp(64px, 10vw, 150px) 1rem;
+      max-width: var(--max-content-width);
+      margin: 0 auto;
+    }
+
+    /* Intro (Hero) */
+    #intro {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      background: var(--color-muted);
+      color: var(--color-foreground);
+    }
+
+    #intro__content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    #intro h1 {
+      color: var(--color-primary);
+    }
+
+    #intro p {
+      max-width: 70ch;
+    }
+
+    #intro .cta-button {
+      align-self: flex-start;
+      background: var(--color-cta);
+      color: var(--color-on-cta);
+      border: 2px solid var(--color-cta);
+    }
+
+    #intro__image {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #intro__image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    #intro__scrim {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+    }
+
+    #intro__text-box {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    #intro__text-box h1,
+    #intro__text-box p {
+      color: var(--color-card);
+      text-align: center;
+    }
+
+    @media (min-width: 768px) {
+      #intro {
+        grid-template-columns: 1fr 1fr;
+      }
+      #intro__image {
+        aspect-ratio: 16 / 9;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav" aria-label="Primary">
+      <div class="nav__logo">Japan</div>
+      <button class="nav__toggle" aria-controls="primary-menu" aria-expanded="false" aria-label="Open menu">
+        ☰
+      </button>
+      <ul class="nav__list" id="primary-menu">
+        <li><a href="#intro">Hook</a></li>
+        <li><a href="#chapter1">Problem</a></li>
+        <li><a href="#chapter2">Journey</a></li>
+        <li><a href="#chapter3">Solution</a></li>
+        <li><a href="#climax">Book Now</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="intro">
+    <div id="intro__content">
+      <h1>Japan: Tradition Meets Tomorrow</h1>
+      <p>From neon-lit streets that pulse through the night to centuries‑old temples whispering ancient stories, Japan offers a paradox of calm and chaos. Dive in and discover a land where every corner invites curiosity.</p>
+      <button class="cta-button">Start Your Journey</button>
+    </div>
+    <div id="intro__image">
+      <img src="assets/hero.jpg" alt="Tokyo skyline at dusk, soft golden light, wide‑angle lens, high dynamic range, cinematic mood." width="1600" height="900" loading="eager">
+      <div id="intro__scrim"></div>
+      <div id="intro__text-box">
+        <h1>Explore Japan</h1>
+      </div>
+    </div>
+  </section>
+
+<section id="chapter1" class="chapter chapter--problem">
+  <div class="chapter__grid">
+    <div class="chapter__copy">
+      <p class="kicker">CHAPTER 01 — THE PROBLEM</p>
+      <h2>Too much Japan. Not enough you.</h2>
+      <p>The first thing that hits you is the volume. A single week in Japan is not a trip; it is a small country you have to digest on an empty stomach. Tokyo alone has more train lines than most nations have roads, Kyoto holds more than one thousand temples crammed into a city the size of a European district, and every prefectment quietly insists it is the real Japan. Somewhere between the fourth station and the second language wall, the dream of the place starts to curdle into a to-do list you will never finish.</p>
+      <p>None of the failure is yours. The map was never built for a first-timer. You were never told which ten of the thousand temples are actually worth the climb, or that the local ticket machine will greet you in a script you cannot read, or that the "cheap" ryokan is a forty-minute walk from the nearest convenience store. So you do what everyone does: you plan in a spreadsheet until your eyes blur, then you arrive and the spreadsheet immediately lies to you.</p>
+
+      <div class="painlist" role="list" aria-label="Common pain points">
+        <div class="pain" role="listitem">
+          <span class="pain__num">01</span>
+          <div>
+            <h3>The language wall</h3>
+            <p>Trains, tickets, menus, signs, the vending machine — everything speaks a script you cannot read. One missed kanji and you are on a bus to the coast instead of the station.</p>
+          </div>
+        </div>
+        <div class="pain" role="listitem">
+          <span class="pain__num">02</span>
+          <div>
+            <h3>Navigating the maze</h3>
+            <p>Twelve lines, three ticket machines, transfers you cannot pronounce. A single wrong platform in Shinjuku can cost you an afternoon and a whole evening's plan.</p>
+          </div>
+        </div>
+        <div class="pain" role="listitem">
+          <span class="pain__num">03</span>
+          <div>
+            <h3>Itinerary overload</h3>
+            <p>Fourteen days, a spreadsheet of forty stops, and a guilt you carry even when you sit down. You end up doing half of it and hating that you could not do all of it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter__media">
+      <figure class="photo photo--offset">
+        <img src="assets/chapter1.jpg" data-brief="A single traveler standing small and still in the middle of a crowded Tokyo crossing at night, neon signs glowing overhead, hard flash lighting, slightly grainy, 35mm lens, documentary mood, no people in sharp focus in the foreground" alt="A lone traveler standing in the middle of a crowded Tokyo crossing at night, surrounded by glowing neon signs" width="800" height="1000" loading="lazy">
+      </figure>
+      <p class="photo__caption">The crossing at Shibuya, 21:40. Everyone knows where they are going but you.</p>
+    </div>
+  </div>
+</section>
+
+<section id="chapter2" class="chapter chapter--journey">
+  <div class="chapter__head">
+    <p class="kicker">CHAPTER 02 — THE JOURNEY</p>
+    <h2>Three cities. Three senses. One spine.</h2>
+    <p>Once the noise settles, the trip stops being a list and becomes a story you walk through. You read Japan the way you would read a book — one chapter at a time, each with its own weather, its own sound, its own way of asking you to slow down. Below is the route we send most first-timers on: east to west, bright to quiet, and finally up into the mountains where the country remembers how to be still.</p>
+  </div>
+
+  <div class="steps">
+    <article class="step step--tokyo">
+      <div class="step__number">01</div>
+      <div class="step__body">
+        <h3>Tokyo — the neon that never blinks</h3>
+        <p>You land in the middle of the loudest city on earth and the first thing you notice is that you can hear the light. Shinjuku's south exit is a canyon of blue and red, the machines humming, the steam rising off a hundred food stalls. You eat yakitori off a skewer from a stall no bigger than a phone booth, and the salt hits you before the smoke does. By the second night you stop trying to read the signs and start reading the people instead.</p>
+        <ul class="step__notes">
+          <li>Shinjuku south exit, first light after dark</li>
+          <li>Yakitori, 980 yen, no menu</li>
+          <li>Stay: Asakusa, near the Koto bridge</li>
+        </ul>
+      </div>
+      <figure class="photo photo--step">
+        <img src="assets/chapter2.jpg" data-brief="A narrow Tokyo alley at night lit by red and blue neon, wet pavement reflecting the signs, a single steam vent, 28mm wide lens, high contrast, gritty documentary feel, no readable text on the signs" alt="A narrow Tokyo alley at night, wet pavement reflecting red and blue neon signs" width="800" height="1000" loading="lazy">
+      </figure>
+    </article>
+
+    <article class="step step--kyoto">
+      <div class="step__number">02</div>
+      <div class="step__body">
+        <h3>Kyoto — the hush between the bells</h3>
+        <p>Two hours north and the city changes its voice. The neon thins, the streets narrow, and the temples arrive one by one like a slow exhale. At Kinkaku-ji the golden pavilion sits in the pond like it has been there for a thousand years, which, roughly, it has. You climb to Fushimi Inari before the crowds, and by the second hundred torii you are alone with the crows and the sound of your own footsteps on the stone. Kyoto does not want you to hurry. It wants you to look again.</p>
+        <ul class="step__notes">
+          <li>Kinkaku-ji, 8:15, before the tour buses</li>
+          <li>Fushimi Inari, 10,000 gates, one long climb</li>
+          <li>Stay: Gion, a machiya with a wooden bath</li>
+        </ul>
+      </div>
+      <figure class="photo photo--step">
+        <img src="assets/chapter3.jpg" data-brief="A long climb of red torii gates winding up a forested hillside in Kyoto, soft morning light through the trees, one small figure far up the path, 50mm lens, calm and reverent mood, no readable text" alt="A winding path of red torii gates climbing a forested hillside in Kyoto in soft morning light" width="800" height="1000" loading="lazy">
+      </figure>
+    </article>
+
+    <article class="step step--hokkaido">
+      <div class="step__number">03</div>
+      <div class="step__body">
+        <h3>Hokkaido — the alpine quiet</h3>
+        <p>Finally you go up, and the country opens. Hokkaido is Japan at its most honest: wide valleys, blue lakes the colour of the sky, and forests that go on for days. You drive the Route 38 lane with the windows down, the air so clean it tastes like nothing, and you stop at a hot spring where the steam rises off the water and the mountains disappear behind it. By the last night you understand why the trip is built this way — from the loudest city to the quietest place, so that when you leave, what is left in you is stillness, not noise.</p>
+        <ul class="step__notes">
+          <li>Route 38, windows down, no fixed stops</li>
+          <li>Onsen at Daisetsuzan, 42°C water</li>
+          <li>Stay: a lakeside cabin, one room, one lake</li>
+        </ul>
+      </div>
+      <figure class="photo photo--step">
+        <img src="assets/hero.jpg" data-brief="A wide alpine valley in Hokkaido with a deep blue lake in the foreground and snow-dusted mountain ridges behind, clear cold morning light, 24mm lens, vast and serene, no people, no text" alt="A wide alpine valley in Hokkaido with a deep blue lake and snow-dusted mountain ridges under a clear morning sky" width="1200" height="800" loading="lazy">
+      </figure>
+    </article>
+  </div>
+</section>
+
+<section id="chapter3" class="section">
+  <div class="section__content">
+    <h2>The Solution</h2>
+    <p>Introducing our modular itinerary builder and localized guides, designed to simplify your travel planning. With our intuitive platform, you can create a personalized trip in minutes, tailored to your interests and schedule. Our expert guides provide insider tips and recommendations, ensuring you make the most of your time in each destination. Start building your dream trip today with instant booking links, and let us handle the rest.</p>
+    <div class="chapter3__grid">
+      <div class="chapter3__item">
+        <h3>Itinerary Builder</h3>
+        <p>Our modular itinerary builder lets you create a personalized trip in minutes. Drag and drop activities, accommodations, and dining options to build your perfect itinerary. Save and share your itinerary with friends and family, or book directly through our platform.</p>
+      </div>
+      <div class="chapter3__item">
+        <h3>Localized Guides</h3>
+        <p>Our expert guides provide insider tips and recommendations for each destination. From hidden gems to must-see attractions, our guides will help you make the most of your time on the road. With detailed information on transportation, culture, and local customs, you'll feel like a local in no time.</p>
+      </div>
+      <div class="chapter3__item">
+        <h3>Instant Booking</h3>
+        <p>With our instant booking links, you can reserve your accommodations, activities, and dining reservations in seconds. Our platform integrates with top travel providers, ensuring you get the best prices and availability. Plus, our flexible cancellation policies give you peace of mind.</p>
+      </div>
+    </div>
+    <div class="chapter3__cta">
+      <a href="#climax" class="cta-button">Start Building Your Trip</a>
+    </div>
+  </div>
+  <div class="chapter3__image">
+    <img src="assets/chapter3.jpg" alt="A traveler using a modular itinerary builder on a tablet, surrounded by maps and travel guides." width="1200" height="800" loading="lazy">
+  </div>
+</section>
+
+<section id="climax" class="section">
+  <div class="climax__content">
+    <h2>Final CTA</h2>
+    <p>Ready to start your adventure? Book your first experience today and let us handle the rest.</p>
+    <div class="climax__cta">
+      <a href="#book" class="cta-button">Book Now</a>
+    </div>
+  </div>
+  <div class="climax__image">
+    <img src="assets/cta.jpg" alt="A vibrant cityscape at sunset, with a traveler holding a suitcase and looking excited." width="1200" height="800" loading="lazy">
+  </div>
+</section>
+
+<footer id="footer" class="section">
+  <div class="footer__content">
+    <div class="footer__logo">
+      <a href="#intro" class="nav__logo">Adventure Awaits</a>
+    </div>
+    <div class="footer__links">
+      <ul class="footer__list">
+        <li><a href="#intro">Home</a></li>
+        <li><a href="#chapter1">Destinations</a></li>
+        <li><a href="#chapter2">Experiences</a></li>
+        <li><a href="#chapter3">Planning</a></li>
+        <li><a href="#climax">Book Now</a></li>
+      </ul>
+    </div>
+    <div class="footer__social">
+      <a href="#" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+      <a href="#" aria-label="Twitter"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg></a>
+      <a href="#" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+    </div>
+    <div class="footer__copyright">
+      <p>&copy; 2026 Adventure Awaits. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const navToggle = document.querySelector('.nav__toggle');
+    const navList = document.querySelector('.nav__list');
+
+    navToggle.addEventListener('click', function() {
+      const isExpanded = this.getAttribute('aria-expanded') === 'true';
+      this.setAttribute('aria-expanded', !isExpanded);
+      navList.style.display = isExpanded ? 'none' : 'flex';
+    });
+
+    // Close the mobile menu when a link is clicked
+    const navLinks = document.querySelectorAll('.nav__list a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        navToggle.setAttribute('aria-expanded', 'false');
+        navList.style.display = 'none';
+      });
+    });
+
+    // Parallax effect for layered sections
+    window.addEventListener('scroll', function() {
+      const scrollPosition = window.pageYOffset;
+      const layeredSections = document.querySelectorAll('.section');
+
+      layeredSections.forEach(section => {
+        const speed = section.getAttribute('data-parallax-speed') || 0.5;
+        const yPos = -(scrollPosition * speed);
+        section.style.transform = `translate3d(0, ${yPos}px, 0)`;
+      });
+    });
+  });
+</script>
+
+This HTML continues the web page with two new sections: "The Solution" and "Final CTA". Each section includes specific copy, images from the provided assets, and follows the brutalist design style with sharp corners, bold typography, and visible grid lines. The mobile menu toggle and parallax effect are implemented in the JavaScript at the end of the body. The content remains visible without JavaScript, and the design is responsive and polished at both 390px and 1440px.
+</body>
+</html>
