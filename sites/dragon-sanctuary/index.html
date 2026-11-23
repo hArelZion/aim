@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mountain Dragon Sanctuary</title>
+<meta name="description" content="Explore the Mountain Dragon Sanctuary – a protected haven high in the peaks where dragons thrive. Learn our mission, meet the guardians, view stunning dragon portraits, and plan your visit.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22 fill=%22%230080FF%22 font-family=%22Poppins%22>🐉</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --aurora-blue:#0080FF;
+  --dragon-ink:#FF1493;
+  --iridescent-cyan:#00FFFF;
+  --mountain-mist:#E0E8F0;
+  --sunset-orange:#FF8C00;
+  --font-display:'Poppins',sans-serif;
+  --font-body:'Open Sans',sans-serif;
+  --max-width:1200px;
+  --gap:clamp(64px,10vw,150px);
+  --bg-gradient:conic-gradient(from 180deg at 50% 50%, var(--aurora-blue), var(--iridescent-cyan), var(--dragon-ink), var(--aurora-blue));
+}
+html{
+  scroll-behavior:smooth;
+}
+body{
+  margin:0;
+  font-family:var(--font-body);
+  font-size:clamp(1.1rem,2.5vw,1.2rem);
+  line-height:1.6;
+  color:#111;
+  background:var(--mountain-mist);
+  background-size:200% 200%;
+  animation:gradient 10s infinite linear;
+}
+@keyframes gradient{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+*{
+  box-sizing:border-box;
+}
+img{
+  display:block;
+  max-width:100%;
+  height:auto;
+  object-fit:cover;
+}
+a{
+  color:var(--aurora-blue);
+  text-decoration:none;
+}
+a:focus{
+  outline:2px solid var(--dragon-ink);
+  outline-offset:2px;
+}
+header{
+  position:sticky;
+  top:0;
+  background:rgba(255,255,255,0.9);
+  backdrop-filter:blur(8px);
+  z-index:10;
+}
+nav{
+  max-width:var(--max-width);
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:1rem var(--gap);
+}
+nav .logo{
+  font-family:var(--font-display);
+  font-size:1.5rem;
+  font-weight:700;
+  color:var(--aurora-blue);
+}
+nav ul{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  gap:1.5rem;
+}
+nav ul li a{
+  font-weight:600;
+}
+nav .menu-toggle{
+  display:none;
+  background:none;
+  border:none;
+  font-size:1.5rem;
+}
+@media (max-width:768px){
+  nav ul{
+    position:absolute;
+    top:100%;
+    right:0;
+    background:#fff;
+    flex-direction:column;
+    width:200px;
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .3s ease;
+    box-shadow:0 4px 8px rgba(0,0,0,.1);
+  }
+  nav ul.open{
+    max-height:500px;
+  }
+  nav .menu-toggle{
+    display:block;
+  }
+}
+section{
+  padding:var(--gap) var(--gap);
+  max-width:var(--max-width);
+  margin:auto;
+}
+section h2{
+  font-family:var(--font-display);
+  font-size:clamp(2rem,4.5vw,3.6rem);
+  line-height:1.1;
+  margin-bottom:1rem;
+}
+section p{
+  max-width:80ch;
+}
+#hero{
+  position:relative;
+  padding:0;
+  height:100vh;
+  overflow:hidden;
+}
+#hero img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+#hero .caption{
+  position:absolute;
+  bottom:var(--gap);
+  left:var(--gap);
+  background:rgba(255,255,255,0.85);
+  padding:0.8rem 1.2rem;
+  border-left:4px solid var(--aurora-blue);
+}
+#hero .caption h1{
+  font-family:var(--font-display);
+  font-size:clamp(2.8rem,7vw,6.5rem);
+  line-height:1;
+  margin:0;
+  color:#111;
+}
+#about{
+  background:var(--mountain-mist);
+  display:flex;
+  flex-wrap:wrap;
+  gap:2rem;
+  align-items:center;
+}
+#about img{
+  flex:1 1 300px;
+  max-height:80vh;
+  border-radius:8px;
+}
+#about .text{
+  flex:1 1 300px;
+}
+#gallery{
+  background:linear-gradient(135deg, var(--aurora-blue), var(--iridescent-cyan));
+  color:#fff;
+}
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:1rem;
+}
+.gallery-grid img{
+  border-radius:6px;
+}
+.gallery-grid .caption{
+  text-align:center;
+  margin-top:0.5rem;
+  font-weight:600;
+}
+#team{
+  background:#fff;
+}
+.team-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:1.5rem;
+}
+.team-card{
+  background:#f9f9f9;
+  padding:1rem;
+  border-radius:8px;
+  text-align:center;
+  box-shadow:0 2px 6px rgba(0,0,0,.05);
+}
+.team-card img{
+  width:100%;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  margin-bottom:0.8rem;
+  box-shadow:0 0 8px var(--iridescent-cyan);
+}
+#visit{
+  background:var(--sunset-orange);
+  color:#fff;
+}
+#visit .map{
+  width:100%;
+  height:400px;
+  background:#fff;
+  border-radius:8px;
+  margin-top:1rem;
+}
+#contact{
+  background:#fff;
+}
+.contact-form{
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+  max-width:600px;
+}
+.contact-form input,
+.contact-form textarea{
+  padding:0.8rem;
+  border:1px solid #ccc;
+  border-radius:4px;
+  font:inherit;
+}
+.contact-form button{
+  align-self:start;
+  background:var(--aurora-blue);
+  color:#fff;
+  border:none;
+  padding:0.8rem 1.6rem;
+  border-radius:4px;
+  cursor:pointer;
+  transition:background .3s;
+}
+.contact-form button:hover,
+.contact-form button:focus{
+  background:var(--dragon-ink);
+}
+@media (prefers-reduced-motion:reduce){
+  *, *::before, *::after{
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+  }
+}
+</style>
+</head>
+<body>
+<header>
+  <nav aria-label="Main navigation">
+    <a href="#" class="logo">Dragon Sanctuary</a>
+    <button class="menu-toggle" aria-controls="nav-list" aria-expanded="false" aria-label="Toggle menu">☰</button>
+    <ul id="nav-list">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#about">Our Mission</a></li>
+      <li><a href="#gallery">Portraits</a></li>
+      <li><a href="#team">Guardians</a></li>
+      <li><a href="#visit">Visit</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section id="hero">
+  <img src="assets/hero.jpg" data-brief="High‑altitude mountain range, misty dawn, wide‑angle lens, serene mood, no visible people or conflict." alt="Misty mountain sunrise over the sanctuary" width="1920" height="1080">
+  <div class="caption">
+    <h1>Welcome to the Mountain Dragon Sanctuary</h1>
+  </div>
+</section>
+
+<section id="about">
+  <h2>Our Mission</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:2rem;align-items:center;">
+    <img src="assets/dragon_rest.jpg" alt="Dragon resting in a cliffside alcove" width="800" height="600" loading="lazy" style="flex:1 1 300px;border-radius:8px;">
+    <div class="text" style="flex:1 1 300px;">
+      <p>
+        At Aurora Conservation, we are dedicated to safeguarding the fragile ecosystems that sustain our mythical dragon populations. By partnering with local communities, we implement habitat restoration projects, monitor nesting sites, and advocate for sustainable land use. Our goal is to ensure that future generations can witness these majestic creatures thriving in their natural environment, while fostering a deep respect for the delicate balance of our planet’s biodiversity.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <h2>Dragon Portraits</h2>
+  <div class="gallery-grid" style="position:relative;">
+    <div>
+      <img src="assets/trail_view.jpg" alt="Dragon soaring over a misty trail" width="800" height="600" loading="lazy" style="border-radius:6px;">
+      <div class="caption" style="background:linear-gradient(to right, var(--aurora-blue), var(--iridescent-cyan));color:#fff;padding:0.5rem 1rem;text-align:center;border-radius:0 0 6px 6px;">
+        Trail Whisperer
+      </div>
+    </div>
+    <div>
+      <img src="assets/dragon_rest.jpg" alt="Dragon perched on a cliff ledge" width="800" height="600" loading="lazy" style="border-radius:6px;">
+      <div class="caption" style="background:linear-gradient(to right, var(--aurora-blue), var(--iridescent-cyan));color:#fff;padding:0.5rem 1rem;text-align:center;border-radius:0 0 6px 6px;">
+        Cliffside Guardian
+      </div>
+    </div>
+    <div>
+      <img src="assets/hero.jpg" alt="Dragon silhouetted against a sunrise" width="800" height="600" loading="lazy" style="border-radius:6px;">
+      <div class="caption" style="background:linear-gradient(to right, var(--aurora-blue), var(--iridescent-cyan));color:#fff;padding:0.5rem 1rem;text-align:center;border-radius:0 0 6px 6px;">
+        Dawn's Embrace
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="team">
+  <h2>Meet the Guardians</h2>
+  <div class="team-grid">
+    <div class="team-card">
+      <img src="assets/team_portrait.jpg" alt="Lead Conservationist Maya Chen" width="400" height="400" loading="lazy" style="aspect-ratio:1/1;border-radius:50%;margin-bottom:0.8rem;box-shadow:0 0 8px var(--iridescent-cyan);">
+      <h3>Maya Chen</h3>
+      <p>Lead Conservationist, 12 years of field experience, spearheads habitat restoration initiatives.</p>
+    </div>
+    <div class="team-card">
+      <img src="assets/team_portrait.jpg" alt="Field Researcher Luis Ramirez" width="400" height="400" loading="lazy" style="aspect-ratio:1/1;border-radius:50%;margin-bottom:0.8rem;box-shadow:0 0 8px var(--iridescent-cyan);">
+      <h3>Luis Ramirez</h3>
+      <p>Field Researcher, specializes in dragon migration patterns and ecological data analysis.</p>
+    </div>
+    <div class="team-card">
+      <img src="assets/team_portrait.jpg" alt="Community Outreach Coordinator Aisha Patel" width="400" height="400" loading="lazy" style="aspect-ratio:1/1;border-radius:50%;margin-bottom:0.8rem;box-shadow:0 0 8px var(--iridescent-cyan);">
+      <h3>Aisha Patel</h3>
+      <p>Community Outreach Coordinator, builds partnerships with local groups to promote conservation education.</p>
+    </div>
+  </div>
+</section>
+<section id="visit">
+  <h2>Plan Your Visit</h2>
+  <p>Embark on a journey through the breathtaking landscapes of the Northern Lights. Our interactive map will guide you to the best trails and viewing points, ensuring you have the most magical experience possible.</p>
+  <div class="map" id="map"></div>
+  <button class="cta-button">Explore Trails</button>
+</section>
+
+<section id="contact">
+  <h2>Get In Touch</h2>
+  <p>Have questions or want to plan your visit? Fill out the form below and we'll get back to you as soon as possible.</p>
+  <form class="contact-form">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    <label for="message">Message:</label>
+    <textarea id="message" name="message" rows="5" required></textarea>
+    <button type="submit">Send Message</button>
+  </form>
+</section>
+
+<footer>
+  <p>&copy; 2023 Aurora Trails. All rights reserved.</p>
+  <nav>
+    <ul>
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="#visit">Visit</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navList = document.querySelector('nav ul');
+
+    menuToggle.addEventListener('click', function() {
+      navList.classList.toggle('open');
+    });
+
+    const ctaButton = document.querySelector('.cta-button');
+    ctaButton.addEventListener('mouseenter', function() {
+      this.style.transform = 'scale(1.05)';
+    });
+    ctaButton.addEventListener('mouseleave', function() {
+      this.style.transform = 'scale(1)';
+    });
+
+    // Initialize the map
+    function initMap() {
+      const map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 64.9631, lng: -19.0208},
+        zoom: 6
+      });
+
+      const trailCoordinates = [
+        {lat: 64.9631, lng: -19.0208},
+        {lat: 65.1234, lng: -18.9876},
+        {lat: 65.2345, lng: -18.8765}
+      ];
+
+      const trailPath = new google.maps.Polyline({
+        path: trailCoordinates,
+        geodesic: true,
+        strokeColor: '#FF1493',
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+      });
+
+      trailPath.setMap(map);
+    }
+
+    // Load the map script
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  });
+</script>
+</body>
+</html>
