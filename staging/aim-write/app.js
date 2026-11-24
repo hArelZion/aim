@@ -1,4 +1,4 @@
-// כתוב — write on any page. Plain ES module, no build step.
+// AIM Write — write on any page. Plain ES module, no build step.
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Hebrew","Arial Hebrew",Arial,sans-serif';
@@ -142,7 +142,7 @@ async function openFile(file, saved = null) {
       await showImage(D.enhBlob || D.blob);
     }
     lastSnap = snapshot();
-    updatePager(); updateUndo(); fit(); buildItems();
+    D.ready = true; updatePager(); updateUndo(); fit(); buildItems();
     saveSoon(true);
   } catch (err) {
     console.error(err);
@@ -257,7 +257,7 @@ async function renderSharp(key) {
 }
 
 new ResizeObserver(() => {
-  if (!D || $('#editor').hidden) return;
+  if (!D || !D.ready || $('#editor').hidden) return;
   const old = fitS;
   const { W, H } = stageSize();
   fitS = Math.min((W - 24) / D.w, (H - 24) / D.h);
@@ -276,10 +276,17 @@ function buildItems() {
 }
 const ICON_MOVE = '<svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg>';
 const ICON_SIZE = '<svg viewBox="0 0 24 24"><path d="M5 19L19 5M5 19v-6M5 19h6M19 5h-6M19 5v6"/></svg>';
+const ICON_WIDTH = '<svg viewBox="0 0 24 24"><path d="M4 12h16M4 12l3-3M4 12l3 3M20 12l-3-3M20 12l-3 3"/></svg>';
+// Max line width (doc units): set by the user, or up to the page edge in the writing direction.
+function itemMaxW(it) {
+  if (it.w) return it.w;
+  const m = D.w * 0.03, room = isRTL(it.text) ? it.x - m : D.w - m - it.x;
+  return Math.max(D.w * 0.2, room);
+}
 function makeItemEl(it) {
   const el = document.createElement('div');
   el.className = 'ti'; el.dataset.id = it.id;
-  el.innerHTML = `<span class="tx" data-ph="כתוב כאן"></span><span class="h h-move">${ICON_MOVE}</span><span class="h h-size">${ICON_SIZE}</span>`;
+  el.innerHTML = `<span class="tx" data-ph="כתוב כאן"></span><span class="h h-move">${ICON_MOVE}</span><span class="h h-size">${ICON_SIZE}</span><span class="h h-width">${ICON_WIDTH}</span>`;
   const tx = el.firstChild; tx.textContent = it.text;
   tx.addEventListener('input', () => { it.text = tx.innerText.replace(/\r/g, ''); styleItem(it, el); layoutItem(it); ensureVisible(it); saveSoon(); });
   tx.addEventListener('blur', () => { if (editing === it.id) finishEdit(); });
@@ -309,6 +316,7 @@ function layoutItem(it, el = itemEl(it)) {
   const left = rtl ? sx + PAD_X * fs : sx - PAD_X * fs;
   const top = sy - (LH / 2 + PAD_Y) * fs;
   el.style.fontSize = fs + 'px';
+  el.firstChild.style.maxWidth = itemMaxW(it) * V.s + 'px';
   el.style.transform = `translate(${left}px,${top}px)` + (rtl ? ' translateX(-100%)' : '');
 }
 function select(id) {
@@ -430,8 +438,9 @@ stage.addEventListener('pointerdown', e => {
     G = { mode: 'pan-press', start: p, sv: { ...V }, t: performance.now() };
     if (h && it) {
       e.preventDefault();
-      G.mode = h.classList.contains('h-move') ? 'move' : 'resize';
-      G.item = it; G.si = { x: it.x, y: it.y, size: it.size };
+      G.mode = h.classList.contains('h-move') ? 'move' : h.classList.contains('h-width') ? 'width' : 'resize';
+      G.item = it; G.si = { x: it.x, y: it.y, size: it.size, w: Math.min(itemMaxW(it), ti.firstChild.getBoundingClientRect().width / V.s) };
+      G.rtl = ti.classList.contains('rtl');
       const r = ti.getBoundingClientRect(), sr = stage.getBoundingClientRect();
       G.anchor = ti.classList.contains('rtl') ? { x: r.right - sr.left, y: r.top - sr.top } : { x: r.left - sr.left, y: r.top - sr.top };
     } else if (it) {
@@ -440,7 +449,7 @@ stage.addEventListener('pointerdown', e => {
     }
   } else if (P.size === 2) {
     const [a, b] = [...P.values()];
-    if (G && G.item && selected === G.item.id && ['move', 'item-press', 'item-drag', 'resize'].includes(G.mode)) {
+    if (G && G.item && selected === G.item.id && ['move', 'item-press', 'item-drag', 'resize', 'width'].includes(G.mode)) {
       G = { mode: 'pinch-item', item: G.item, d0: dist(a, b), size0: G.item.size };
     } else {
       G = { mode: 'pinch', d0: dist(a, b), m0: mid(a, b), sv: { ...V } };
@@ -462,6 +471,11 @@ window.addEventListener('pointermove', e => {
     case 'item-drag': case 'move':
       G.item.x = G.si.x + (p.x - G.start.x) / V.s; G.item.y = G.si.y + (p.y - G.start.y) / V.s; layoutItem(G.item); break;
     case 'edit-press': if (moved > 12) { G.mode = 'item-drag'; } break;
+    case 'width': {
+      const dx = (p.x - G.start.x) / V.s;
+      G.item.w = clamp(G.si.w + (G.rtl ? -dx : dx), G.item.size * 1.5, D.w * 1.5);
+      layoutItem(G.item); break;
+    }
     case 'resize': {
       const d0 = Math.max(20, dist(G.start, G.anchor));
       G.item.size = clamp(G.si.size * dist(p, G.anchor) / d0, 4 / V.s, 400 / V.s);
@@ -495,7 +509,7 @@ function endPointer(e) {
     if (m === 'pan-press') queueTap({ kind: 'empty', x: G.start.x, y: G.start.y });
     else if (m === 'item-press') queueTap({ kind: 'item', id: G.item.id });
   }
-  if (['item-drag', 'move', 'resize', 'pinch-item'].includes(m)) {
+  if (['item-drag', 'move', 'resize', 'width', 'pinch-item'].includes(m)) {
     if (m === 'item-drag' || m === 'move') select(G.item.id);
     commitItemChange(G.item);
   }
@@ -565,7 +579,7 @@ $('#btnRedo').addEventListener('click', redo);
 function updatePager() {
   const n = D.kind === 'pdf' ? D.pdf.numPages : 1;
   $('#pager').hidden = n < 2;
-  $('#pgLabel').textContent = `${D.page + 1} / ${n}`;
+  $('#pgLabel').textContent = `⁦${D.page + 1} / ${n}⁩`;
   $('#pgPrev').disabled = D.page <= 0; $('#pgNext').disabled = D.page >= n - 1;
 }
 async function goPage(i) {
@@ -625,7 +639,7 @@ async function saveTimerFlush(doc) {
 document.addEventListener('visibilitychange', () => { if (document.hidden && D) saveTimerFlush(D); });
 
 // ---------- quality ----------
-const AI_LIMIT = { 2: 1_600_000, 4: 450_000 };
+const AI_LIMIT = { 2: 4_100_000, 4: 1_020_000 }; // output must stay under the ~16.7M px canvas limit
 $('#btnEnhance').addEventListener('click', () => {
   if (!D) return; deselect();
   if (D.kind === 'pdf') { toast('קובץ PDF נשאר חד בכל הגדלה – אין צורך בשיפור ✨', 3200); return; }
@@ -635,7 +649,8 @@ $('#btnEnhance').addEventListener('click', () => {
     const b = $('#enhAI' + f), ok = px <= AI_LIMIT[f];
     b.disabled = !ok;
     $('small', b).textContent = ok
-      ? (f === 2 ? 'מכפיל את הרזולוציה ומחדד קווים וטקסט. רץ בטלפון עצמו.' : 'פי 4 – לתמונות קטנות או מטושטשות במיוחד.')
+      ? (f === 2 ? 'מכפיל את הרזולוציה ומחדד קווים וטקסט. רץ בטלפון עצמו.' : 'פי 4 – לתמונות קטנות או מטושטשות במיוחד.') +
+        (px * f * f > 4_000_000 ? ' בתמונה בגודל הזה זה יכול לקחת דקה-שתיים – אפשר לבטל בכל רגע.' : '')
       : 'התמונה כבר ברזולוציה גבוהה מדי לזה. מצב סריקה יעזור יותר.';
   }
   $('#enhUndo').hidden = !D.enhBlob;
@@ -669,7 +684,8 @@ async function runAI(factor) {
   $('#aiStop').onclick = () => { ctl.cancelled = true; };
   const bar = () => $('#busy .progress i'), label = () => $('#busy .busy-text div');
   try {
-    const ai = await import('./ai.js?v=1');
+    try { ctl.lock = await navigator.wakeLock?.request('screen'); } catch {}
+    const ai = await import('./ai.js?v=2');
     const src = baseToCanvas();
     const t0 = performance.now();
     const out = await ai.upscale(src, factor, {
@@ -683,14 +699,14 @@ async function runAI(factor) {
     });
     if (!out) { busy(false); toast('בוטל'); return; }
     const l = label(); if (l) l.textContent = 'שומר…';
-    const blob = await canvasToBlob(out, 'image/jpeg', 0.93);
+    const blob = await canvasToBlob(out, 'image/jpeg', 0.95);
     D.enhBlob = blob; D.factor *= factor; D.enhKind = `AI ×${factor}`;
     await showImage(blob); rescaleItems(factor);
     busy(false); toast(`האיכות שופרה ✨ ⁦${D.w}×${D.h}⁩`, 3200);
   } catch (err) {
     console.error(err); busy(false);
     toast('שיפור ה־AI לא הצליח במכשיר הזה. נסה את מצב סריקה', 3800);
-  } finally { aiCancel = null; }
+  } finally { aiCancel = null; try { ctl.lock?.release(); } catch {} }
 }
 
 async function runScan() {
@@ -762,96 +778,219 @@ function scanFilter(src) {
 }
 
 // ---------- export ----------
-function drawItems(ctx, list, k) {
-  for (const it of list) {
-    if (!it.text.trim()) continue;
-    const fs = it.size * k, padX = PAD_X * fs, padY = PAD_Y * fs, lh = LH * fs;
-    ctx.font = `${it.bold ? 700 : 400} ${fs}px ${FONT}`;
-    const lines = it.text.split('\n');
-    const widths = lines.map(l => ctx.measureText(l).width);
-    const maxW = Math.max(...widths, fs * 0.1);
-    const rtl = isRTL(it.text);
-    const boxW = maxW + 2 * padX, boxH = lines.length * lh + 2 * padY;
-    const x = it.x * k, y = it.y * k;
-    const left = rtl ? x + padX - boxW : x - padX, top = y - lh / 2 - padY;
-    if (it.bg !== 'none') {
-      ctx.fillStyle = it.bg === 'white' ? '#ffffff' : it.bg === 'yellow' ? 'rgba(255,226,64,.72)' : '#111111';
-      ctx.beginPath();
-      if (ctx.roundRect) ctx.roundRect(left, top, boxW, boxH, RAD * fs); else ctx.rect(left, top, boxW, boxH);
-      ctx.fill();
+// Lay out one text item in output pixels (k = output px per doc unit). Mirrors the CSS: pre-wrap, overflow-wrap:anywhere,
+// inline-block shrink-to-fit up to the item's max width, unicode-bidi:plaintext per paragraph.
+function textLayout(ctx, it, k) {
+  const fs = it.size * k, padX = PAD_X * fs, padY = PAD_Y * fs, lh = LH * fs;
+  ctx.font = `${it.bold ? 700 : 400} ${fs}px ${FONT}`;
+  const maxW = itemMaxW(it) * k;
+  const W = t => ctx.measureText(t.replace(/\s+$/, '')).width;
+  const lines = []; let wrapped = false;
+  for (const para of it.text.split('\n')) {
+    const prtl = /[^\s\d\p{P}\p{S}]/u.test(para) ? isRTL(para) : true;
+    let line = '';
+    for (const tok of (para.match(/\S+\s*|\s+/g) || [''])) {
+      if (W(line + tok) <= maxW) { line += tok; continue; }
+      if (line.trim()) { lines.push({ t: line, rtl: prtl }); line = ''; wrapped = true; }
+      if (W(tok) <= maxW) { line = tok; continue; }
+      for (const ch of tok) { if (line && W(line + ch) > maxW) { lines.push({ t: line, rtl: prtl }); line = ''; wrapped = true; } line += ch; }
     }
-    ctx.fillStyle = it.color; ctx.textBaseline = 'middle';
-    lines.forEach((l, i) => {
-      const lr = /[^\s\d\p{P}\p{S}]/u.test(l) ? isRTL(l) : true;
-      const cy = top + padY + lh * (i + 0.5);
-      ctx.direction = lr ? 'rtl' : 'ltr'; ctx.textAlign = lr ? 'right' : 'left';
-      ctx.fillText(l, lr ? left + padX + maxW : left + padX, cy);
-    });
+    lines.push({ t: line, rtl: prtl });
   }
+  const contentW = wrapped ? maxW : Math.max(fs * 0.1, ...lines.map(l => W(l.t)));
+  const rtl = isRTL(it.text);
+  const boxW = contentW + 2 * padX, boxH = lines.length * lh + 2 * padY;
+  const x = it.x * k, y = it.y * k;
+  return { fs, padX, padY, lh, lines, contentW, boxW, boxH, left: rtl ? x + padX - boxW : x - padX, top: y - lh / 2 - padY };
 }
-async function renderPageCanvas(i) {
-  if (D.kind === 'image') {
-    let k = 1; if (D.w * D.h > MAX_CANVAS_PX) k = Math.sqrt(MAX_CANVAS_PX / (D.w * D.h));
-    const c = document.createElement('canvas'); c.width = Math.round(D.w * k); c.height = Math.round(D.h * k);
-    const ctx = c.getContext('2d'); ctx.drawImage(D.base, 0, 0, c.width, c.height);
-    drawItems(ctx, D.pages[0].items, k); return c;
+function drawItem(ctx, it, k, ox = 0, oy = 0) {
+  const L = textLayout(ctx, it, k);
+  const left = L.left - ox, top = L.top - oy;
+  if (it.bg !== 'none') {
+    ctx.fillStyle = it.bg === 'white' ? '#ffffff' : it.bg === 'yellow' ? 'rgba(255,226,64,.72)' : '#111111';
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(left, top, L.boxW, L.boxH, RAD * L.fs); else ctx.rect(left, top, L.boxW, L.boxH);
+    ctx.fill();
   }
-  const page = await D.pdf.getPage(i + 1);
-  const vp1 = page.getViewport({ scale: 1 });
-  const k = Math.min(4.2, 3600 / Math.max(vp1.width, vp1.height));
-  const vp = page.getViewport({ scale: k });
-  const c = document.createElement('canvas'); c.width = Math.round(vp.width); c.height = Math.round(vp.height);
-  const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
-  await page.render({ canvasContext: ctx, viewport: vp, canvas: c }).promise;
-  drawItems(ctx, D.pages[i].items, k);
+  ctx.fillStyle = it.color; ctx.textBaseline = 'middle';
+  L.lines.forEach((l, i) => {
+    const cy = top + L.padY + L.lh * (i + 0.5);
+    ctx.direction = l.rtl ? 'rtl' : 'ltr'; ctx.textAlign = l.rtl ? 'right' : 'left';
+    ctx.fillText(l.t.replace(/\s+$/, ''), l.rtl ? left + L.padX + L.contentW : left + L.padX, cy);
+  });
+  return L;
+}
+const textItems = i => D.pages[i].items.filter(it => it.text.trim());
+// A text item as its own sharp PNG (for PDF overlays): ~96px letters whatever the page resolution.
+async function itemPng(it) {
+  const probe = document.createElement('canvas').getContext('2d');
+  let kk = Math.max(96 / it.size, 1);
+  let L = textLayout(probe, it, kk);
+  const big = Math.max(L.boxW, L.boxH);
+  if (big > 4000) { kk *= 4000 / big; L = textLayout(probe, it, kk); }
+  const c = document.createElement('canvas');
+  c.width = Math.ceil(L.boxW) + 2; c.height = Math.ceil(L.boxH) + 2;
+  drawItem(c.getContext('2d'), it, kk, L.left - 1, L.top - 1);
+  const png = new Uint8Array(await (await canvasToBlob(c, 'image/png')).arrayBuffer());
+  return { png, rect: { x: (L.left - 1) / kk, y: (L.top - 1) / kk, w: c.width / kk, h: c.height / kk } };
+}
+
+// Render a page (with text) at k output px per doc unit.
+async function renderPageCanvas(i, k, withText = true) {
+  const c = document.createElement('canvas');
+  if (D.kind === 'image') {
+    c.width = Math.round(D.w * k); c.height = Math.round(D.h * k);
+    const ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(D.base, 0, 0, c.width, c.height);
+  } else {
+    const page = await D.pdf.getPage(i + 1);
+    const vp = page.getViewport({ scale: k });
+    c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+    await page.render({ canvasContext: ctx, viewport: vp, canvas: c }).promise;
+  }
+  if (withText) { const ctx = c.getContext('2d'); for (const it of textItems(i)) drawItem(ctx, it, k); }
   return c;
 }
-let EX = null; // { blob, name, type, pageCanvas, url }
-let exportFmt = 'pdf';
+async function pageSize(i) {
+  if (D.kind === 'image') return { w: D.w, h: D.h };
+  const vp = (await D.pdf.getPage(i + 1)).getViewport({ scale: 1 }); return { w: vp.width, h: vp.height };
+}
+// Scale for an image export: as sharp as the device allows, big enough that the smallest text is readable.
+async function imageScale(i) {
+  const { w, h } = await pageSize(i);
+  const cap = Math.sqrt(MAX_CANVAS_PX / (w * h)) * 0.98;
+  const minFs = Math.min(...textItems(i).map(it => it.size), Infinity);
+  let k = D.kind === 'image' ? 1 : 3000 / Math.max(w, h);
+  if (minFs < Infinity) k = Math.max(k, 40 / minFs);
+  return Math.min(k, cap);
+}
+
+function loadScript(src) {
+  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+}
+async function pdfLib() { if (!window.PDFLib) await loadScript('vendor/pdf-lib.min.js?v=1'); return window.PDFLib; }
+
+function jpegOrientation(buf) {
+  const v = new DataView(buf);
+  if (v.byteLength < 4 || v.getUint16(0) !== 0xFFD8) return 0;
+  let o = 2;
+  while (o + 4 < v.byteLength) {
+    const m = v.getUint16(o), len = v.getUint16(o + 2);
+    if (m === 0xFFE1 && v.getUint32(o + 4) === 0x45786966) {
+      const t = o + 10, le = v.getUint16(t) === 0x4949;
+      const ifd = t + v.getUint32(t + 4, le), n = v.getUint16(ifd, le);
+      for (let i = 0; i < n; i++) { const e = ifd + 2 + i * 12; if (v.getUint16(e, le) === 0x0112) return v.getUint16(e + 8, le); }
+      return 1;
+    }
+    if ((m & 0xFF00) !== 0xFF00) break;
+    o += 2 + len;
+  }
+  return 1;
+}
+
+// Best-quality PDF: the original page untouched (vector PDF / original photo bytes) + each text as a sharp overlay.
+async function buildPdf(progress) {
+  const { PDFDocument, degrees } = await pdfLib();
+  if (D.kind === 'pdf') {
+    let doc = null;
+    try { doc = await PDFDocument.load(await D.blob.arrayBuffer(), { ignoreEncryption: true }); } catch (e) { console.warn(e); }
+    if (doc && doc.getPageCount() === D.pdf.numPages) {
+      try {
+        for (let i = 0; i < D.pdf.numPages; i++) {
+          const list = textItems(i); if (!list.length) continue;
+          progress(i);
+          const vp = (await D.pdf.getPage(i + 1)).getViewport({ scale: 1 });
+          const pg = doc.getPage(i);
+          const rot = ((pg.getRotation().angle % 360) + 360) % 360;
+          for (const it of list) {
+            const { png, rect } = await itemPng(it);
+            const img = await doc.embedPng(png);
+            const [ax, ay] = vp.convertToPdfPoint(rect.x, rect.y + rect.h); // image's bottom-left as seen on screen
+            pg.drawImage(img, { x: ax, y: ay, width: rect.w, height: rect.h, rotate: degrees(rot) });
+          }
+        }
+        return new Blob([await doc.save()], { type: 'application/pdf' });
+      } catch (e) { console.warn('overlay failed, using raster', e); }
+    }
+    // fallback (encrypted / odd PDFs): sharp raster pages + sharp text overlays
+    const out = await PDFDocument.create();
+    for (let i = 0; i < D.pdf.numPages; i++) {
+      progress(i);
+      const { w, h } = await pageSize(i);
+      const k = Math.min(4.2, Math.sqrt(MAX_CANVAS_PX / (w * h)) * 0.9);
+      const c = await renderPageCanvas(i, k, false);
+      const img = await out.embedJpg(new Uint8Array(await (await canvasToBlob(c, 'image/jpeg', 0.95)).arrayBuffer()));
+      const pg = out.addPage([w, h]); pg.drawImage(img, { x: 0, y: 0, width: w, height: h });
+      for (const it of textItems(i)) {
+        const { png, rect } = await itemPng(it); const ti = await out.embedPng(png);
+        pg.drawImage(ti, { x: rect.x, y: h - rect.y - rect.h, width: rect.w, height: rect.h });
+      }
+    }
+    return new Blob([await out.save()], { type: 'application/pdf' });
+  }
+  // photo → PDF: embed the photo's original bytes (no recompression) when possible
+  progress(0);
+  const out = await PDFDocument.create();
+  const src = D.enhBlob || D.blob, buf = await src.arrayBuffer();
+  let img;
+  if (src.type === 'image/png') img = await out.embedPng(buf);
+  else if ((src.type === 'image/jpeg' || src.type === 'image/jpg') && jpegOrientation(buf) <= 1) img = await out.embedJpg(buf);
+  else {
+    const c = document.createElement('canvas'); c.width = D.w; c.height = D.h; c.getContext('2d').drawImage(D.base, 0, 0);
+    img = await out.embedJpg(new Uint8Array(await (await canvasToBlob(c, 'image/jpeg', 0.95)).arrayBuffer()));
+  }
+  const f = 595 / D.w, pw = 595, ph = D.h * f;
+  const pg = out.addPage([pw, ph]); pg.drawImage(img, { x: 0, y: 0, width: pw, height: ph });
+  for (const it of textItems(0)) {
+    const { png, rect } = await itemPng(it); const ti = await out.embedPng(png);
+    pg.drawImage(ti, { x: rect.x * f, y: ph - (rect.y + rect.h) * f, width: rect.w * f, height: rect.h * f });
+  }
+  return new Blob([await out.save()], { type: 'application/pdf' });
+}
+
+let EX = null; // { blob, name, type, url }
+let exportFmt = localStorage.getItem('ktov-fmt') || 'pdf';
+const fileBase = () => (D.name.replace(/[\\/:*?"<>|]+/g, '_') || 'page') + '-AIM';
 async function buildExport() {
-  busy(true, 'מכין את הדף לשליחה…'); await nextFrame();
+  busy(true, 'מכין את הדף באיכות מלאה…'); await nextFrame();
   try {
     if (EX?.url) URL.revokeObjectURL(EX.url);
-    const pageCanvas = await renderPageCanvas(D.page);
-    const base = D.name.replace(/[\\/:*?"<>|]+/g, '_') || 'page';
-    let blob, name, type;
-    if (D.kind === 'pdf' && exportFmt === 'pdf') {
-      if (!window.jspdf) await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'vendor/jspdf.umd.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
-      const { jsPDF } = window.jspdf; let doc = null;
-      for (let i = 0; i < D.pdf.numPages; i++) {
-        $('#busy .busy-text').textContent = `מכין PDF… עמוד ${i + 1} מתוך ${D.pdf.numPages}`; await nextFrame();
-        const c = i === D.page ? pageCanvas : await renderPageCanvas(i);
-        const page = await D.pdf.getPage(i + 1); const vp = page.getViewport({ scale: 1 });
-        const o = vp.width > vp.height ? 'l' : 'p';
-        if (!doc) doc = new jsPDF({ unit: 'pt', format: [vp.width, vp.height], orientation: o, compress: true });
-        else doc.addPage([vp.width, vp.height], o);
-        doc.addImage(c.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, vp.width, vp.height, undefined, 'FAST');
-      }
-      blob = doc.output('blob'); type = 'application/pdf'; name = base + '-כתוב.pdf';
+    const { w, h } = await pageSize(D.page);
+    const preview = await renderPageCanvas(D.page, 1400 / Math.max(w, h));
+    const previewUrl = URL.createObjectURL(await canvasToBlob(preview, 'image/jpeg', 0.85));
+    let blob, name, type, info = '';
+    if (exportFmt === 'pdf') {
+      const n = D.kind === 'pdf' ? D.pdf.numPages : 1;
+      blob = await buildPdf(i => { $('#busy .busy-text').textContent = n > 1 ? `מכין PDF… עמוד ${i + 1} מתוך ${n}` : 'מכין PDF…'; });
+      type = 'application/pdf'; name = fileBase() + '.pdf';
+      info = 'הדף המקורי נשמר בדיוק כמו שהוא, והכיתוב חד בכל הגדלה';
     } else {
-      blob = await canvasToBlob(pageCanvas, 'image/jpeg', 0.92); type = 'image/jpeg';
-      name = base + (D.kind === 'pdf' && D.pdf.numPages > 1 ? `-עמוד${D.page + 1}` : '') + '-כתוב.jpg';
+      const k = await imageScale(D.page);
+      const c = await renderPageCanvas(D.page, k);
+      blob = await canvasToBlob(c, 'image/jpeg', 0.95); type = 'image/jpeg';
+      name = fileBase() + (D.kind === 'pdf' && D.pdf.numPages > 1 ? `-p${D.page + 1}` : '') + '.jpg';
+      info = `⁦${c.width}×${c.height}⁩ · בוואטסאפ תמונות נדחסות – לאיכות מלאה שלח PDF`;
     }
-    const prevBlob = type === 'image/jpeg' ? blob : await canvasToBlob(pageCanvas, 'image/jpeg', 0.8);
-    EX = { blob, name, type, pageCanvas, url: URL.createObjectURL(prevBlob) };
-    $('#donePreview').src = EX.url;
+    EX = { blob, name, type, url: previewUrl };
+    $('#donePreview').src = previewUrl;
     const mb = blob.size / 1048576;
-    $('#doneNote').textContent = `${type === 'application/pdf' ? 'PDF' : 'תמונה'} · ${mb < 1 ? Math.round(blob.size / 1024) + ' KB' : mb.toFixed(1) + ' MB'}` +
-      (isIOS && type !== 'application/pdf' ? ' · לשמירה בגלריה: שלח ← "שמור תמונה"' : '');
+    $('#doneNote').textContent = `${type === 'application/pdf' ? 'PDF' : 'תמונה'} · ${mb < 1 ? Math.round(blob.size / 1024) + ' KB' : mb.toFixed(1) + ' MB'} · ${info}`;
   } finally { busy(false); }
 }
 $('#btnDone').addEventListener('click', async () => {
   if (!D) return; deselect();
-  $('#fmtSeg').hidden = D.kind !== 'pdf';
+  const multi = D.kind === 'pdf' && D.pdf.numPages > 1;
+  $('#fmtSeg [data-fmt=pdf]').textContent = multi ? 'PDF · כל העמודים · איכות מלאה' : 'PDF · איכות מלאה';
+  $('#fmtSeg [data-fmt=page]').textContent = multi ? 'תמונה · העמוד הזה' : 'תמונה';
   $$('#fmtSeg .seg-btn').forEach(b => b.classList.toggle('on', b.dataset.fmt === exportFmt));
-  if (D.kind === 'pdf') $('#fmtSeg [data-fmt=pdf]').textContent = D.pdf.numPages > 1 ? 'PDF – כל העמודים' : 'PDF';
-  if (D.kind === 'pdf') $('#fmtSeg [data-fmt=page]').textContent = D.pdf.numPages > 1 ? 'תמונה – העמוד הזה' : 'תמונה';
   try { await buildExport(); openSheet($('#sheetDone')); } catch (e) { console.error(e); toast('משהו השתבש בהכנת הקובץ'); }
 });
 $('#fmtSeg').addEventListener('click', async e => {
   const b = e.target.closest('[data-fmt]'); if (!b || b.dataset.fmt === exportFmt) return;
-  exportFmt = b.dataset.fmt; $$('#fmtSeg .seg-btn').forEach(x => x.classList.toggle('on', x === b));
-  await buildExport();
+  exportFmt = b.dataset.fmt; localStorage.setItem('ktov-fmt', exportFmt);
+  $$('#fmtSeg .seg-btn').forEach(x => x.classList.toggle('on', x === b));
+  try { await buildExport(); } catch (err) { console.error(err); toast('משהו השתבש בהכנת הקובץ'); }
 });
 $('#dShare').addEventListener('click', async () => {
   if (!EX) return;
@@ -864,13 +1003,14 @@ function download() {
   const a = document.createElement('a'); a.href = URL.createObjectURL(EX.blob); a.download = EX.name;
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
 }
-$('#dSave').addEventListener('click', () => { if (EX) { download(); toast('נשמר בהורדות ✔'); } });
+$('#dSave').addEventListener('click', () => { if (EX) { download(); toast('נשמר ✔'); } });
 $('#dCopy').addEventListener('click', async () => {
   if (!EX) return;
   try {
     if (!window.ClipboardItem || !navigator.clipboard?.write) throw new Error('no clipboard');
-    await navigator.clipboard.write([new ClipboardItem({ 'image/png': canvasToBlob(EX.pageCanvas, 'image/png') })]);
-    toast(D.kind === 'pdf' && exportFmt === 'pdf' ? 'העמוד הנוכחי הועתק כתמונה ✔' : 'הועתק ✔ אפשר להדביק בכל מקום');
+    const png = (async () => canvasToBlob(await renderPageCanvas(D.page, await imageScale(D.page)), 'image/png'))();
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': png })]);
+    toast(D.kind === 'pdf' && D.pdf.numPages > 1 ? 'העמוד הנוכחי הועתק כתמונה ✔' : 'הועתק ✔ אפשר להדביק בכל מקום');
   } catch (e) { console.warn(e); toast('ההעתקה לא נתמכת כאן – השתמש בשליחה או בשמירה'); }
 });
 
@@ -880,7 +1020,7 @@ async function boot() {
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
   if (!standalone) tip.textContent = isIOS ? 'טיפ: בספארי לחץ על כפתור השיתוף ← "הוסף למסך הבית" כדי שזה יהיה אפליקציה.'
     : 'טיפ: בתפריט הדפדפן בחר "הוסף למסך הבית" / "התקן אפליקציה".';
-  else if (!isIOS) tip.textContent = 'אפשר גם לשתף תמונה או PDF מכל אפליקציה ישר ל"כתוב".';
+  else if (!isIOS) tip.textContent = 'אפשר גם לשתף תמונה או PDF מכל אפליקציה ישר ל-AIM Write.';
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
   // Android share target: the service worker stores the shared file and reloads with ?shared=1
   if (new URLSearchParams(location.search).has('shared')) {

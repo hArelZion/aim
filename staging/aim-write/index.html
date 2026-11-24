@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>AIM Write</title>
+<meta name="theme-color" content="#0f1115">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AIM Write">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="app.css?v=2">
+</head>
+<body>
+<div id="app">
+
+  <!-- Home -->
+  <section id="home" class="screen">
+    <div class="home-inner">
+      <div class="brand">
+        <img src="icons/icon-192.png" alt="" class="brand-icon">
+        <h1 dir="ltr">AIM Write</h1>
+        <p>פותחים דף או תמונה, נוגעים איפה שרוצים וכותבים.</p>
+      </div>
+      <div class="big-actions">
+        <button class="big" data-pick="camera">
+          <svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>
+          <span>צלם דף</span>
+        </button>
+        <button class="big" data-pick="photo">
+          <svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M4 17l5-5 4 4 3-3 4 4"/></svg>
+          <span>בחר תמונה</span>
+        </button>
+        <button class="big" data-pick="file">
+          <svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4v13H7z"/><path d="M14 3.5v4h4"/><path d="M9.5 13h6M9.5 16.5h6"/></svg>
+          <span>קובץ / PDF</span>
+        </button>
+      </div>
+      <button id="resume" class="resume" hidden>
+        <span class="resume-thumb"></span>
+        <span class="resume-text"><b>להמשיך מאיפה שעצרת</b><small></small></span>
+        <span class="chev">‹</span>
+      </button>
+      <button id="pasteBtn" class="link-btn">הדבק תמונה מהלוח</button>
+      <p class="home-tip" id="homeTip"></p>
+    </div>
+    <input type="file" id="inCamera" accept="image/*" capture="environment" hidden>
+    <input type="file" id="inPhoto" accept="image/*" hidden>
+    <input type="file" id="inFile" accept="image/*,application/pdf,.pdf" hidden>
+  </section>
+
+  <!-- Editor -->
+  <section id="editor" class="screen" hidden>
+    <header class="topbar">
+      <button class="icon-btn" id="btnClose" aria-label="סגור"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <button class="icon-btn" id="btnUndo" aria-label="בטל" disabled><svg viewBox="0 0 24 24"><path d="M15 7H9a5 5 0 0 0 0 10h6"/><path d="M12 4l3 3-3 3" /></svg></button>
+      <button class="icon-btn" id="btnRedo" aria-label="שחזר" disabled><svg viewBox="0 0 24 24"><path d="M9 7h6a5 5 0 0 1 0 10H9"/><path d="M12 4L9 7l3 3"/></svg></button>
+      <div class="spacer"></div>
+      <button class="pill-btn" id="btnEnhance"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><path d="M18.5 14.5l.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7-1.7-.8 1.7-.8z"/></svg><span>שפר איכות</span></button>
+      <button class="primary-btn" id="btnDone"><span>סיום</span><svg viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M5 13v6h14v-6"/></svg></button>
+    </header>
+
+    <div id="stage">
+      <div id="world"></div>
+      <canvas id="sharp"></canvas>
+      <div id="layer"></div>
+      <div id="busy" hidden><div class="spinner"></div><div class="busy-text"></div></div>
+    </div>
+
+    <footer id="bottom">
+      <div id="hint" class="hint">הקש בכל מקום על הדף כדי לכתוב · שתי אצבעות להגדלה</div>
+      <div id="viewbar" class="viewbar">
+        <div id="pager" class="pager" hidden>
+          <button class="icon-btn sm" id="pgPrev" aria-label="עמוד קודם"><svg viewBox="0 0 24 24"><path d="M10 6l6 6-6 6"/></svg></button>
+          <span id="pgLabel">1 / 1</span>
+          <button class="icon-btn sm" id="pgNext" aria-label="עמוד הבא"><svg viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6"/></svg></button>
+        </div>
+        <div class="spacer"></div>
+        <span id="zoomLabel" class="zoom-label">100%</span>
+        <button class="icon-btn sm" id="btnFit" aria-label="התאם למסך"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      </div>
+
+      <div id="textbar" class="textbar" hidden>
+        <div class="tb-row">
+          <button class="icon-btn sm danger" id="tDelete" aria-label="מחק"><svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V4.5h4V7M7 7l1 13h8l1-13"/></svg></button>
+          <button class="icon-btn sm" id="tSmaller" aria-label="הקטן"><span class="aa">A<small>−</small></span></button>
+          <input type="range" id="tSize" min="0" max="100" step="1" aria-label="גודל">
+          <button class="icon-btn sm" id="tBigger" aria-label="הגדל"><span class="aa aa-l">A<small>+</small></span></button>
+          <button class="ok-btn" id="tOk">אישור</button>
+        </div>
+        <div class="tb-row">
+          <div class="colors" id="tColors"></div>
+          <div class="seg">
+            <button id="tBold" class="seg-btn" aria-label="מודגש"><b>B</b></button>
+            <button id="tBg" class="seg-btn" aria-label="רקע"><span class="bg-ico"></span></button>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </section>
+
+  <!-- Sheets -->
+  <div id="scrim" hidden></div>
+
+  <div class="sheet" id="sheetEnhance" hidden>
+    <div class="grab"></div>
+    <h2>שיפור איכות</h2>
+    <p class="sheet-sub" id="enhInfo"></p>
+    <button class="sheet-opt" id="enhAI2">
+      <span class="opt-ico">✨</span>
+      <span class="opt-text"><b>הגדלה חכמה ×2 (AI)</b><small>מכפיל את הרזולוציה ומחדד קווים וטקסט. רץ בטלפון עצמו.</small></span>
+    </button>
+    <button class="sheet-opt" id="enhAI4">
+      <span class="opt-ico">🔍</span>
+      <span class="opt-text"><b>הגדלה חכמה ×4 (AI)</b><small>לתמונות קטנות או מטושטשות במיוחד.</small></span>
+    </button>
+    <button class="sheet-opt" id="enhScan">
+      <span class="opt-ico">📄</span>
+      <span class="opt-text"><b>מצב סריקה</b><small>רקע לבן ונקי, טקסט כהה וחד. מעולה לצילום של דף.</small></span>
+    </button>
+    <button class="sheet-opt" id="enhUndo" hidden>
+      <span class="opt-ico">↺</span>
+      <span class="opt-text"><b>חזרה לתמונה המקורית</b><small>הכיתוב שלך נשאר במקום.</small></span>
+    </button>
+    <button class="sheet-cancel" data-close>סגור</button>
+  </div>
+
+  <div class="sheet" id="sheetDone" hidden>
+    <div class="grab"></div>
+    <h2>הדף מוכן</h2>
+    <div class="preview-wrap"><img id="donePreview" alt="תצוגה מקדימה"></div>
+    <div class="seg wide" id="fmtSeg">
+      <button class="seg-btn on" data-fmt="pdf">PDF – כל העמודים</button>
+      <button class="seg-btn" data-fmt="page">תמונה – העמוד הזה</button>
+    </div>
+    <button class="share-main" id="dShare">
+      <svg viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M5 13v6h14v-6"/></svg>
+      <span>שלח ל־WhatsApp, טלגרם ועוד</span>
+    </button>
+    <div class="done-row">
+      <button class="done-opt" id="dSave"><svg viewBox="0 0 24 24"><path d="M12 4v11M8 11l4 4 4-4"/><path d="M5 19h14"/></svg><span>שמור בטלפון</span></button>
+      <button class="done-opt" id="dCopy"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg><span>העתק</span></button>
+    </div>
+    <p class="sheet-sub" id="doneNote"></p>
+    <button class="sheet-cancel" data-close>חזרה לעריכה</button>
+  </div>
+
+  <div class="dialog" id="dialog" hidden>
+    <div class="dialog-box">
+      <p id="dialogText"></p>
+      <div class="dialog-btns">
+        <button id="dialogNo" class="sheet-cancel">ביטול</button>
+        <button id="dialogYes" class="primary-btn">כן</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" hidden></div>
+</div>
+
+<script src="app.js?v=2" type="module"></script>
+</body>
+</html>

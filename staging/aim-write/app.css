@@ -61,8 +61,8 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke
 
 /* Text items */
 .ti{position:absolute;left:0;top:0;pointer-events:auto;line-height:1.25;padding:.12em .3em;border-radius:.18em;
-  white-space:pre;font-family:var(--font);touch-action:none;outline:none}
-.ti .tx{display:inline-block;min-width:.6em;white-space:pre;unicode-bidi:plaintext;text-align:start;outline:none;
+  white-space:pre-wrap;font-family:var(--font);touch-action:none;outline:none}
+.ti .tx{display:inline-block;min-width:.6em;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;unicode-bidi:plaintext;text-align:start;outline:none;
   -webkit-user-select:text;user-select:text;caret-color:var(--accent)}
 .ti .tx:empty::before{content:attr(data-ph);opacity:.38;pointer-events:none}
 .ti.sel{box-shadow:0 0 0 1.5px var(--accent),0 0 0 4px rgba(79,124,255,.18)}
@@ -76,8 +76,11 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke
 .ti.sel .h{display:grid}
 .h-move{top:-17px}
 .h-size{bottom:-17px}
-.ti.ltr .h-move{left:-17px}.ti.ltr .h-size{right:-17px}
-.ti.rtl .h-move{right:-17px}.ti.rtl .h-size{left:-17px}
+.ti.ltr .h-move{left:-17px}.ti.ltr .h-size{left:-17px}
+.ti.rtl .h-move{right:-17px}.ti.rtl .h-size{right:-17px}
+.h-width{top:50%;margin-top:-15px}
+.ti.sel .h-width{width:22px;border-radius:11px}
+.ti.ltr .h-width{right:-13px}.ti.rtl .h-width{left:-13px}
 
 #busy{position:absolute;inset:0;background:rgba(15,17,21,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:4;padding:24px;text-align:center}
 .spinner{width:42px;height:42px;border-radius:50%;border:4px solid rgba(255,255,255,.18);border-top-color:var(--accent);animation:spin 1s linear infinite}
@@ -104,7 +107,7 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke
 .seg{display:flex;background:var(--panel2);border-radius:12px;padding:3px;gap:3px;flex:none}
 .seg-btn{min-width:42px;height:36px;border-radius:9px;display:grid;place-items:center;font-size:17px;padding:0 8px}
 .seg-btn.on{background:var(--accent);color:#fff}
-.seg.wide{width:100%}.seg.wide .seg-btn{flex:1;font-size:14px}
+.seg.wide{width:100%}.seg.wide .seg-btn{flex:1;font-size:13.5px;height:40px;line-height:1.2}
 .bg-ico{width:20px;height:16px;border-radius:4px;border:2px dashed currentColor;display:block}
 .bg-ico.white{background:#fff;border:2px solid #fff}
 .bg-ico.yellow{background:#ffe240;border:2px solid #ffe240}

@@ -1,5 +1,5 @@
 // On-device AI upscaling (ESRGAN "medium", RDN architecture) with TensorFlow.js, tile by tile.
-// Models: @upscalerjs/esrgan-medium 1.0.0 (MIT), input/output range 0..255.
+// Models: @upscalerjs/esrgan-medium + esrgan-slim 1.0.0 (MIT), input/output range 0..255.
 let tfP = null;
 const models = {};
 
@@ -17,9 +17,9 @@ function loadTf() {
   }));
 }
 
-async function loadModel(tf, f) {
-  if (!models[f]) models[f] = tf.loadLayersModel(new URL(`./models/x${f}/model.json`, import.meta.url).href);
-  return models[f];
+async function loadModel(tf, name) {
+  if (!models[name]) models[name] = tf.loadLayersModel(new URL(`./models/${name}/model.json`, import.meta.url).href);
+  return models[name];
 }
 
 const tick = () => new Promise(r => setTimeout(r, 0));
@@ -33,8 +33,9 @@ export async function upscale(src, f, { onStatus = () => {}, onProgress = () => 
   onStatus('טוען את מנוע ה־AI…');
   const tf = await loadTf();
   onStatus('טוען את המודל…');
-  const model = await loadModel(tf, f);
   const w = src.width, h = src.height;
+  // big pictures use the "slim" network (about 2x faster); smaller ones the sharper "medium" one
+  const model = await loadModel(tf, f === 2 && w * h > 1_500_000 ? 'slim-x2' : `x${f}`);
   const sd = src.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h).data;
   const out = document.createElement('canvas'); out.width = w * f; out.height = h * f;
   const octx = out.getContext('2d');
