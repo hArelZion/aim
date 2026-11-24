@@ -64,6 +64,7 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke
   white-space:pre-wrap;font-family:var(--font);touch-action:none;outline:none}
 .ti .tx{display:inline-block;min-width:.6em;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;unicode-bidi:plaintext;text-align:start;outline:none;
   -webkit-user-select:text;user-select:text;caret-color:var(--accent)}
+.ti:not(.editing) .tx{white-space:pre;overflow-wrap:normal}
 .ti .tx:empty::before{content:attr(data-ph);opacity:.38;pointer-events:none}
 .ti.sel{box-shadow:0 0 0 1.5px var(--accent),0 0 0 4px rgba(79,124,255,.18)}
 .ti.bg-white{background:#fff}

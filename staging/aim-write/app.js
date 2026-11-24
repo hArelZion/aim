@@ -82,8 +82,10 @@ let D = null;           // current document
 let V = { s: 1, tx: 0, ty: 0 }; // view: screen = doc * s + t
 let fitS = 1;
 let selected = null, editing = null;
-let last = { size: 22, color: COLORS[0], bold: false, bg: 'none' }; // size in screen px
+let last = { rel: 0.02, color: COLORS[0], bold: false, bg: 'none' }; // rel = letter size as a fraction of page width
 try { Object.assign(last, JSON.parse(localStorage.getItem('ktov-last') || '{}')); } catch {}
+if (!(last.rel > 0.003 && last.rel < 0.3)) last.rel = 0.02;
+delete last.size;
 const saveLast = () => localStorage.setItem('ktov-last', JSON.stringify(last));
 const items = () => D.pages[D.page].items;
 const findItem = id => items().find(i => i.id === id);
@@ -196,11 +198,11 @@ async function showPdfPage(i) {
 function stageSize() { return { W: stage.clientWidth, H: stage.clientHeight }; }
 function fit() {
   const { W, H } = stageSize();
-  fitS = Math.min((W - 24) / D.w, (H - 24) / D.h);
+  fitS = Math.max(1e-4, Math.min((W - 24) / D.w, (H - 24) / D.h));
   V.s = fitS; V.tx = (W - D.w * V.s) / 2; V.ty = (H - D.h * V.s) / 2;
   render();
 }
-function limits() { return { min: fitS * 0.5, max: D.kind === 'pdf' ? fitS * 30 : Math.max(fitS * 12, 8) }; }
+function limits() { return { min: fitS * 0.6, max: fitS * (D.kind === 'pdf' ? 20 : 10) }; }
 function zoomAt(sx, sy, ns) {
   const { min, max } = limits(); ns = clamp(ns, min, max);
   V.tx = sx - (sx - V.tx) * (ns / V.s); V.ty = sy - (sy - V.ty) * (ns / V.s); V.s = ns;
@@ -260,7 +262,7 @@ new ResizeObserver(() => {
   if (!D || !D.ready || $('#editor').hidden) return;
   const old = fitS;
   const { W, H } = stageSize();
-  fitS = Math.min((W - 24) / D.w, (H - 24) / D.h);
+  fitS = Math.max(1e-4, Math.min((W - 24) / D.w, (H - 24) / D.h));
   if (Math.abs(V.s - old) < 1e-6 && !editing) fit();
   else if (editing) ensureVisible(findItem(editing));
   render();
@@ -288,7 +290,14 @@ function makeItemEl(it) {
   el.className = 'ti'; el.dataset.id = it.id;
   el.innerHTML = `<span class="tx" data-ph="כתוב כאן"></span><span class="h h-move">${ICON_MOVE}</span><span class="h h-size">${ICON_SIZE}</span><span class="h h-width">${ICON_WIDTH}</span>`;
   const tx = el.firstChild; tx.textContent = it.text;
-  tx.addEventListener('input', () => { it.text = tx.innerText.replace(/\r/g, ''); styleItem(it, el); layoutItem(it); ensureVisible(it); saveSoon(); });
+  tx.addEventListener('input', () => {
+    const was = el.classList.contains('rtl');
+    it.text = tx.innerText.replace(/\r/g, ''); styleItem(it, el); layoutItem(it);
+    // the first letter decides the writing direction: re-aim the view so the line grows on screen
+    if (was !== el.classList.contains('rtl') && editing === it.id) { if (!autoView) autoView = { ...V }; animateView(focusTarget(it), 200); }
+    else ensureVisible(it);
+    saveSoon();
+  });
   tx.addEventListener('blur', () => { if (editing === it.id) finishEdit(); });
   tx.addEventListener('paste', e => {
     e.preventDefault();
@@ -316,7 +325,14 @@ function layoutItem(it, el = itemEl(it)) {
   const left = rtl ? sx + PAD_X * fs : sx - PAD_X * fs;
   const top = sy - (LH / 2 + PAD_Y) * fs;
   el.style.fontSize = fs + 'px';
-  el.firstChild.style.maxWidth = itemMaxW(it) * V.s + 'px';
+  const tx = el.firstChild;
+  if (editing === it.id) tx.style.maxWidth = itemMaxW(it) * V.s * 1.03 + 2 + 'px'; // a little slack: small screen fonts measure wider
+  else {
+    // fixed line breaks (computed for the page, not per zoom) so the text never re-flows when zooming
+    tx.style.maxWidth = 'none';
+    const t = wrapLines(it).map(l => l.replace(/\s+$/, '')).join('\n');
+    if (tx.textContent !== t) tx.textContent = t;
+  }
   el.style.transform = `translate(${left}px,${top}px)` + (rtl ? ' translateX(-100%)' : '');
 }
 function select(id) {
@@ -327,27 +343,69 @@ function select(id) {
 }
 const PT_OK = (() => { const d = document.createElement('div'); try { d.contentEditable = 'plaintext-only'; return d.contentEditable === 'plaintext-only'; } catch { return false; } })();
 function startEdit(id) {
-  if (editing && editing !== id) finishEdit();
+  if (editing && editing !== id) finishEdit(true);
   const it = findItem(id); if (!it) return;
   select(id); editing = id;
-  const tx = itemEl(it).firstChild;
+  const el = itemEl(it), tx = el.firstChild;
+  el.classList.add('editing');
+  tx.textContent = it.text; layoutItem(it, el);
+  focusOn(it);
   tx.contentEditable = PT_OK ? 'plaintext-only' : 'true';
   tx.focus({ preventScroll: true });
   const r = document.createRange(); r.selectNodeContents(tx); r.collapse(false);
   const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
-  setTimeout(() => ensureVisible(it), 350);
+  setTimeout(() => { if (editing === it.id && !animId) ensureVisible(it); }, 400);
 }
-function finishEdit() {
+function finishEdit(keepView = false) {
   if (!editing) return;
   const it = findItem(editing); const id = editing; editing = null;
   const el = it && itemEl(it);
-  if (el) { el.firstChild.contentEditable = 'false'; el.firstChild.blur(); }
+  if (el) { el.classList.remove('editing'); el.firstChild.contentEditable = 'false'; el.firstChild.blur(); }
   if (it) {
     it.text = it.text.replace(/\n+$/, '');
     if (!it.text.trim()) { removeItem(id, false); if (selected === id) select(null); }
-    else { el.firstChild.textContent = it.text; styleItem(it, el); layoutItem(it, el); }
+    else { styleItem(it, el); layoutItem(it, el); }
   }
   commit();
+  if (!keepView && autoView) { const v = autoView; autoView = null; animateView(v); }
+}
+
+// ---------- automatic zoom while writing ----------
+// Like form-filling apps: tapping to write zooms to a comfortable size; finishing returns to the previous view.
+let autoView = null, animId = 0;
+const coarse = matchMedia('(pointer: coarse)').matches;
+function userMovedView() { autoView = null; cancelAnimationFrame(animId); animId = 0; }
+function animateView(to, ms = 280) {
+  cancelAnimationFrame(animId);
+  const from = { ...V }, t0 = performance.now();
+  const step = now => {
+    const t = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - t, 3);
+    V.s = from.s + (to.s - from.s) * e; V.tx = from.tx + (to.tx - from.tx) * e; V.ty = from.ty + (to.ty - from.ty) * e;
+    renderNow(); animId = t < 1 ? requestAnimationFrame(step) : 0;
+  };
+  animId = requestAnimationFrame(step);
+}
+function focusTarget(it) {
+  const { W, H } = stageSize(), m = 18, { min, max } = limits();
+  const size = it.size, maxW = itemMaxW(it), rtl = isRTL(it.text), pad = PAD_X * size;
+  let s = V.s;
+  if (size * s < 16 || size * s > 40) s = 22 / size;                    // readable letters (~22px)
+  s = Math.min(s, Math.max((W - 2 * m) / (maxW + 2 * pad), 12 / size)); // the whole line fits on screen
+  s = clamp(s, min, max);
+  const colLeft = rtl ? it.x - maxW - pad : it.x - pad, colW = maxW + 2 * pad;
+  const tx = colW * s <= W - 2 * m ? (W - colW * s) / 2 - colLeft * s
+    : rtl ? W - m - (it.x + pad) * s : m - (it.x - pad) * s;
+  const top = (it.y - (LH / 2 + PAD_Y) * size) * s;
+  const ty = Math.min(90, H * 0.25) - top;
+  return { s, tx, ty };
+}
+function focusOn(it) {
+  const { H } = stageSize();
+  const fs = it.size * V.s, topNow = (it.y - (LH / 2 + PAD_Y) * it.size) * V.s + V.ty;
+  const ok = fs >= 16 && fs <= 40 && topNow >= 8 && topNow <= (coarse ? H * 0.4 : H - 60);
+  if (ok) return;
+  if (!autoView) autoView = { ...V };
+  animateView(focusTarget(it));
 }
 function removeItem(id, doCommit = true) {
   const arr = items(); const i = arr.findIndex(x => x.id === id);
@@ -364,7 +422,7 @@ function deselect() {
 function createAt(sx, sy) {
   const x = (sx - V.tx) / V.s, y = (sy - V.ty) / V.s;
   if (x < -D.w * 0.02 || y < -D.h * 0.02 || x > D.w * 1.02 || y > D.h * 1.02) return; // off the page
-  const it = { id: uid(), x, y, text: '', size: last.size / V.s, color: last.color, bold: last.bold, bg: last.bg };
+  const it = { id: uid(), x, y, text: '', size: last.rel * D.w, color: last.color, bold: last.bold, bg: last.bg };
   items().push(it);
   makeItemEl(it);
   startEdit(it.id);
@@ -394,10 +452,10 @@ function showTextbar(on) {
   $('#textbar').hidden = !on; $('#viewbar').hidden = on;
   if (on) { $('#hint').hidden = true; syncTextbar(); }
 }
-const SZ_MIN = 8, SZ_RANGE = 12; // slider maps to 8..96 screen px
+const SZ_MIN = 0.006, SZ_RANGE = 20; // slider maps to 0.6%..12% of the page width
 function syncTextbar() {
   const it = selected && findItem(selected); if (!it) return;
-  $('#tSize').value = clamp(Math.log(it.size * V.s / SZ_MIN) / Math.log(SZ_RANGE) * 100, 0, 100);
+  $('#tSize').value = clamp(Math.log(it.size / D.w / SZ_MIN) / Math.log(SZ_RANGE) * 100, 0, 100);
   $$('.sw', colorsEl).forEach(b => b.classList.toggle('on', b.dataset.c === it.color));
   $('#tBold').classList.toggle('on', it.bold);
   $('.bg-ico').className = 'bg-ico ' + (it.bg === 'none' ? '' : it.bg);
@@ -405,13 +463,13 @@ function syncTextbar() {
 function withSel(fn, doCommit = true) {
   const it = selected && findItem(selected); if (!it) return;
   fn(it); styleItem(it); layoutItem(it); syncTextbar();
-  last = { size: it.size * V.s, color: it.color, bold: it.bold, bg: it.bg }; saveLast();
+  last = { rel: it.size / D.w, color: it.color, bold: it.bold, bg: it.bg }; saveLast();
   if (doCommit && !editing) commit();
   if (editing) itemEl(it).firstChild.focus({ preventScroll: true });
 }
 // keep the keyboard open while using the toolbar
 $('#textbar').addEventListener('pointerdown', e => { if (e.target.closest('button')) e.preventDefault(); });
-$('#tSize').addEventListener('input', e => withSel(it => { it.size = SZ_MIN * Math.pow(SZ_RANGE, e.target.value / 100) / V.s; }, false));
+$('#tSize').addEventListener('input', e => withSel(it => { it.size = SZ_MIN * Math.pow(SZ_RANGE, e.target.value / 100) * D.w; }, false));
 $('#tSize').addEventListener('change', () => { if (!editing) commit(); });
 $('#tSmaller').addEventListener('click', () => withSel(it => { it.size /= 1.15; }));
 $('#tBigger').addEventListener('click', () => withSel(it => { it.size *= 1.15; }));
@@ -439,7 +497,7 @@ stage.addEventListener('pointerdown', e => {
     if (h && it) {
       e.preventDefault();
       G.mode = h.classList.contains('h-move') ? 'move' : h.classList.contains('h-width') ? 'width' : 'resize';
-      G.item = it; G.si = { x: it.x, y: it.y, size: it.size, w: Math.min(itemMaxW(it), ti.firstChild.getBoundingClientRect().width / V.s) };
+      G.item = it; G.si = { x: it.x, y: it.y, size: it.size, wSet: it.w, w: Math.min(itemMaxW(it), ti.firstChild.getBoundingClientRect().width / V.s) };
       G.rtl = ti.classList.contains('rtl');
       const r = ti.getBoundingClientRect(), sr = stage.getBoundingClientRect();
       G.anchor = ti.classList.contains('rtl') ? { x: r.right - sr.left, y: r.top - sr.top } : { x: r.left - sr.left, y: r.top - sr.top };
@@ -449,11 +507,10 @@ stage.addEventListener('pointerdown', e => {
     }
   } else if (P.size === 2) {
     const [a, b] = [...P.values()];
-    if (G && G.item && selected === G.item.id && ['move', 'item-press', 'item-drag', 'resize', 'width'].includes(G.mode)) {
-      G = { mode: 'pinch-item', item: G.item, d0: dist(a, b), size0: G.item.size };
-    } else {
-      G = { mode: 'pinch', d0: dist(a, b), m0: mid(a, b), sv: { ...V } };
-    }
+    // two fingers always zoom the page (never the text); undo any start of a drag
+    if (G && G.item && G.si) { Object.assign(G.item, { x: G.si.x, y: G.si.y, size: G.si.size }); if (G.si.wSet !== undefined) G.item.w = G.si.wSet; layoutItem(G.item); }
+    G = { mode: 'pinch', d0: dist(a, b), m0: mid(a, b), sv: { ...V } };
+    userMovedView();
   }
 });
 
@@ -462,7 +519,7 @@ window.addEventListener('pointermove', e => {
   const p = pt(e); P.set(e.pointerId, p);
   const moved = G.start ? dist(p, G.start) : 0;
   switch (G.mode) {
-    case 'pan-press': if (moved > 8) { G.mode = 'pan'; } else break;
+    case 'pan-press': if (moved > 8) { G.mode = 'pan'; userMovedView(); } else break;
     // falls through
     case 'pan':
       V.tx = G.sv.tx + p.x - G.start.x; V.ty = G.sv.ty + p.y - G.start.y; clampPan(); render(); break;
@@ -478,7 +535,7 @@ window.addEventListener('pointermove', e => {
     }
     case 'resize': {
       const d0 = Math.max(20, dist(G.start, G.anchor));
-      G.item.size = clamp(G.si.size * dist(p, G.anchor) / d0, 4 / V.s, 400 / V.s);
+      G.item.size = clamp(G.si.size * dist(p, G.anchor) / d0, D.w * 0.004, D.w * 0.3);
       layoutItem(G.item); syncTextbar(); break;
     }
     case 'pinch': {
@@ -488,10 +545,6 @@ window.addEventListener('pointermove', e => {
       V.s = ns; V.tx = m.x - (G.m0.x - G.sv.tx) * (ns / G.sv.s); V.ty = m.y - (G.m0.y - G.sv.ty) * (ns / G.sv.s);
       clampPan(); render(); break;
     }
-    case 'pinch-item': {
-      const [a, b] = [...P.values()]; if (!b) break;
-      G.item.size = clamp(G.size0 * dist(a, b) / G.d0, 4 / V.s, 400 / V.s); layoutItem(G.item); syncTextbar(); break;
-    }
   }
 });
 
@@ -499,8 +552,7 @@ function endPointer(e) {
   if (!P.has(e.pointerId)) return;
   P.delete(e.pointerId);
   if (!G) return;
-  if (P.size === 1 && (G.mode === 'pinch' || G.mode === 'pinch-item')) {
-    if (G.mode === 'pinch-item') commitItemChange(G.item);
+  if (P.size === 1 && G.mode === 'pinch') {
     const p = [...P.values()][0]; G = { mode: 'pan', start: p, sv: { ...V } }; return;
   }
   if (P.size > 0) return;
@@ -509,7 +561,7 @@ function endPointer(e) {
     if (m === 'pan-press') queueTap({ kind: 'empty', x: G.start.x, y: G.start.y });
     else if (m === 'item-press') queueTap({ kind: 'item', id: G.item.id });
   }
-  if (['item-drag', 'move', 'resize', 'width', 'pinch-item'].includes(m)) {
+  if (['item-drag', 'move', 'resize', 'width'].includes(m)) {
     if (m === 'item-drag' || m === 'move') select(G.item.id);
     commitItemChange(G.item);
   }
@@ -519,7 +571,7 @@ window.addEventListener('pointerup', endPointer);
 window.addEventListener('pointercancel', endPointer);
 function commitItemChange(it) {
   if (editing === it.id) return; // committed when editing ends
-  last.size = it.size * V.s; saveLast(); commit();
+  last.rel = it.size / D.w; saveLast(); commit();
 }
 
 let tapTimer = 0;
@@ -539,7 +591,7 @@ function runTap() {
 }
 
 stage.addEventListener('wheel', e => {
-  if (!D) return; e.preventDefault();
+  if (!D) return; e.preventDefault(); userMovedView();
   const p = pt(e);
   if (e.ctrlKey || Math.abs(e.deltaY) > Math.abs(e.deltaX) && !e.shiftKey) zoomAt(p.x, p.y, V.s * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0022)));
   else { V.tx -= e.deltaX; V.ty -= e.deltaY; }
@@ -553,7 +605,7 @@ document.addEventListener('keydown', e => {
   else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
 });
 
-$('#btnFit').addEventListener('click', () => { fit(); });
+$('#btnFit').addEventListener('click', () => { userMovedView(); fit(); });
 
 // ---------- undo / redo ----------
 let undoStack = [], redoStack = [], lastSnap = '';
@@ -668,7 +720,7 @@ $('#enhUndo').addEventListener('click', async () => {
 function rescaleItems(k) {
   if (k !== 1) for (const p of D.pages) for (const it of p.items) { it.x *= k; it.y *= k; it.size *= k; }
   V.s /= k; fitS /= k;
-  const { W, H } = stageSize(); fitS = Math.min((W - 24) / D.w, (H - 24) / D.h);
+  const { W, H } = stageSize(); fitS = Math.max(1e-4, Math.min((W - 24) / D.w, (H - 24) / D.h));
   undoStack = []; redoStack = []; lastSnap = snapshot(); updateUndo();
   buildItems(); render(); saveSoon(true);
 }
@@ -783,21 +835,8 @@ function scanFilter(src) {
 function textLayout(ctx, it, k) {
   const fs = it.size * k, padX = PAD_X * fs, padY = PAD_Y * fs, lh = LH * fs;
   ctx.font = `${it.bold ? 700 : 400} ${fs}px ${FONT}`;
-  const maxW = itemMaxW(it) * k;
-  const W = t => ctx.measureText(t.replace(/\s+$/, '')).width;
-  const lines = []; let wrapped = false;
-  for (const para of it.text.split('\n')) {
-    const prtl = /[^\s\d\p{P}\p{S}]/u.test(para) ? isRTL(para) : true;
-    let line = '';
-    for (const tok of (para.match(/\S+\s*|\s+/g) || [''])) {
-      if (W(line + tok) <= maxW) { line += tok; continue; }
-      if (line.trim()) { lines.push({ t: line, rtl: prtl }); line = ''; wrapped = true; }
-      if (W(tok) <= maxW) { line = tok; continue; }
-      for (const ch of tok) { if (line && W(line + ch) > maxW) { lines.push({ t: line, rtl: prtl }); line = ''; wrapped = true; } line += ch; }
-    }
-    lines.push({ t: line, rtl: prtl });
-  }
-  const contentW = wrapped ? maxW : Math.max(fs * 0.1, ...lines.map(l => W(l.t)));
+  const lines = wrapLines(it).map(t => ({ t: t.replace(/\s+$/, ''), rtl: lineRTL(t) }));
+  const contentW = Math.max(fs * 0.1, ...lines.map(l => ctx.measureText(l.t).width));
   const rtl = isRTL(it.text);
   const boxW = contentW + 2 * padX, boxH = lines.length * lh + 2 * padY;
   const x = it.x * k, y = it.y * k;
@@ -816,14 +855,38 @@ function drawItem(ctx, it, k, ox = 0, oy = 0) {
   L.lines.forEach((l, i) => {
     const cy = top + L.padY + L.lh * (i + 0.5);
     ctx.direction = l.rtl ? 'rtl' : 'ltr'; ctx.textAlign = l.rtl ? 'right' : 'left';
-    ctx.fillText(l.t.replace(/\s+$/, ''), l.rtl ? left + L.padX + L.contentW : left + L.padX, cy);
+    ctx.fillText(l.t, l.rtl ? left + L.padX + L.contentW : left + L.padX, cy);
   });
   return L;
+}
+const probe = document.createElement('canvas').getContext('2d');
+const lineRTL = l => /[^\s\d\p{P}\p{S}]/u.test(l) ? isRTL(l) : true;
+const wrapCache = new Map();
+// Line breaks at a fixed reference size: identical on screen at every zoom and in the exported file.
+function wrapLines(it) {
+  const maxW = itemMaxW(it);
+  const key = `${it.text}\u0001${it.size.toFixed(4)}\u0001${it.bold}\u0001${maxW.toFixed(3)}`;
+  const c = wrapCache.get(it.id); if (c && c.key === key) return c.lines;
+  const k = 100 / it.size, mw = maxW * k;
+  probe.font = `${it.bold ? 700 : 400} 100px ${FONT}`;
+  const W = t => probe.measureText(t.replace(/\s+$/, '')).width;
+  const lines = [];
+  for (const para of it.text.split('\n')) {
+    let line = '';
+    for (const tok of (para.match(/\S+\s*|\s+/g) || [''])) {
+      if (W(line + tok) <= mw) { line += tok; continue; }
+      if (line.trim()) { lines.push(line); line = ''; }
+      if (W(tok) <= mw) { line = tok; continue; }
+      for (const ch of tok) { if (line && W(line + ch) > mw) { lines.push(line); line = ''; } line += ch; }
+    }
+    lines.push(line);
+  }
+  wrapCache.set(it.id, { key, lines });
+  return lines;
 }
 const textItems = i => D.pages[i].items.filter(it => it.text.trim());
 // A text item as its own sharp PNG (for PDF overlays): ~96px letters whatever the page resolution.
 async function itemPng(it) {
-  const probe = document.createElement('canvas').getContext('2d');
   let kk = Math.max(96 / it.size, 1);
   let L = textLayout(probe, it, kk);
   const big = Math.max(L.boxW, L.boxH);

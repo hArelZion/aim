@@ -1,6 +1,6 @@
 // AIM Write service worker: offline shell + Android share target.
-const V = 'aimwrite-v2';
-const SHELL = ['./', 'index.html', 'app.css?v=2', 'app.js?v=2', 'manifest.webmanifest', 'icons/icon-192.png'];
+const V = 'aimwrite-v3';
+const SHELL = ['./', 'index.html', 'app.css?v=3', 'app.js?v=3', 'manifest.webmanifest', 'icons/icon-192.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
